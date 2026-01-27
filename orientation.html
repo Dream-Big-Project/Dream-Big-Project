@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Memorandum Of Understanding</title>
+  <style>
+    :root{
+      --navy: #0b2340;        /* page background & tick color */
+      --panel-navy: #041827;  /* deep panel navy for text boxes (white pops) */
+      --gold: #d4af37;
+      --gold-strong: #c89f2f;
+      --bg-card: #ffffff;
+      --ease: cubic-bezier(.2,.9,.25,1);
+      --transition: 760ms var(--ease);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--navy); color:#fff;}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;}
+
+    /* Viewport + soft golden glow */
+    .viewport {
+      width:100%;
+      max-width:1000px;
+      height:86vh;
+      border-radius:24px;
+      position:relative;
+      overflow:hidden;
+      padding:18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+    }
+    .viewport::before{
+      content:'';
+      position:absolute;inset:-8px;border-radius:28px;z-index:0;
+      background:
+        radial-gradient(600px 200px at 8% 8%, rgba(212,175,55,0.12), transparent 6%),
+        radial-gradient(400px 200px at 92% 92%, rgba(212,175,55,0.08), transparent 8%);
+      filter: blur(16px);
+      pointer-events:none;
+    }
+    .viewport::after{
+      content:'';position:absolute;inset:0;border-radius:24px;z-index:0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), inset 0 0 30px rgba(212,175,55,0.02);
+      pointer-events:none;
+    }
+
+    /* Slider layout */
+    .slider {display:flex; height:100%; width:100%; transition: transform var(--transition); will-change: transform; position:relative; z-index:1;}
+    .slide {flex:0 0 100%; padding:28px; display:flex; align-items:flex-start; justify-content:center;}
+    .card {
+      width:100%; height:100%; border-radius:18px; background:var(--bg-card); padding:34px; box-shadow:0 16px 40px rgba(3,10,20,0.45);
+      border:1px solid rgba(11,35,64,0.06); overflow:auto; position:relative;
+      color: #072233;
+    }
+
+    /* header */
+    .brand {display:flex; align-items:center; gap:12px; margin-bottom:6px;}
+    .logo {
+      width:56px; height:56px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+      overflow:hidden; background:transparent; flex:0 0 56px;
+    }
+    .logo img{width:100%;height:100%;object-fit:contain;display:block}
+    .title {font-weight:700; font-size:18px; color:var(--panel-navy);}
+
+    h2 {margin:4px 0 12px 0; font-size:20px; color:var(--panel-navy); font-weight:800;}
+    /* text box container - deep navy filled with white bold text */
+    .text-box {
+      display:flex; flex-direction:column; gap:12px; padding:18px; border-radius:12px;
+      background: var(--panel-navy);
+      border-left: 4px solid rgba(212,175,55,0.18);
+      box-shadow: 0 6px 20px rgba(212,175,55,0.03);
+    }
+    .text-box p {
+      margin:0; color: #ffffff; font-size:17px; font-weight:800; line-height:1.6;
+    }
+
+    /* Footer controls */
+    .controls {position:absolute; left:50%; transform:translateX(-50%); bottom:16px; display:flex; gap:10px; align-items:center; z-index:4;}
+    .dots {display:flex; gap:8px; align-items:center;}
+    .dot {
+      width:10px;height:10px;border-radius:50%; background: rgba(255,255,255,0.12); transition: all 300ms ease;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.05);
+    }
+    .dot.active{ background: var(--gold); box-shadow: 0 6px 18px rgba(212,175,55,0.14); transform: scale(1.15); }
+    .nav-btn{
+      width:44px;height:44px;border-radius:12px;border:none;background:rgba(255,255,255,0.06); display:flex;align-items:center;justify-content:center;
+      cursor:pointer;backdrop-filter: blur(2px); font-weight:700; color:#fff;
+    }
+    .nav-btn:active{ transform:translateY(1px) scale(.99); }
+
+    /* pager */
+    .pager { position:absolute; top:18px; right:20px; background:rgba(255,255,255,0.06); padding:8px 12px; border-radius:12px; font-weight:700; color:#fff; z-index:4; border:1px solid rgba(255,255,255,0.04); }
+
+    /* acceptance area (last slide) */
+    .accept-area { display:flex; flex-direction:column; gap:18px; margin-top:14px; align-items:flex-start; }
+    .agree-row { display:flex; gap:18px; align-items:center; }
+    .agree-checkbox{display:flex; align-items:flex-start; gap:12px;}
+    /* golden border for unchecked checkbox, strong contrast */
+    .agree-checkbox input[type=checkbox] {
+      width:22px; height:22px; -webkit-appearance:none; appearance:none; border-radius:6px;
+      border:2px solid var(--gold); background:transparent; cursor:pointer;
+      transition: all 200ms ease; margin-top:3px; box-shadow: 0 4px 12px rgba(212,175,55,0.08), inset 0 -2px 0 rgba(0,0,0,0.06);
+    }
+    .agree-checkbox input[type=checkbox]:hover { box-shadow: 0 6px 18px rgba(212,175,55,0.12); }
+    .agree-checkbox input[type=checkbox]:focus { outline:3px solid rgba(212,175,55,0.12); }
+    /* when checked keep the gold gradient but keep a thin gold border for clarity */
+    .agree-checkbox input[type=checkbox]:checked {
+      background: linear-gradient(180deg,var(--gold), #ffd67a);
+      border:2px solid var(--gold-strong);
+      box-shadow: 0 8px 20px rgba(212,175,55,0.12);
+    }
+    .agree-checkbox label { font-size:15px; color:#ffffff; font-weight:800; line-height:1.35; } /* white + bold to match text-box */
+
+    .roller-wrap { width:140px; height:64px; display:flex; align-items:center; justify-content:center; position:relative; }
+    .roller-track { width:120px; height:10px; background: rgba(11,35,64,0.04); border-radius:10px; position:relative; overflow:hidden; }
+    .roller { width:46px; height:46px; border-radius:50%; position:absolute; left:6px; top:-18px; background: linear-gradient(180deg,var(--gold), #ffd67a); box-shadow: 0 12px 28px rgba(11,35,64,0.08); transition: transform 1100ms var(--ease), left 1100ms var(--ease); transform-origin:center; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--navy); }
+
+    .roller.rolled { left: calc(100% - 52px); transform: rotate(1080deg); }
+
+    .proceed { opacity:0; transform:translateY(8px); pointer-events:none; transition: all 480ms ease; }
+    .proceed.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+    /* Proceed button now uses the same gold gradient as the roller circle */
+    .proceed button {
+      background: linear-gradient(180deg,var(--gold), #ffd67a);
+      color: var(--panel-navy);
+      border: 2px solid var(--gold-strong);
+      padding:12px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      box-shadow: 0 12px 36px rgba(200,160,40,0.16);
+      font-weight:800;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+    .proceed button:hover { transform: translateY(-2px); box-shadow: 0 18px 46px rgba(200,160,40,0.22); }
+
+    @media (max-width:720px){
+      .viewport { height:92vh; padding:12px; }
+      .card { padding:20px; }
+      .logo { width:48px; height:48px; }
+      .title { font-size:15px; }
+      .text-box p { font-size:16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="viewport" role="application" aria-label="Dream Big Project orientation">
+      <div class="pager" id="pager">1 / 19</div>
+
+      <div id="slider" class="slider" aria-live="polite">
+        <!-- Slide 1 -->
+        <section class="slide" data-index="0" aria-roledescription="slide">
+          <div class="card">
+            <div class="brand"><div class="logo"><img src="logo.png" alt="DB Logo"></div><div class="title">Dream Big Project — Orientation (MoU)</div></div>
+            <h2>1. Purpose of this MoU</h2>
+            <div class="text-box">
+              <p>Dream Big Project exists as a structured execution ecosystem designed to help individuals and communities move from ideas and dreams to disciplined, funded, and responsibly executed outcomes.</p>
+              <p>This MoU establishes clarity, accountability, and mutual understanding between DBP and its Members.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 2 -->
+        <section class="slide" data-index="1">
+          <div class="card">
+            <h2>2. Nature of Dream Big Project</h2>
+            <div class="text-box">
+              <p><strong>Dream Big Project is NOT:</strong> An investment platform; a get-rich-quick scheme; a donation-for-profit program; a financial guarantee system.</p>
+              <p><strong>Dream Big Project IS:</strong> A structured development and execution ecosystem; a discipline-driven contribution & learning platform; a long-term capacity-building system. No profits, returns, or outcomes are guaranteed.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 3 -->
+        <section class="slide" data-index="2">
+          <div class="card">
+            <h2>3. Membership & Eligibility</h2>
+            <div class="text-box">
+              <p>Membership is open to individuals who agree to follow the Dream Big process. Progression is based on discipline, consistency, participation, and learning engagement. Mere registration does not guarantee access to funding or execution privileges.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 4 -->
+        <section class="slide" data-index="3">
+          <div class="card">
+            <h2>4. Contributions & Financial Commitment</h2>
+            <div class="text-box">
+              <p>Member contributions are commitment-based, not investments. Contributions support financial discipline, long-term planning, and execution readiness. Contributions are not instant-withdrawal funds. Contribution rules, schedules, and usage are clearly defined and communicated.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 5 -->
+        <section class="slide" data-index="4">
+          <div class="card">
+            <h2>5. Non-Refund Policy</h2>
+            <div class="text-box">
+              <p>Contributions are generally non-refundable, except where DBP explicitly states otherwise. Contributions reflect long-term commitment, not short-term liquidity. Members acknowledge that withdrawal requests may be denied based on policy.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 6 -->
+        <section class="slide" data-index="5">
+          <div class="card">
+            <h2>6. Maturity & Waiting Period</h2>
+            <div class="text-box">
+              <p>Dream Big Project operates a 24-month maturity cycle before project funding eligibility. This period exists to build financial intelligence, emotional discipline, and execution readiness. No exceptions are guaranteed.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 7 -->
+        <section class="slide" data-index="6">
+          <div class="card">
+            <h2>7. Dream Classroom (Compulsory)</h2>
+            <div class="text-box">
+              <p>All Members must participate in the Dream Classroom. This includes training in financial intelligence, money management, and strategic execution. Failure to engage may delay or revoke progression privileges.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 8 -->
+        <section class="slide" data-index="7">
+          <div class="card">
+            <h2>8. Project Funding & Execution</h2>
+            <div class="text-box">
+              <p>Funding access is conditional, not automatic. Approval depends on discipline record, classroom engagement, contribution consistency, and execution readiness. DBP reserves the right to delay, modify, or decline project execution.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 9 -->
+        <section class="slide" data-index="8">
+          <div class="card">
+            <h2>9. Multiple Project Participation</h2>
+            <div class="text-box">
+              <p>Members may subscribe to multiple project categories. Each project requires separate discipline and separate contribution responsibility. Failure in one project does not automatically affect others unless stated.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 10 -->
+        <section class="slide" data-index="9">
+          <div class="card">
+            <h2>10. Referrals</h2>
+            <div class="text-box">
+              <p>Referrals are optional, not compulsory. Progress is not dependent on recruitment. No member is penalized for non-referral.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 11 -->
+        <section class="slide" data-index="10">
+          <div class="card">
+            <h2>11. Transparency & Communication</h2>
+            <div class="text-box">
+              <p>DBP commits to transparent communication. Members commit to staying informed through official channels. Ignorance of communicated policies is not an excuse.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 12 -->
+        <section class="slide" data-index="11">
+          <div class="card">
+            <h2>12. Accountability & Discipline</h2>
+            <div class="text-box">
+              <p>Members are accountable for their actions, commitments, and conduct. DBP may impose delays, restrictions, suspension, or termination for misconduct or violation of this MoU.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 13 -->
+        <section class="slide" data-index="12">
+          <div class="card">
+            <h2>13. Inactivity</h2>
+            <div class="text-box">
+              <p>Prolonged inactivity may result in loss of eligibility, reset of progress, or removal from active programs.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 14 -->
+        <section class="slide" data-index="13">
+          <div class="card">
+            <h2>14. Termination</h2>
+            <div class="text-box">
+              <p>DBP reserves the right to terminate membership for breach of agreement, fraud, misrepresentation, or disruptive behavior. Termination does not automatically entitle refunds.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 15 -->
+        <section class="slide" data-index="14">
+          <div class="card">
+            <h2>15. No Partnership or Employment</h2>
+            <div class="text-box">
+              <p>This MoU does not create employment, partnership, agency, or joint venture. Members participate independently.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 16 -->
+        <section class="slide" data-index="15">
+          <div class="card">
+            <h2>16. Limitation of Liability</h2>
+            <div class="text-box">
+              <p>Dream Big Project shall not be liable for personal financial decisions, member negligence, or external economic factors.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 17 -->
+        <section class="slide" data-index="16">
+          <div class="card">
+            <h2>17. Amendments</h2>
+            <div class="text-box">
+              <p>DBP reserves the right to amend this MoU with notice. Continued participation signifies acceptance.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 18 -->
+        <section class="slide" data-index="17">
+          <div class="card">
+            <h2>18. Governing Principles</h2>
+            <div class="text-box">
+              <p>This MoU is governed by integrity, accountability, discipline, and ethical execution.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 19 (Acceptance) -->
+        <section class="slide" data-index="18">
+          <div class="card">
+            <h2>19. Acceptance</h2>
+            <div class="text-box">
+              <p>By registering, signing digitally, or continuing participation, the Member confirms acceptance of the Dream Big Project Memorandum of Understanding.</p>
+
+              <div class="accept-area" aria-live="polite">
+                <div class="agree-row">
+                  <div class="agree-checkbox">
+                    <input id="agree" type="checkbox" aria-disabled="true" disabled>
+                    <label for="agree">“I have read, understood, and voluntarily agreed to the Dream Big Project Memorandum of Understanding.”</label>
+                  </div>
+
+                  <div class="roller-wrap" aria-hidden="true">
+                    <div class="roller-track" aria-hidden="true"></div>
+                    <div id="roller" class="roller" aria-hidden="true">✓</div>
+                  </div>
+                </div>
+
+                <div class="proceed" id="proceedWrap" aria-hidden="true">
+                  <button id="proceedBtn" type="button" disabled>Proceed to Dashboard</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- controls (prev, next, dots) -->
+      <div class="controls" aria-hidden="false">
+        <button id="prev" class="nav-btn" aria-label="Previous">◀</button>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <button id="next" class="nav-btn" aria-label="Next">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const total = 19;
+      const slider = document.getElementById('slider');
+      const prevBtn = document.getElementById('prev');
+      const nextBtn = document.getElementById('next');
+      const pager = document.getElementById('pager');
+      const dotsWrap = document.getElementById('dots');
+      const agree = document.getElementById('agree');
+      const roller = document.getElementById('roller');
+      const proceedWrap = document.getElementById('proceedWrap');
+      const proceedBtn = document.getElementById('proceedBtn');
+
+      let index = 0;
+      let visited = new Array(total).fill(false);
+      visited[0] = true;
+      let visitedCount = 1;
+
+      // generate dots (visual only)
+      for (let i = 0; i < total; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        dotsWrap.appendChild(d);
+      }
+      const dots = Array.from(dotsWrap.children);
+
+      // update UI
+      function updateUI() {
+        slider.style.transform = `translateX(${ -index * 100 }%)`;
+        pager.textContent = `${index + 1} / ${total}`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+
+        // mark visited
+        if (!visited[index]) { visited[index] = true; visitedCount++; }
+
+        // enable agreement only if on last slide and all visited
+        if (index === total - 1 && visitedCount === total) {
+          agree.disabled = false;
+          agree.setAttribute('aria-disabled', 'false');
+        } else {
+          if (agree.checked) agree.checked = false;
+          agree.disabled = true;
+          agree.setAttribute('aria-disabled', 'true');
+          roller.classList.remove('rolled');
+          proceedWrap.classList.remove('show');
+          proceedBtn.disabled = true;
+        }
+      }
+
+      // Navigation handlers: next and prev only move one step
+      prevBtn.addEventListener('click', () => {
+        if (index > 0) index--;
+        updateUI();
+      });
+      nextBtn.addEventListener('click', () => {
+        if (index < total - 1) index++;
+        updateUI();
+      });
+
+      // Keyboard navigation (arrow keys)
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+          if (index < total - 1) index++;
+          updateUI();
+        } else if (e.key === 'ArrowLeft') {
+          if (index > 0) index--;
+          updateUI();
+        }
+      });
+
+      // pointer (mouse/touch) dragging for swipe interaction
+      let startX = 0, isPointerDown = false, width = window.innerWidth;
+      const threshold = 0.12; // fraction of width needed to change slide
+
+      function onPointerDown(e) {
+        isPointerDown = true;
+        startX = e.touches ? e.touches[0].clientX : e.clientX;
+        slider.style.transition = 'none';
+      }
+      function onPointerMove(e) {
+        if (!isPointerDown) return;
+        const x = e.touches ? e.touches[0].clientX : e.clientX;
+        const dx = x - startX;
+        const percent = (dx / width) * 100;
+        slider.style.transform = `translateX(${ -index * 100 + percent }%)`;
+      }
+      function onPointerUp(e) {
+        if (!isPointerDown) return;
+        isPointerDown = false;
+        slider.style.transition = '';
+        const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+        const dx = endX - startX;
+        const abs = Math.abs(dx);
+        if (abs > width * threshold) {
+          if (dx < 0 && index < total - 1) index++;
+          if (dx > 0 && index > 0) index--;
+        }
+        updateUI();
+      }
+
+      // attach touch + mouse listeners
+      slider.addEventListener('touchstart', onPointerDown, { passive: true });
+      slider.addEventListener('touchmove', onPointerMove, { passive: true });
+      slider.addEventListener('touchend', onPointerUp);
+      slider.addEventListener('mousedown', onPointerDown);
+      window.addEventListener('mousemove', onPointerMove);
+      window.addEventListener('mouseup', onPointerUp);
+      window.addEventListener('resize', () => { width = window.innerWidth; });
+
+      // Prevent dot clicking (enforce sequential)
+      dots.forEach(d => d.addEventListener('click', (e) => { e.preventDefault(); }));
+
+      // Agreement checkbox behaviour
+      agree.addEventListener('change', () => {
+        if (agree.checked) {
+          roller.classList.add('rolled');
+          setTimeout(() => {
+            proceedWrap.classList.add('show');
+            proceedBtn.disabled = false;
+          }, 700);
+        } else {
+          roller.classList.remove('rolled');
+          proceedWrap.classList.remove('show');
+          proceedBtn.disabled = true;
+        }
+      });
+
+      // Proceed button — replace with actual redirect in production
+      proceedBtn.addEventListener('click', () => {
+        proceedBtn.disabled = true;
+        proceedBtn.textContent = 'Proceeding...';
+        setTimeout(() => {
+          alert('Thanks — you agreed to the MoU. Redirecting to dashboard (demo).');
+          proceedBtn.textContent = 'Proceed to Dashboard';
+          proceedBtn.disabled = false;
+        }, 900);
+      });
+
+      // ARIA live announce
+      const live = document.createElement('div');
+      live.setAttribute('aria-live', 'polite');
+      live.style.position = 'absolute';
+      live.style.left = '-9999px';
+      document.body.appendChild(live);
+      let lastAnnounced = -1;
+      setInterval(() => {
+        if (lastAnnounced !== index) {
+          live.textContent = `Slide ${index + 1} of ${total}`;
+          lastAnnounced = index;
+        }
+      }, 300);
+
+      // init
+      updateUI();
+    })();
+  </script>
+</body>
+</html>

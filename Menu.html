@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dream Big Project — Menu</title>
+<meta name="description" content="Site menu — Dream Big Project" />
+
+<style>
+  :root{
+    /* LIGHT GREY BASE */
+    --navy: #f2f2f2;
+    --gold: #DCAE3A;
+    --gold-2: #F0C75E;
+    --muted: #7b8697;
+    --white-10: rgba(255,255,255,0.10);
+    --radius: 18px;
+    --max-w: 1100px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+
+  body{
+    font-size:16px;
+    color:#33b64f;
+    background:#f2f2f2; /* FULL PAGE LIGHT GREY */
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:28px;
+  }
+
+  /* SOFT OVERLAY (optional, not blocking anything) */
+  .page-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.08);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:var(--max-w);
+    padding:18px;
+    position:relative;
+    z-index:5;
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+  }
+
+  .brand{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+
+  .logo{
+    width:96px;
+    height:96px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+  }
+
+  .logo img{
+    width:72px;
+    height:72px;
+    object-fit:contain;
+  }
+
+  .brand .title{
+    font-weight:800;
+    font-size:18px;
+  }
+
+  nav.actions{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+
+  .btn{
+    background: linear-gradient(135deg, var(--gold), var(--gold-2));
+    color:#1a1a1a;
+    font-weight:800;
+    padding:8px 14px;
+    border-radius:999px;
+    border:0;
+    cursor:pointer;
+  }
+
+  .btn-ghost-green{
+    background:transparent;
+    color:#33b64f;
+    font-weight:900;
+    padding:8px 14px;
+    border-radius:999px;
+    border:1px solid rgba(51,182,79,0.3);
+    text-decoration:none;
+  }
+
+  .full-menu{
+    width:100%;
+    border-radius:14px;
+    padding:28px;
+    margin-bottom:18px;
+    background:#ffffff;
+    border:1px solid rgba(0,0,0,0.06);
+  }
+
+  .menu-heading{
+    text-align:center;
+    font-weight:900;
+    font-size:32px;
+    letter-spacing:4px;
+    margin:0 0 14px;
+  }
+
+  .menu-heading.small{
+    font-size:20px;
+    margin-top:6px;
+    color:var(--gold);
+    letter-spacing:2px;
+  }
+
+  .menu-items{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:14px;
+    align-items:center;
+  }
+
+  .menu-link{
+    width:100%;
+    max-width:520px;
+    padding:12px 16px;
+    border-radius:12px;
+    color:#33b64f;
+    text-decoration:none;
+    font-weight:800;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:linear-gradient(90deg,rgba(210,170,60,.12),rgba(240,199,94,.06));
+    border:1px solid rgba(0,0,0,0.05);
+  }
+
+  .divider{
+    width:100%;
+    height:3px;
+    margin:22px 0;
+    background:linear-gradient(90deg,var(--gold),var(--gold-2));
+  }
+
+  .site-footer{
+    background:#ffffff;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid rgba(0,0,0,0.06);
+    text-align:center;
+    font-weight:800;
+  }
+
+  @media (max-width:540px){
+    .menu-heading{font-size:24px}
+    .wrap{padding:12px}
+    .full-menu{padding:20px}
+  }
+</style>
+</head>
+
+<body>
+
+<div class="page-overlay" aria-hidden="true"></div>
+
+<div class="wrap">
+
+<header>
+  <div class="brand">
+    <div class="logo">
+      <img src="logo.png" alt="Dream Big Project logo">
+    </div>
+    <div>
+      <div class="title">Dream Big Project</div>
+      <div style="font-size:12px;color:#666">Secret • Structure • Strategy</div>
+    </div>
+  </div>
+
+  <nav class="actions">
+    <a class="btn-ghost-green" href="big dream projects.html">Go back home</a>
+    <button class="btn" onclick="location.href='signup.html'">JOIN NOW</button>
+  </nav>
+</header>
+
+<section class="full-menu">
+  <h1 class="menu-heading">MENU</h1>
+  <div class="menu-heading small">Explore the Ecosystem</div>
+
+  <nav class="menu-items">
+    <a class="menu-link" href="about.html">About Us <span>→</span></a>
+    <a class="menu-link" href="How it works.html">How it Works <span>→</span></a>
+    <a class="menu-link" href="dream projects.html">Dream Projects <span>→</span></a>
+    <a class="menu-link" href="testimonials.html">Dream Big Testimonials <span>→</span></a>
+    <a class="menu-link" href="events.html">Events <span>→</span></a>
+    <a class="menu-link" href="team.html">Team ';<span>→</span></a>
+    <a class="menu-link" href="Faq.html">FAQs <span>→</span></a>
+    <a class="menu-link" href="dream classroom.html">Dream Classroom <span>→</span></a>
+    <a class="menu-link" href="certification.html">Certifications <span>→</span></a>
+    <a class="menu-link" href="blog.html">Blog <span>→</span></a>
+    <a class="menu-link" href="contact.html">Contact <span>→</span></a>
+    <a class="menu-link" href="disclaimer.html">Disclaimer <span>→</span></a>
+  </nav>
+</section>
+
+<div class="divider"></div>
+
+<footer class="site-footer">
+  © 2026 Dream Big Project. All rights reserved.
+</footer>
+
+</div>
+
+<script id="chatway" async src="https://cdn.chatway.app/widget.js?id=Vykf7IgckhoX"></script>
+
+</body>
+</html>

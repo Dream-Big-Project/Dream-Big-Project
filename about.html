@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dream Big Project — About Us</title>
+<meta name="description" content="About Dream Big Project - Secret • Structure • Strategy" />
+<style>
+  :root{
+    --navy: #071735;
+    --gold: #DCAE3A;
+    --gold-2: #F0C75E;
+    --muted: #7b8697;
+    --card: #ffffff;
+    --bg1: #071735;
+    --bg2: #0e274f;
+    --sage: #6FBF9B; /* chosen sage green for headings */
+    --radius: 18px;
+    --max-w: 1200px;
+    --gap: 22px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font-size:16px;
+    color:#fff;
+    background: linear-gradient(180deg,var(--bg1) 0%, #082042 45%, var(--bg2) 100%);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:28px;
+  }
+
+  .wrap{width:100%;max-width:var(--max-w);padding:18px}
+
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{ width:88px; height:88px; display:flex; align-items:center; justify-content:center; padding:6px; border-radius:12px; }
+  .logo img{ width:72px; height:72px; object-fit:contain; display:block; border-radius:10px; }
+  .brand .title{font-weight:900;font-size:18px;color:#fff}
+  nav.actions{display:flex;gap:10px;align-items:center}
+  .btn {
+    background: linear-gradient(135deg, var(--gold), var(--gold-2));
+    color: var(--navy);
+    font-weight:800;
+    padding:8px 14px;
+    border-radius:999px;
+    border:0;
+    cursor:pointer;
+  }
+
+  /* Layout */
+  .hero{
+    border-radius:20px;
+    padding:36px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    margin-bottom:var(--gap);
+  }
+
+  .grid{ display:grid; grid-template-columns: 1fr 360px; gap:28px; align-items:start; }
+  @media(max-width:980px){ .grid{ grid-template-columns: 1fr; } }
+
+  /* Headings */
+  h1{
+    font-size:44px;
+    margin:0 0 8px 0;
+    font-weight:900;
+    letter-spacing:2px;
+    color:var(--sage); /* Who We Are in sage */
+    text-align:left;
+  }
+  @media(max-width:720px){ h1{ font-size:36px; } }
+
+  /* eyebrow same size as h1; remains gold */
+  .eyebrow{
+    font-weight:900;
+    color:var(--gold);
+    letter-spacing:2px;
+    font-size:44px;
+    margin-bottom:12px;
+    display:inline-block;
+  }
+  @media(max-width:720px){ .eyebrow{ font-size:36px; } }
+
+  /* h2.section used for both Our Vision and Our Mission — set to sage */
+  h2.section{
+    font-size:20px;
+    margin:18px 0 8px 0;
+    font-weight:900;
+    color:var(--sage); /* Vision & Mission in sage */
+  }
+
+  /* card heading style (Core Values, Quick facts) */
+  .card-heading{
+    font-weight:900;
+    color:var(--sage);
+    font-size:16px;
+  }
+
+  p.lead{ color:#fff; line-height:1.6; margin:0 0 12px 0; font-weight:800; }
+
+  /* Sidebar */
+  .card{
+    padding:18px;
+    border-radius:12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+    color:#fff;
+    font-weight:800;
+  }
+  .values{ display:grid; grid-template-columns:repeat(1, 1fr); gap:10px; margin-top:12px; }
+  .value-pill{ padding:10px 12px; border-radius:999px; font-weight:900; background:rgba(255,255,255,0.02); color:var(--gold); display:inline-block; }
+
+  /* Core values list */
+  .values-list{ margin:0; padding-left:18px; color:#fff; line-height:1.9; font-weight:800; }
+  .values-list li{ margin-bottom:6px; list-style: none; position:relative; padding-left:18px; }
+  .values-list li::before{ content:'•'; position:absolute; left:0; top:0; color:var(--gold); font-weight:900; }
+
+  /* ensure muted text becomes bold white */
+  .muted{ color:#fff; font-size:15px; line-height:1.6; font-weight:800; }
+
+  /* CTA button in card — gold background, black text (kept per request) */
+  a.cta{ display:inline-block; margin-top:12px; padding:12px 18px; border-radius:12px; background:linear-gradient(135deg,var(--gold),var(--gold-2)); color:#000; font-weight:900; text-decoration:none; }
+
+  /* subtle decorative shapes */
+  .decor{ position:absolute; right:-60px; top:-60px; width:260px; height:260px; border-radius:40px; background: radial-gradient(circle at 30% 30%, rgba(220,174,58,0.14), rgba(240,199,94,0.06)); filter: blur(28px); opacity:0.9; pointer-events:none; }
+
+  /* footer copy */
+  .divider{ width:100%; height:3px; margin:22px 0; background: linear-gradient(90deg, var(--gold), var(--gold-2)); border-radius:3px; box-shadow: 0 6px 18px rgba(220,174,58,0.10); overflow:hidden; }
+  .site-footer{ background: var(--navy); padding:10px; border-radius:12px; margin-top:0; color:#fff; position:relative; z-index:4; box-shadow: 0 10px 40px rgba(2,6,20,0.55); }
+  .site-footer .footer-inner{ display:flex;justify-content:center;align-items:center; }
+  .site-footer .legal{ font-size:14px; color:#fff; text-align:center; font-weight:900; margin:0; }
+
+  /* Animations */
+  @keyframes fadeUp { from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform:none; } }
+  @keyframes fadeIn { from{ opacity:0 } to{ opacity:1 } }
+
+  .anim-stagger{ opacity:0; transform:translateY(8px); animation: fadeUp 520ms cubic-bezier(.2,.9,.2,1) forwards; }
+  .anim-delay-1{ animation-delay:120ms; }
+  .anim-delay-2{ animation-delay:260ms; }
+  .anim-delay-3{ animation-delay:380ms; }
+  .anim-delay-4{ animation-delay:520ms; }
+  .anim-delay-5{ animation-delay:640ms; }
+
+  @media (prefers-reduced-motion: reduce){
+    .anim-stagger { animation: none; opacity:1; transform:none; }
+    .decor{ display:none; }
+  }
+
+</style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <header role="banner" aria-label="Main navigation">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><img src="logo.png" alt="Dream Big Project logo" /></div>
+        <div>
+          <div class="title">Dream Big Project</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.95);margin-top:2px;font-weight:800">Secret • Structure • Strategy</div>
+        </div>
+      </div>
+
+      <nav class="actions" aria-label="Top actions">
+        <button class="btn" onclick="location.href='signup.html'">JOIN NOW</button>
+        <button class="btn" onclick="location.href='menu.html'">Explore</button>
+      </nav>
+    </header>
+
+    <main>
+      <div class="hero" aria-labelledby="about-title" role="region">
+        <div style="position:relative;">
+          <div class="decor" aria-hidden="true"></div>
+
+          <div class="grid">
+            <div>
+              <div class="eyebrow anim-stagger anim-delay-1">ABOUT US</div>
+              <h1 id="about-title" class="anim-stagger anim-delay-2">Who We Are</h1>
+
+              <p class="lead anim-stagger anim-delay-3">
+                Dream Big Project is a member-owned, digital cooperative ecosystem designed to support long-term dream execution for personal, family, NGO, and community benefit.
+              </p>
+
+              <p class="muted anim-stagger anim-delay-4">
+                At Dream Big Project, we responsibly pool member contributions, provide education and mentorship, and apply cooperative principles to help members prepare for and execute meaningful projects.
+              </p>
+
+              <h2 class="section anim-stagger anim-delay-5">Our Vision</h2>
+              <p class="lead anim-stagger" style="margin-top:6px">
+                A world where disciplined dreams grow into sustainable realities through integrity, cooperation, and shared prosperity.
+              </p>
+
+              <h2 class="section anim-stagger">Our Mission</h2>
+              <p class="muted">
+                To empower individuals and communities to responsibly execute meaningful dreams through structured contributions, cooperative collaboration, mentorship, clear timelines, and accountability.
+              </p>
+
+            </div>
+
+            <aside>
+              <div class="card anim-stagger anim-delay-3" role="complementary" aria-label="Core values">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div class="card-heading">Core Values</div>
+                </div>
+
+                <ul class="values-list" style="margin-top:12px">
+                  <li>Commitment</li>
+                  <li>Integrity</li>
+                  <li>Accountability</li>
+                  <li>Community</li>
+                  <li>Stewardship</li>
+                  <li>Hope</li>
+                  <li>Action</li>
+                </ul>
+
+                <div style="margin-top:16px; text-align:center">
+                  <a class="cta" href="big dream projects.html">Return home</a>
+                </div>
+              </div>
+
+              <div style="height:18px"></div>
+
+              <div class="card anim-stagger anim-delay-4" aria-hidden="false">
+                <div class="card-heading" style="margin-bottom:8px">Quick facts</div>
+                <div class="muted" style="font-size:14px">
+                  Member-owned • Cooperative principles • Milestone-driven support
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <footer class="site-footer" role="contentinfo" aria-label="Site footer">
+        <div class="footer-inner">
+          <div class="legal">© 2026 Dream Big Project. All rights reserved.</div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // nothing complex — ensure animation classes applied after load for consistent replay
+    document.addEventListener('DOMContentLoaded', ()=> {
+      // force reflow for animations
+      const animated = Array.from(document.querySelectorAll('.anim-stagger'));
+      animated.forEach(el => { void el.offsetWidth; });
+    });
+  </script>
+  
+<!-- Chatway Live Chat (placed before closing </body>) -->
+<script id="chatway" async="true" src="https://cdn.chatway.app/widget.js?id=Vykf7IgckhoX"></script>
+
+</body>
+</html>

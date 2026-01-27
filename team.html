@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dream Big Project — Team Swipe Widget (Return Home)</title>
+<style>
+  :root{
+    --navy: #071735;
+    --bg: #0b2540;
+    --card-bg: #ffffff;
+    --sage: #266a4f;
+    --muted: #5f6670;
+    --accent: #dcae3a;
+    --card-radius: 14px;
+    --shadow: 0 20px 60px rgba(15,23,42,0.12);
+    --max-w: 960px;
+    --type-speed: 46;
+    --slide-dur: 560ms;
+    --card-anim-dur: 420ms;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg, var(--navy) 0%, #082042 60%, #06263b 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:28px;
+    color:#0b1a2b;
+  }
+
+  .widget-wrap{ width:100%; max-width:var(--max-w); }
+
+  .swipe-card {
+    background:var(--card-bg);
+    border-radius:var(--card-radius);
+    padding:18px;
+    box-shadow:var(--shadow);
+    overflow:visible;
+    position:relative;
+  }
+
+  /* Return Home button (replaces file icon) */
+  .return-home-btn{
+    position:absolute;
+    left:14px;
+    top:14px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:10px;
+    background:linear-gradient(90deg,var(--accent), #f6d98f);
+    color:#071735;
+    font-weight:800;
+    text-decoration:none;
+    box-shadow:0 8px 22px rgba(7,23,53,0.08);
+    border:0;
+    cursor:pointer;
+  }
+  .return-home-btn:focus{ outline:3px solid rgba(220,174,58,0.18); }
+
+  .slider{
+    width:100%;
+    overflow:hidden;
+    border-radius:10px;
+    margin-top:8px;
+  }
+
+  .track{
+    display:flex;
+    transition: transform var(--slide-dur) cubic-bezier(.22,.9,.36,1);
+    will-change:transform;
+    align-items:stretch;
+  }
+
+  .card{
+    min-width:100%;
+    padding:40px 40px 34px 40px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    align-items:flex-start;
+    justify-content:flex-start;
+    transition: transform var(--card-anim-dur) cubic-bezier(.2,.9,.36,1),
+                opacity var(--card-anim-dur) cubic-bezier(.2,.9,.36,1),
+                box-shadow var(--card-anim-dur) ease;
+    transform-origin: center center;
+    opacity:0.94;
+    transform:scale(0.986);
+  }
+
+  .card.active{
+    transform:scale(1);
+    opacity:1;
+    box-shadow:0 36px 90px rgba(7,23,53,0.10);
+  }
+
+  .role{ font-size:14px; color:var(--muted); font-weight:800; letter-spacing:0.6px; text-transform:uppercase; }
+  .name{ font-size:24px; font-weight:900; color:#071735; margin-top:6px; }
+
+  .desc{
+    font-size:18px;
+    color:var(--sage);
+    line-height:1.7;
+    margin-top:8px;
+    min-height:140px;
+    white-space:pre-wrap;
+    word-break:break-word;
+    transition: opacity 360ms cubic-bezier(.2,.9,.3,1), transform 360ms cubic-bezier(.2,.9,.3,1);
+    opacity:0;
+    transform: translateY(6px) scale(0.997);
+  }
+
+  .card.active .desc{
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+
+  .controls{ display:flex; gap:8px; justify-content:center; margin-top:18px; align-items:center }
+  .btn{ border:0; padding:10px 14px; border-radius:10px; font-weight:800; cursor:pointer;
+        background:linear-gradient(90deg,var(--accent), #f6d98f); color:#071735;
+        box-shadow:0 10px 30px rgba(7,23,53,0.08) }
+  .btn.ghost{ background:transparent; border:1px solid rgba(7,23,53,0.06); color:var(--muted); font-weight:800 }
+
+  .btn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+  .dots{ display:flex; gap:8px; align-items:center; margin:0 12px }
+  .dot{ width:8px; height:8px; border-radius:8px; background:rgba(7,23,53,0.08); transition: all 260ms ease }
+  .dot.active{ background:var(--accent); width:20px; border-radius:10px }
+
+  @media(max-width:760px){
+    .card{ padding:22px }
+    .desc{ min-height:120px; font-size:16px }
+    .name{ font-size:20px }
+    .return-home-btn{ left:10px; top:10px; padding:7px 10px }
+  }
+</style>
+</head>
+<body>
+
+<div class="widget-wrap" aria-live="polite">
+  <div class="swipe-card" role="region" aria-label="Team showcase slider">
+    <a href="big dream projects.html" class="return-home-btn" aria-label="Return to Big Dream Projects">← Return Home</a>
+
+    <div class="slider" id="slider">
+      <div class="track" id="track">
+        <article class="card" data-index="0" aria-labelledby="nm0">
+          <div class="role">Dream Big Project Team</div>
+          <div id="nm0" class="name">Secret • Strategy • Structure • Execution</div>
+          <div id="desc0" class="desc" aria-live="polite"></div>
+        </article>
+
+        <article class="card" data-index="1" aria-labelledby="nm1">
+          <div class="role">Web Development & Systems</div>
+          <div id="nm1" class="name">Axisum Tech</div>
+          <div id="desc1" class="desc" aria-live="polite"></div>
+        </article>
+
+        <article class="card" data-index="2" aria-labelledby="nm2">
+          <div class="role">Donor Funding Partner</div>
+          <div id="nm2" class="name">Direct Access Charity Foundation</div>
+          <div id="desc2" class="desc" aria-live="polite"></div>
+        </article>
+
+        <article class="card" data-index="3" aria-labelledby="nm3">
+          <div class="role">Member Contribution & Capital Stewardship Body</div>
+          <div id="nm3" class="name">Dream Big Project Contribution & Execution MPCS Ltd</div>
+          <div id="desc3" class="desc" aria-live="polite"></div>
+        </article>
+      </div>
+    </div>
+
+    <div class="controls" aria-hidden="false">
+      <button id="prevBtn" class="btn ghost" aria-label="Previous">◀ Prev</button>
+      <div class="dots" id="dots" aria-hidden="true"></div>
+      <button id="nextBtn" class="btn ghost" aria-label="Next">Next ▶</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Data */
+const cardsData = [
+  `The Dream Big Project Team architects the hidden logic behind Dream Big Project, designing the strategic and structural systems that move ideas from vision to disciplined, sustainable execution.`,
+  `Axisum Tech builds the Dream Big Project’s digital platform, turning strategy into smooth, reliable, and intuitive systems that empower members to execute their dreams`,
+  `Direct Access Charity Foundation supports the Dream Big Project as a donor funding partner, contributing to its capacity-building and long-term execution initiatives. Its support is aligned with ethical development, accountability, and sustainable impact, without influence over project governance or member outcomes.`,
+  `Members of Dream Big Project Contribution & Execution MPCS Ltd collectively steward pooled contributions used to secure low-risk, yield-focused financial instruments in support of approved project funding. The structure prioritizes capital preservation, disciplined growth, and responsible deployment aligned with Dream Big Project’s execution framework.`
+];
+
+/* Config */
+const TYPE_SPEED = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--type-speed')) || 46;
+const PAUSE_AFTER_TYPE = 1200;
+const AUTO_MOVE_DELAY = 700;
+const SLIDE_DURATION_MS = 560;
+const NAV_LOCK_BUFFER = 320;
+
+/* DOM */
+const track = document.getElementById('track');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const dotsWrap = document.getElementById('dots');
+const descEls = [document.getElementById('desc0'), document.getElementById('desc1'), document.getElementById('desc2'), document.getElementById('desc3')];
+const cardEls = Array.from(document.querySelectorAll('.card'));
+const total = descEls.length;
+
+/* build dots */
+for(let i=0;i<total;i++){
+  const d = document.createElement('div'); d.className='dot'; d.dataset.i = i;
+  d.addEventListener('click', ()=> goTo(i, true));
+  dotsWrap.appendChild(d);
+}
+const dots = Array.from(dotsWrap.children);
+
+/* state */
+let current = 0;
+let autoTimer = null;
+let typingController = null;
+let isUserInteracting = false;
+let lastTouchX = null;
+let navLock = false;
+let sequenceRunning = false;
+let playAbort = false;
+
+/* helpers */
+function setActiveDot(idx){ dots.forEach((d,i)=> d.classList.toggle('active', i===idx)); }
+function setActiveCardClass(idx){ cardEls.forEach((c,i)=> c.classList.toggle('active', i===idx)); }
+function slideTo(idx){
+  const pct = - (idx * 100);
+  track.style.transform = `translateX(${pct}%)`;
+  current = idx;
+  setActiveDot(idx);
+  setActiveCardClass(idx);
+}
+
+/* typing control */
+function makeTypingController(){ return { cancelled:false, speed: TYPE_SPEED }; }
+function cancelTyping(){ if(typingController) typingController.cancelled = true; typingController = null; }
+
+function typeInto(el, text, controller){
+  return new Promise((resolve)=>{
+    el.textContent = '';
+    if(!controller || controller.cancelled){ resolve('cancelled'); return; }
+    let i = 0;
+    const len = text.length;
+    function step(){
+      if(controller.cancelled){ resolve('cancelled'); return; }
+      el.textContent += text.charAt(i);
+      i++;
+      if(i < len){
+        const jitter = Math.random()*18 - 9;
+        setTimeout(step, Math.max(16, controller.speed + jitter));
+      } else {
+        resolve('done');
+      }
+    }
+    setTimeout(step, 40);
+  });
+}
+
+/* play auto sequence (guarded) */
+async function playSequenceFrom(startIndex=0){
+  if(sequenceRunning) return;
+  sequenceRunning = true;
+  playAbort = false;
+  try{
+    let idx = startIndex;
+    while(true){
+      if(playAbort || isUserInteracting) break;
+      slideTo(idx);
+      cancelTyping();
+      typingController = makeTypingController();
+      const res = await typeInto(descEls[idx], cardsData[idx], typingController);
+      if(res === 'cancelled' || playAbort || isUserInteracting) break;
+      await new Promise(r=>setTimeout(r, PAUSE_AFTER_TYPE));
+      idx = (idx + 1) % total;
+      await new Promise(r=>setTimeout(r, AUTO_MOVE_DELAY));
+    }
+  } finally {
+    sequenceRunning = false;
+  }
+}
+
+/* autoplay control */
+function startAutoplay(){
+  clearAuto();
+  if(sequenceRunning) return;
+  autoTimer = setTimeout(()=> { playSequenceFrom(current); }, 250);
+}
+function clearAuto(){ if(autoTimer){ clearTimeout(autoTimer); autoTimer = null; } }
+
+/* navigation lock */
+function engageNavLock(duration){
+  navLock = true;
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+  setTimeout(()=>{ navLock = false; prevBtn.disabled = false; nextBtn.disabled = false; }, duration + NAV_LOCK_BUFFER);
+}
+
+/* navigate */
+async function goTo(idx, manual=false){
+  if(navLock) return;
+  idx = ((idx % total) + total) % total;
+  if(manual){
+    playAbort = true;
+    isUserInteracting = true;
+    engageNavLock(SLIDE_DURATION_MS);
+  }
+  clearAuto();
+  cancelTyping();
+  slideTo(idx);
+  descEls.forEach((el,i)=> { if(i!==idx) el.textContent = ''; });
+  typingController = makeTypingController();
+  const res = await typeInto(descEls[idx], cardsData[idx], typingController);
+  if(manual){
+    setTimeout(()=>{ playAbort = false; isUserInteracting = false; startAutoplay(); }, 2400);
+  } else {
+    startAutoplay();
+  }
+}
+
+/* prev/next handlers */
+prevBtn.addEventListener('click', ()=> { goTo(current - 1, true); });
+nextBtn.addEventListener('click', ()=> { goTo(current + 1, true); });
+
+/* touch swipe */
+const slider = document.getElementById('slider');
+slider.addEventListener('touchstart', (e)=>{ lastTouchX = e.changedTouches[0].clientX; });
+slider.addEventListener('touchend', (e)=>{
+  const x = e.changedTouches[0].clientX;
+  const dx = x - lastTouchX;
+  const threshold = 36;
+  if(Math.abs(dx) > threshold){
+    if(dx < 0) { goTo(current + 1, true); } else { goTo(current - 1, true); }
+  }
+  lastTouchX = null;
+});
+
+/* mouse drag */
+let isDown = false, startX = 0;
+slider.addEventListener('mousedown', (e)=>{ isDown=true; startX=e.clientX; });
+document.addEventListener('mouseup', (e)=>{
+  if(!isDown) return;
+  isDown=false;
+  const dx = e.clientX - startX;
+  if(Math.abs(dx) > 80){
+    if(dx < 0) goTo(current + 1, true);
+    else goTo(current - 1, true);
+  }
+});
+
+/* keyboard left/right */
+document.addEventListener('keydown',(e)=>{
+  if(e.key === 'ArrowLeft') goTo(current - 1, true);
+  if(e.key === 'ArrowRight') goTo(current + 1, true);
+});
+
+/* startup */
+window.addEventListener('load', ()=> {
+  slideTo(0);
+  setTimeout(()=> { goTo(0, false); }, 360);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dream Big Project — FAQ</title>
+<meta name="description" content="Dream Big Project — Frequently Asked Questions (General). 24 FAQs, two-column layout, search, accessible."/>
+<style>
+  :root{
+    --navy: #071735;
+    --gold: #DCAE3A;
+    --gold-2: #F0C75E;
+    --muted: #718099;
+    --card-bg: #ffffff;
+    --card-radius: 12px;
+    --shadow: 0 20px 60px rgba(7,23,53,0.18);
+    --max-w: 1100px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--navy), #082042 60%);-webkit-font-smoothing:antialiased;color:var(--navy)}
+  a{color:var(--gold)}
+  .page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}/* Card */ .card{width:100%;max-width:var(--max-w);background:var(--card-bg);border-radius:var(--card-radius);padding:18px 16px 12px 16px;box-shadow:var(--shadow);border:1px solid rgba(7,23,53,0.04)}
+
+/* Top bar: logo + toggle */ .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px} .brand{display:flex;gap:12px;align-items:center} .logo-img{height:48px; width:auto; border-radius:6px} .brand .title{font-weight:800;color:var(--navy);font-size:16px} .brand .subtitle{font-size:12px;color:var(--muted)}
+
+.controls{display:flex;gap:8px;align-items:center} .toggle-all{background:linear-gradient(90deg,var(--gold),var(--gold-2));color:var(--navy);border:0;padding:8px 12px;border-radius:8px;font-weight:800;cursor:pointer} .home-btn{background:transparent;border:1px solid rgba(7,23,53,0.06);padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
+
+/* heading */ .heading{ text-align:center;padding:6px 8px 10px 8px } .heading h1{ margin:6px 0 6px 0;font-size:24px;color:var(--gold);font-weight:900;text-transform:uppercase } .heading p{ margin:0;color:var(--muted);font-size:13px;max-width:880px;margin-left:auto;margin-right:auto }
+
+/* search row */ .search-row{ display:flex; gap:8px; align-items:center; justify-content:center; margin:12px 0; } .search-box{ width:100%; max-width:760px; display:flex; gap:6px; align-items:center; } .search-input{ flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(7,23,53,0.06); font-size:14px } .search-clear{ padding:9px 12px; border-radius:10px; border:0; background:linear-gradient(90deg,var(--gold),var(--gold-2)); color:var(--navy); font-weight:800; cursor:pointer }
+
+/* single pill */ .pill-row{ display:flex;justify-content:center;margin:6px 0 8px } .pill{ padding:6px 12px;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:var(--navy);font-weight:800;font-size:13px;box-shadow:0 8px 20px rgba(220,174,58,0.08);border:0 }
+
+/* two-column layout */ .faq-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:8px; max-width:1000px; margin-left:auto; margin-right:auto; } .col{ display:flex; flex-direction:column; gap:8px; }
+
+.faq-row{ display:flex; gap:10px; align-items:flex-start; padding:12px; border-radius:10px; border:1px solid rgba(7,23,53,0.04); transition: background 180ms ease, transform 180ms ease; background:transparent; } .faq-row.hidden{ display:none !important; } .faq-row:hover{ background: rgba(7,23,53,0.02); transform:translateY(-2px) }
+
+.icon{ width:40px;height:40px;border-radius:8px; display:grid; place-items:center; background:transparent; color:var(--gold); font-weight:900; flex-shrink:0; font-size:16px; border:1px solid rgba(7,23,53,0.03) }
+
+.q-wrap{ flex:1; display:flex; flex-direction:column; gap:6px } /* QUESTIONS: bold black and visible */ .q-title{ display:flex; align-items:center; justify-content:space-between; gap:10px } .q-title button{ background:transparent;border:0;padding:0;margin:0;font-weight:900;font-size:15px;color:#000;text-align:left;cursor:pointer;width:100% } .q-title button:focus{ outline:3px solid rgba(220,174,58,0.08); border-radius:8px }
+
+.chev{ width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:var(--muted); transition:transform 180ms ease }
+
+/* ANSWERS: black and readable */ .faq-answer{ max-height:0; overflow:hidden; transition:max-height 360ms cubic-bezier(.2,.9,.3,1), opacity 300ms ease; opacity:0; color:#111; font-size:14px; line-height:1.48 } .faq-row.open .faq-answer{ opacity:1; padding-top:8px; max-height:320px } .faq-row.open .chev{ transform:rotate(180deg); color:var(--navy); background:linear-gradient(90deg,var(--gold),var(--gold-2)); color:var(--navy); box-shadow:0 8px 20px rgba(220,174,58,0.08) }
+
+mark.match { background:rgba(220,174,58,0.36); color:inherit; padding:0 2px; border-radius:3px } .no-results { text-align:center; color:var(--muted); margin-top:8px; display:none }
+
+/* footer — updated style */ .site-footer{ margin-top:14px; padding:18px; border-radius:10px; background:rgba(7,23,53,0.02); color:var(--muted); font-size:13px } .site-footer .footer-inner{ display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap } .site-footer .footer-brand{ display:flex; align-items:center; gap:12px } .site-footer .footer-brand img{ height:40px; width:auto; border-radius:6px } .site-footer .brand-text{ font-weight:800; color:var(--navy) } .site-footer .muted{ font-size:12px; color:var(--muted) } .site-footer .footer-links{ display:flex; gap:18px } .site-footer .footer-links .col{ display:flex; flex-direction:column; gap:8px } .site-footer .footer-links a{ color:var(--muted); text-decoration:none; font-size:13px } .site-footer .footer-actions{ display:flex; gap:12px; align-items:center } .site-footer .copyright{ color:var(--muted); font-size:13px } .site-footer .return-home{ background:linear-gradient(90deg,var(--gold),var(--gold-2)); border:0; padding:8px 12px; border-radius:8px; color:var(--navy); font-weight:800; cursor:pointer; font-size:13px } @media (max-width:920px){ .faq-grid{ grid-template-columns: 1fr; } .topbar{ flex-direction:column; align-items:flex-start; gap:12px } .controls{ width:100%; display:flex; justify-content:flex-end; } } @media (max-width:720px){ .site-footer .footer-inner{ flex-direction:column; align-items:flex-start } .site-footer .footer-links{ margin-top:12px } } </style>
+
+</head>
+<body>
+  <div class="page">
+    <div class="card" role="main" aria-labelledby="faqTitle"><!-- top bar -->
+  <div class="topbar">
+    <div class="brand" aria-hidden="false">
+      <!-- Replace the src below with your actual logo file path if different -->
+      <img src="logo.png" alt="Dream Big Project logo" class="logo-img" onerror="this.style.display='none'">
+      <div>
+        <div class="title">Dream Big Project</div>
+        <div class="subtitle">Structure • Strategy • Support</div>
+      </div>
+    </div>
+
+    <div class="controls" aria-hidden="false">
+      <button id="toggleAll" class="toggle-all" aria-pressed="false">Show all FAQs</button>
+      <a class="home-btn" href="big dream projects.html" title="Return home" role="button">Return Home</a>
+    </div>
+  </div>
+
+  <!-- heading -->
+  <div class="heading">
+    <h1 id="faqTitle">FREQUENTLY ASKED QUESTIONS</h1>
+    <p>Got a question? We can answer it. Learn how Dream Big works, the 24-month maturity cycle, the Dream Classroom, referrals, multiple project subscriptions and more.</p>
+  </div>
+
+  <!-- search -->
+  <div class="search-row" role="search" aria-label="Search FAQs">
+    <div class="search-box" style="width:100%;">
+      <input id="faqSearch" class="search-input" type="search" placeholder="Search FAQs (try: '24-month', 'Dream Classroom', 'referral')" aria-label="Search Frequently Asked Questions" />
+      <button id="searchClear" class="search-clear" aria-label="Clear search">Clear</button>
+    </div>
+  </div>
+
+  <div class="pill-row" aria-hidden="true"><div class="pill">General</div></div>
+
+  <!-- two column FAQ list: left (1-12) and right (13-24) -->
+  <div class="faq-grid" id="faqGrid" aria-live="polite">
+    <div class="col" id="colLeft">
+      <!-- Left column: 1..12 -->
+      <!-- 1 -->
+      <div class="faq-row" data-index="1">
+        <div class="icon" aria-hidden="true">1</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a1" id="q1">What is Dream Big Project?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a1" class="faq-answer" role="region" aria-labelledby="q1"><p>Dream Big Project is a structured execution ecosystem designed to help individuals and communities move from dreams to disciplined, funded, and executed realities.</p></div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="faq-row" data-index="2">
+        <div class="icon" aria-hidden="true">2</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a2" id="q2">Who is Dream Big Project for?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a2" class="faq-answer" role="region" aria-labelledby="q2"><p>It is for individuals who understand that success is built, not wished, and are willing to follow structure, strategy, and process.</p></div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="faq-row" data-index="3">
+        <div class="icon" aria-hidden="true">3</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a3" id="q3">What makes Dream Big Project different from other platforms?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a3" class="faq-answer" role="region" aria-labelledby="q3"><p>We prioritize capacity, discipline, and preparation before funding, not shortcuts or hype.</p></div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="faq-row" data-index="4">
+        <div class="icon" aria-hidden="true">4</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a4" id="q4">Is Dream Big Project an investment platform?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a4" class="faq-answer" role="region" aria-labelledby="q4"><p>No. Dream Big Project is not an investment scheme or get-rich-quick program.</p></div>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="faq-row" data-index="5">
+        <div class="icon" aria-hidden="true">5</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a5" id="q5">Does Dream Big Project guarantee profits or returns?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a5" class="faq-answer" role="region" aria-labelledby="q5"><p>No. We provide structure and opportunity — outcomes depend on discipline, learning, and execution.</p></div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="faq-row" data-index="6">
+        <div class="icon" aria-hidden="true">6</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a6" id="q6">What problem does Dream Big Project exist to solve?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a6" class="faq-answer" role="region" aria-labelledby="q6"><p>It solves failure caused by poor planning, weak financial intelligence, and lack of structured execution.</p></div>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="faq-row" data-index="7">
+        <div class="icon" aria-hidden="true">7</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a7" id="q7">Who can join Dream Big Project?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a7" class="faq-answer" role="region" aria-labelledby="q7"><p>Anyone can join, but only disciplined members who follow the process will progress.</p></div>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="faq-row" data-index="8">
+        <div class="icon" aria-hidden="true">8</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a8" id="q8">What types of projects are supported?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a8" class="faq-answer" role="region" aria-labelledby="q8"><p>Projects span business, education, housing, mobility, health, and community development.</p></div>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="faq-row" data-index="9">
+        <div class="icon" aria-hidden="true">9</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a9" id="q9">How does contribution work?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a9" class="faq-answer" role="region" aria-labelledby="q9"><p>Members make structured contributions as part of their commitment to discipline and growth.</p></div>
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <div class="faq-row" data-index="10">
+        <div class="icon" aria-hidden="true">10</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a10" id="q10">Are contributions refundable?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a10" class="faq-answer" role="region" aria-labelledby="q10"><p>Contributions follow clearly defined policies and are tied to long-term commitment, not instant withdrawal.</p></div>
+        </div>
+      </div>
+
+      <!-- 11 -->
+      <div class="faq-row" data-index="11">
+        <div class="icon" aria-hidden="true">11</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a11" id="q11">Is Dream Big Project transparent?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a11" class="faq-answer" role="region" aria-labelledby="q11"><p>Yes. Processes, expectations, timelines, and responsibilities are clearly communicated.</p></div>
+        </div>
+      </div>
+
+      <!-- 12 -->
+      <div class="faq-row" data-index="12">
+        <div class="icon" aria-hidden="true">12</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a12" id="q12">Who manages Dream Big Project?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a12" class="faq-answer" role="region" aria-labelledby="q12"><p>The ecosystem is governed by structured leadership, accountability systems, and operational oversight.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" id="colRight">
+      <!-- Right column: 13..24 -->
+      <!-- 13 -->
+      <div class="faq-row" data-index="13">
+        <div class="icon" aria-hidden="true">13</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a13" id="q13">What happens if a member becomes inactive?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a13" class="faq-answer" role="region" aria-labelledby="q13"><p>Inactivity may delay eligibility, pause benefits, or require re-alignment with the program.</p></div>
+        </div>
+      </div>
+
+      <!-- 14 -->
+      <div class="faq-row" data-index="14">
+        <div class="icon" aria-hidden="true">14</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a14" id="q14">Is Dream Big Project a charity, religious body, or political organization?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a14" class="faq-answer" role="region" aria-labelledby="q14"><p>No. It is a values-driven development and execution ecosystem.</p></div>
+        </div>
+      </div>
+
+      <!-- 15 -->
+      <div class="faq-row" data-index="15">
+        <div class="icon" aria-hidden="true">15</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a15" id="q15">Can members work individually or in groups?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a15" class="faq-answer" role="region" aria-labelledby="q15"><p>Both options are allowed depending on project type and execution strategy.</p></div>
+        </div>
+      </div>
+
+      <!-- 16 -->
+      <div class="faq-row" data-index="16">
+        <div class="icon" aria-hidden="true">16</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a16" id="q16">Why is discipline emphasized so strongly?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a16" class="faq-answer" role="region" aria-labelledby="q16"><p>Because money without discipline destroys more futures than lack of money.</p></div>
+        </div>
+      </div>
+
+      <!-- 17 -->
+      <div class="faq-row" data-index="17">
+        <div class="icon" aria-hidden="true">17</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a17" id="q17">What does “MAKE IT HAPPEN — SHOCK THE WORLD” represent?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a17" class="faq-answer" role="region" aria-labelledby="q17"><p>It represents intentional action, prepared execution, and results that come from structure, not luck.</p></div>
+        </div>
+      </div>
+
+      <!-- 18 -->
+      <div class="faq-row" data-index="18">
+        <div class="icon" aria-hidden="true">18</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a18" id="q18">Is there a minimum commitment period?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a18" class="faq-answer" role="region" aria-labelledby="q18"><p>Yes. Members are expected to commit to the full Dream Big process before accessing execution privileges.</p></div>
+        </div>
+      </div>
+
+      <!-- 19 -->
+      <div class="faq-row" data-index="19">
+        <div class="icon" aria-hidden="true">19</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a19" id="q19">What is the long-term vision of Dream Big Project?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a19" class="faq-answer" role="region" aria-labelledby="q19"><p>To build a generation capable of executing responsibly, sustainably, and ethically.</p></div>
+        </div>
+      </div>
+
+      <!-- 20 -->
+      <div class="faq-row" data-index="20">
+        <div class="icon" aria-hidden="true">20</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a20" id="q20">How are members held accountable?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a20" class="faq-answer" role="region" aria-labelledby="q20"><p>Through structured participation, contribution consistency, learning engagement, and progress evaluation.</p></div>
+        </div>
+      </div>
+
+      <!-- 21 -->
+      <div class="faq-row" data-index="21">
+        <div class="icon" aria-hidden="true">21</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a21" id="q21">Why is there a waiting period before project funding?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a21" class="faq-answer" role="region" aria-labelledby="q21"><p>Dream Big Project operates a 24-month maturity cycle designed to build financial discipline, mindset, and execution readiness before project funding access.</p></div>
+        </div>
+      </div>
+
+      <!-- 22 -->
+      <div class="faq-row" data-index="22">
+        <div class="icon" aria-hidden="true">22</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a22" id="q22">What is the Dream Classroom?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a22" class="faq-answer" role="region" aria-labelledby="q22"><p>The Dream Classroom is a compulsory learning environment where members must engage in financial intelligence, money management, and execution training before advancing.</p></div>
+        </div>
+      </div>
+
+      <!-- 23 -->
+      <div class="faq-row" data-index="23">
+        <div class="icon" aria-hidden="true">23</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a23" id="q23">Is referral compulsory to succeed in Dream Big Project?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a23" class="faq-answer" role="region" aria-labelledby="q23"><p>No. Referrals are optional, not mandatory. Progress is based on discipline and participation, not recruitment.</p></div>
+        </div>
+      </div>
+
+      <!-- 24 -->
+      <div class="faq-row" data-index="24">
+        <div class="icon" aria-hidden="true">24</div>
+        <div class="q-wrap">
+          <div class="q-title"><button aria-expanded="false" aria-controls="a24" id="q24">Can a member subscribe to more than one project category?</button><div class="chev" aria-hidden="true">▾</div></div>
+          <div id="a24" class="faq-answer" role="region" aria-labelledby="q24"><p>Yes. Members are allowed to subscribe to multiple projects, provided they meet contribution and discipline requirements for each.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="noResults" class="no-results">No FAQs matched your search.</div>
+
+  <!-- footer (REPLACED) -->
+  <div style="height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-2));border-radius:2px;margin:12px 0;" aria-hidden="true"></div>
+  <footer class="site-footer" role="contentinfo" aria-label="Site footer">
+    <div style="width:100%; text-align:center; padding:12px 8px;">
+      <div style="font-size:13px;color:var(--muted)">© 2026 Dream Big Project — All rights reserved.</div>
+    </div>
+  </footer>
+
+</div>
+
+  </div><script>
+(function(){
+  // elements
+  const rows = Array.from(document.querySelectorAll('.faq-row'));
+  const questionButtons = Array.from(document.querySelectorAll('.q-title button'));
+  const searchInput = document.getElementById('faqSearch');
+  const clearBtn = document.getElementById('searchClear');
+  const noResults = document.getElementById('noResults');
+  const toggleAllBtn = document.getElementById('toggleAll');
+
+  // store original text for highlight reset
+  questionButtons.forEach(btn => btn.dataset.orig = btn.textContent.trim());
+  rows.forEach(r => {
+    const p = r.querySelector('.faq-answer p');
+    if(p) p.dataset.orig = p.textContent.trim();
+    const a = r.querySelector('.faq-answer');
+    if(a) a.style.maxHeight = '0px';
+  });
+
+  // single-open accordion behavior
+  rows.forEach(r => {
+    const btn = r.querySelector('.q-title button');
+    const ans = r.querySelector('.faq-answer');
+    btn.addEventListener('click', () => {
+      const isOpen = r.classList.contains('open');
+
+      // close others
+      rows.forEach(other => {
+        if (other !== r) {
+          other.classList.remove('open');
+          const b = other.querySelector('.q-title button');
+          const a = other.querySelector('.faq-answer');
+          if (b) b.setAttribute('aria-expanded','false');
+          if (a) a.style.maxHeight = '0px';
+        }
+      });
+
+      if (isOpen) {
+        r.classList.remove('open');
+        btn.setAttribute('aria-expanded','false');
+        ans.style.maxHeight = '0px';
+      } else {
+        r.classList.add('open');
+        btn.setAttribute('aria-expanded','true');
+        ans.style.maxHeight = ans.scrollHeight + 'px';
+        setTimeout(()=> {
+          const rect = r.getBoundingClientRect();
+          if (rect.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+            r.scrollIntoView({behavior:'smooth', block:'center'});
+          }
+        }, 200);
+      }
+    });
+
+    // keyboard support
+    btn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+    });
+  });
+
+  // master toggle all open/close
+  let allOpen = false;
+  toggleAllBtn.addEventListener('click', () => {
+    allOpen = !allOpen;
+    toggleAllBtn.textContent = allOpen ? 'Hide all FAQs' : 'Show all FAQs';
+    toggleAllBtn.setAttribute('aria-pressed', String(allOpen));
+    rows.forEach(r => {
+      const btn = r.querySelector('.q-title button');
+      const ans = r.querySelector('.faq-answer');
+      if (allOpen) {
+        r.classList.add('open');
+        if (btn) btn.setAttribute('aria-expanded','true');
+        if (ans) ans.style.maxHeight = ans.scrollHeight + 'px';
+      } else {
+        r.classList.remove('open');
+        if (btn) btn.setAttribute('aria-expanded','false');
+        if (ans) ans.style.maxHeight = '0px';
+      }
+    });
+  });
+
+  // search & highlight (debounced)
+  function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function highlight(text, term){
+    if(!term) return text;
+    const re = new RegExp('(' + escapeRegExp(term) + ')', 'ig');
+    return text.replace(re, '<mark class="match">$1</mark>');
+  }
+
+  function filterFAQs(query){
+    const q = (query || '').trim();
+    let visibleCount = 0;
+    rows.forEach(r => {
+      const btn = r.querySelector('.q-title button');
+      const ansP = r.querySelector('.faq-answer p');
+      const qText = btn && btn.dataset.orig ? btn.dataset.orig : (btn ? btn.textContent : '');
+      const aText = ansP && ansP.dataset.orig ? ansP.dataset.orig : (ansP ? ansP.textContent : '');
+
+      // reset
+      btn.innerHTML = btn.dataset.orig;
+      if(ansP) ansP.innerHTML = ansP.dataset.orig;
+
+      if (!q) {
+        r.classList.remove('hidden');
+        visibleCount++;
+        return;
+      }
+
+      const inQ = qText.toLowerCase().includes(q.toLowerCase());
+      const inA = aText.toLowerCase().includes(q.toLowerCase());
+
+      if (inQ || inA) {
+        // highlight matches
+        btn.innerHTML = highlight(btn.dataset.orig, q);
+        if(ansP) ansP.innerHTML = highlight(ansP.dataset.orig, q);
+        r.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        r.classList.add('hidden');
+        // collapse if open
+        r.classList.remove('open');
+        const b = r.querySelector('.q-title button');
+        const a = r.querySelector('.faq-answer');
+        if (b) b.setAttribute('aria-expanded','false');
+        if (a) a.style.maxHeight = '0px';
+      }
+    });
+
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  function debounce(fn, wait=160){
+    let t;
+    return function(...args){
+      clearTimeout(t);
+      t = setTimeout(()=> fn.apply(this, args), wait);
+    };
+  }
+
+  const debouncedFilter = debounce((ev) => {
+    filterFAQs(ev.target.value);
+  }, 120);
+
+  searchInput.addEventListener('input', debouncedFilter);
+  clearBtn.addEventListener('click', () => { searchInput.value = ''; searchInput.focus(); filterFAQs(''); });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { searchInput.value = ''; filterFAQs(''); }
+    else if (e.key === 'Enter') {
+      // focus first visible question and expand it
+      const first = rows.find(r => !r.classList.contains('hidden'));
+      if (first) {
+        const btn = first.querySelector('.q-title button');
+        if (btn) { btn.focus(); btn.click(); }
+      }
+    }
+  });
+
+  // progressive reveal
+  rows.forEach((r, i) => {
+    r.style.opacity = 0;
+    r.style.transform = 'translateY(8px)';
+    setTimeout(()=> {
+      r.style.transition = 'opacity 320ms ease, transform 320ms cubic-bezier(.2,.9,.3,1)';
+      r.style.opacity = 1;
+      r.style.transform = 'translateY(0)';
+    }, 80 + i*18);
+  });
+
+})();
+</script>
+
+<!-- Chatway Live Chat (placed before closing </body>) -->
+<script id="chatway" async="true" src="https://cdn.chatway.app/widget.js?id=Vykf7IgckhoX"></script>
+
+</body>
+</html>

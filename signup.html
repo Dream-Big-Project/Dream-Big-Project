@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dream Big Project — Sign Up</title>
+
+  <!-- Tailwind CDN (quick dev build) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --gold-1: #E1B24A;
+      --gold-2: #C78F18;
+      --navy: #071826;
+    }
+    body { font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+
+    .glow-frame {
+      box-shadow: 0 10px 60px rgba(199,143,24,0.12), 0 0 30px rgba(213,150,40,0.16) inset;
+      border-radius: 8px;
+      border: 1px solid rgba(225,178,74,0.06);
+    }
+
+    .meter {
+      transition: width .25s ease;
+      height: 0.5rem;
+      border-radius: .375rem;
+      background: linear-gradient(90deg, rgba(199,143,24,1), rgba(225,178,74,1));
+    }
+
+    .btn-disabled {
+      background: linear-gradient(90deg, rgba(217,168,74,0.28), rgba(199,143,24,0.28));
+      color: rgba(0,0,0,0.6);
+      cursor: not-allowed;
+    }
+
+    /* search dropdown */
+    .dropdown { position: relative; }
+    .dropdown-list {
+      position: absolute;
+      z-index: 40;
+      left: 0;
+      right: 0;
+      max-height: 12rem;
+      overflow: auto;
+      background: #071826;
+      border: 1px solid rgba(225,178,74,0.06);
+      border-radius: 6px;
+      margin-top: .25rem;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    }
+    .dropdown-item {
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      color: #ffffff;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+    }
+    .dropdown-item[aria-selected="true"] { background: rgba(225,178,74,0.06); }
+
+    /* phone code area */
+    #phoneCode { min-width: 120px; display:flex; align-items:center; gap:0.5rem; padding-right:0.75rem; border-right:2px solid rgba(217,168,74,0.18); }
+    #countrySearch { font-size: 1rem; }
+
+    /* eye button styles (white icon) */
+    .eye-btn {
+      background: transparent;
+      border: none;
+      padding: 0.25rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffffff;
+    }
+    .eye-btn svg { width: 20px; height: 20px; }
+  </style>
+</head>
+<body class="min-h-screen bg-[#071826] flex items-center justify-center p-6">
+
+  <main class="w-full max-w-4xl">
+    <section class="glow-frame overflow-hidden">
+      <div class="grid grid-cols-1">
+        <div class="bg-[#071826] p-8 md:p-12">
+          <div class="max-w-2xl mx-auto">
+            <h1 class="text-white text-3xl font-extrabold mb-6">Sign Up</h1>
+
+            <form id="signupForm" novalidate>
+              <div class="space-y-4">
+
+                <!-- Username -->
+                <div>
+                  <label class="block text-sm text-white/80">Username</label>
+                  <input id="username" name="username" type="text" placeholder="Choose a username"
+                         class="mt-2 w-full bg-transparent border-b-2 border-[#D9A84A]/30 py-3 focus:outline-none focus:border-[#D9A84A] text-white"
+                         aria-describedby="usernameErr" />
+                  <p id="usernameErr" class="mt-1 text-xs text-rose-400 hidden"></p>
+                </div>
+
+                <!-- Full name -->
+                <div>
+                  <label class="block text-sm text-white/80">Full Name</label>
+                  <input id="fullname" name="fullname" type="text" placeholder="First and last name"
+                         class="mt-2 w-full bg-transparent border-b-2 border-[#D9A84A]/30 py-3 focus:outline-none focus:border-[#D9A84A] text-white"
+                         aria-describedby="fullnameErr" />
+                  <p id="fullnameErr" class="mt-1 text-xs text-rose-400 hidden"></p>
+                </div>
+
+                <!-- Email -->
+                <div>
+                  <label class="block text-sm text-white/80">Email address</label>
+                  <input id="email" name="email" type="email" placeholder="you@example.com"
+                         class="mt-2 w-full bg-transparent border-b-2 border-[#D9A84A]/30 py-3 focus:outline-none focus:border-[#D9A84A] text-white"
+                         aria-describedby="emailErr" />
+                  <p id="emailErr" class="mt-1 text-xs text-rose-400 hidden"></p>
+                </div>
+
+                <!-- Phone + Country -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm text-white/80">Phone number</label>
+
+                    <div class="mt-2 flex items-center gap-3">
+                      <div id="phoneCode" class="text-white/90">
+                        <span id="phoneFlag" style="font-size:1.3rem;">🇳🇬</span>
+                        <span id="phoneDial" class="font-medium">+234</span>
+                      </div>
+
+                      <input id="phone" name="phone" type="tel" placeholder="e.g. 812345678 (omit leading 0)"
+                             class="flex-1 bg-transparent border-b-2 border-[#D9A84A]/30 py-3 focus:outline-none focus:border-[#D9A84A] text-white"
+                             aria-describedby="phoneErr" />
+                    </div>
+
+                    <p id="phoneErr" class="mt-1 text-xs text-rose-400 hidden"></p>
+                    <p id="phoneRule" class="mt-1 text-xs text-white/60">When adding your local number after the country code, remove the leading zero if present. Example: Nigeria (+234) — local 0812 345 678 → enter 812345678.</p>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm text-white/80">Country</label>
+
+                    <!-- Searchable country input + hidden value -->
+                    <div class="mt-2 dropdown">
+                      <input id="countrySearch" type="text" autocomplete="off" placeholder='Search country — try: "I live in Nigeria" or "usa"'
+                             class="w-full py-3 px-3 bg-[#071826] text-white border-b-2 border-[#D9A84A]/30 focus:outline-none focus:border-[#D9A84A]"
+                             aria-describedby="countryErr" aria-haspopup="listbox" aria-expanded="false" />
+
+                      <input type="hidden" id="country" name="country" value="" />
+
+                      <div id="countryList" class="dropdown-list hidden" role="listbox" tabindex="-1" aria-label="Country results"></div>
+                    </div>
+
+                    <p id="countryErr" class="mt-1 text-xs text-rose-400 hidden"></p>
+                  </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                  <label class="block text-sm text-white/80">Password</label>
+
+                  <!-- added relative wrapper + eye toggle button -->
+                  <div class="relative mt-2">
+                    <input id="password" name="password" type="password" placeholder="Create a password"
+                           class="w-full bg-transparent border-b-2 border-[#D9A84A]/30 py-3 pr-10 focus:outline-none focus:border-[#D9A84A] text-white"
+                           aria-describedby="passwordErr" />
+                    <button id="passwordToggle" type="button" class="eye-btn absolute right-2 top-1/2 -translate-y-1/2" aria-label="Show password" aria-pressed="false">
+                      <!-- eye open -->
+                      <svg id="pwEyeOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <!-- eye closed (hidden by default) -->
+                      <svg id="pwEyeClosed" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a16.14 16.14 0 0 1 5.06-6.94"></path>
+                        <path d="M1 1l22 22"></path>
+                        <path d="M9.88 9.88A3 3 0 0 0 14.12 14.12"></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div class="mt-2 flex items-center gap-3">
+                    <div class="flex-1 bg-white/10 rounded overflow-hidden h-2">
+                      <div id="pwMeter" class="meter" style="width:0%"></div>
+                    </div>
+                    <div id="pwLabel" class="text-xs text-white/60">—</div>
+                  </div>
+                  <p id="passwordErr" class="mt-1 text-xs text-rose-400 hidden"></p>
+                  <p class="mt-2 text-xs text-white/60">Minimum 8 characters. Use a memorable phrase or two words with a number (easier for elderly users) — e.g. <span class="font-semibold text-white/90">SunnyDay42</span>.</p>
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                  <label class="block text-sm text-white/80">Confirm Password</label>
+
+                  <!-- added relative wrapper + eye toggle button -->
+                  <div class="relative mt-2">
+                    <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm password"
+                           class="w-full bg-transparent border-b-2 border-[#D9A84A]/30 py-3 pr-10 focus:outline-none focus:border-[#D9A84A] text-white"
+                           aria-describedby="confirmErr" />
+                    <button id="confirmToggle" type="button" class="eye-btn absolute right-2 top-1/2 -translate-y-1/2" aria-label="Show confirm password" aria-pressed="false">
+                      <!-- eye open -->
+                      <svg id="cpwEyeOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <!-- eye closed (hidden by default) -->
+                      <svg id="cpwEyeClosed" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a16.14 16.14 0 0 1 5.06-6.94"></path>
+                        <path d="M1 1l22 22"></path>
+                        <path d="M9.88 9.88A3 3 0 0 0 14.12 14.12"></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <p id="confirmErr" class="mt-1 text-xs text-rose-400 hidden"></p>
+                </div>
+
+                <!-- Referral (optional) -->
+                <div>
+                  <label class="block text-sm text-white/80">Referral code <span class="text-xs text-white/60">(optional)</span></label>
+                  <input id="referral" name="referral" type="text" placeholder="Referral code (optional)"
+                         class="mt-2 w-full bg-transparent border-b-2 border-[#D9A84A]/30 py-3 focus:outline-none focus:border-[#D9A84A] text-white" />
+                </div>
+
+                <!-- REQUIRED checkboxes -->
+                <fieldset class="mt-2 border-t border-white/5 pt-4 space-y-2" aria-describedby="checkboxNote">
+                  <legend class="sr-only">Agreements (required)</legend>
+
+                  <label class="flex items-start gap-3 cursor-pointer">
+                    <input id="chkNotInvestment" type="checkbox" class="mt-1 w-4 h-4 accent-[#D9A84A]" />
+                    <span class="text-sm text-white/85">I understand Dream Big Project is not an investment platform.</span>
+                  </label>
+
+                  <label class="flex items-start gap-3 cursor-pointer">
+                    <input id="chkMaturity" type="checkbox" class="mt-1 w-4 h-4 accent-[#D9A84A]" />
+                    <span class="text-sm text-white/85">I understand funding is subject to a 24-month maturity cycle.</span>
+                  </label>
+
+                  <label class="flex items-start gap-3 cursor-pointer">
+                    <input id="chkClassroom" type="checkbox" class="mt-1 w-4 h-4 accent-[#D9A84A]" />
+                    <span class="text-sm text-white/85">I agree to participate in the Dream Classroom.</span>
+                  </label>
+
+                  <label class="flex items-start gap-3 cursor-pointer">
+                    <input id="chkDiscipline" type="checkbox" class="mt-1 w-4 h-4 accent-[#D9A84A]" />
+                    <span class="text-sm text-white/85">I agree to follow structure, discipline, and accountability.</span>
+                  </label>
+
+                  <p id="checkboxNote" class="text-xs text-white/60 mt-1">All four agreements are required to create an account.</p>
+                </fieldset>
+
+                <!-- CTA -->
+                <div class="mt-6">
+                  <button id="createBtn" type="submit"
+                          class="w-full py-3 rounded-full text-lg font-semibold transition shadow-md btn-disabled"
+                          disabled>
+                    Create Account
+                  </button>
+
+                  <p id="formHint" class="mt-2 text-xs text-white/70 text-center">Complete required fields & acknowledgements to continue.</p>
+
+                  <p class="mt-4 text-sm text-white/60 text-center">Already have an account? <a href="login.html" class="text-[#E1B24A] underline">Login</a></p>
+
+                  <p class="mt-3 text-xs text-white/50 text-center">By creating an account you agree to our <a class="underline text-white/80" href="#">Terms & Privacy</a>.</p>
+                </div>
+
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- JS: client-side validation + interactions -->
+  <script>
+    (function () {
+      // Elements
+      const form = document.getElementById('signupForm');
+      const createBtn = document.getElementById('createBtn');
+      const formHint = document.getElementById('formHint');
+
+      const username = document.getElementById('username');
+      const fullname = document.getElementById('fullname');
+      const email = document.getElementById('email');
+      const phone = document.getElementById('phone');
+      const countryHidden = document.getElementById('country');
+      const countrySearch = document.getElementById('countrySearch');
+      const countryList = document.getElementById('countryList');
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirmPassword');
+
+      const pwMeter = document.getElementById('pwMeter');
+      const pwLabel = document.getElementById('pwLabel');
+
+      const chkNotInvestment = document.getElementById('chkNotInvestment');
+      const chkMaturity = document.getElementById('chkMaturity');
+      const chkClassroom = document.getElementById('chkClassroom');
+      const chkDiscipline = document.getElementById('chkDiscipline');
+
+      // Password visibility toggles (only added functionality)
+      const passwordToggle = document.getElementById('passwordToggle');
+      const pwEyeOpen = document.getElementById('pwEyeOpen');
+      const pwEyeClosed = document.getElementById('pwEyeClosed');
+
+      const confirmToggle = document.getElementById('confirmToggle');
+      const cpwEyeOpen = document.getElementById('cpwEyeOpen');
+      const cpwEyeClosed = document.getElementById('cpwEyeClosed');
+
+      if (passwordToggle) {
+        passwordToggle.addEventListener('click', () => {
+          const showing = password.type === 'text';
+          password.type = showing ? 'password' : 'text';
+          passwordToggle.setAttribute('aria-pressed', (!showing).toString());
+          // toggle icons
+          if (pwEyeOpen && pwEyeClosed) {
+            pwEyeOpen.classList.toggle('hidden');
+            pwEyeClosed.classList.toggle('hidden');
+          }
+        });
+      }
+
+      if (confirmToggle) {
+        confirmToggle.addEventListener('click', () => {
+          const showing = confirmPassword.type === 'text';
+          confirmPassword.type = showing ? 'password' : 'text';
+          confirmToggle.setAttribute('aria-pressed', (!showing).toString());
+          if (cpwEyeOpen && cpwEyeClosed) {
+            cpwEyeOpen.classList.toggle('hidden');
+            cpwEyeClosed.classList.toggle('hidden');
+          }
+        });
+      }
+
+      // --- rest of your existing logic unchanged below ---
+      // Countries list (names only — used for searching). Expand if needed.
+      const countries = [
+"Afghanistan","Albania","Algeria","American Samoa","Andorra","Angola","Anguilla","Antigua and Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan",
+"Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi",
+"Cabo Verde","Cambodia","Cameroon","Canada","Cayman Islands","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo (Brazzaville)","Congo (Kinshasa)","Cook Islands","Costa Rica","Cote d'Ivoire","Croatia","Cuba","Curacao",
+"Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia",
+"Falkland Islands","Faroe Islands","Fiji","Finland","France","French Guiana","French Polynesia","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guadeloupe","Guam","Guatemala","Guernsey","Guinea","Guinea-Bissau","Guyana",
+"Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan",
+"Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg",
+"Macao","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Martinique","Mauritania","Mauritius","Mayotte","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar",
+"Namibia","Nauru","Nepal","Netherlands","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Niue","North Korea","North Macedonia","Northern Mariana Islands","Norway","Oman",
+"Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Pitcairn Islands","Poland","Portugal","Puerto Rico",
+"Qatar","Reunion","Romania","Russia","Rwanda","Saint Barthelemy","Saint Helena","Saint Kitts and Nevis","Saint Lucia","Saint Martin","Saint Pierre and Miquelon","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Sint Maarten","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Georgia and the South Sandwich Islands","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Svalbard and Jan Mayen","Sweden","Switzerland","Syria",
+"Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tokelau","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Turks and Caicos Islands","Tuvalu","U.S. Virgin Islands","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Wallis and Futuna","Western Sahara","Yemen","Zambia","Zimbabwe",
+"Aland Islands","Bonaire, Sint Eustatius and Saba","Saint Martin (French part)","Curacao (Country of the Kingdom of the Netherlands)","Guernsey (Bailiwick of Guernsey)","Jersey (Bailiwick of Jersey)","Turks and Caicos","Kosovo (partially recognised)","Northern Cyprus","Somaliland","Transnistria","Western New Guinea" ];
+
+      // Aliases & short names
+      const countryAliases = {
+        'us': 'United States', 'usa': 'United States', 'u.s.': 'United States', 'america': 'United States',
+        'uk': 'United Kingdom', 'britain': 'United Kingdom', 'england': 'United Kingdom',
+        "ivory coast": "Cote d'Ivoire", "cote d'ivoire": "Cote d'Ivoire", 'south korea': 'South Korea', 'north korea': 'North Korea',
+        'uae': 'United Arab Emirates', 'holland': 'Netherlands'
+      };
+
+      // Minimal country code + flag lookup (expandable). Matches common countries.
+      const countryData = {
+        'nigeria': { dial: '+234', flag: '🇳🇬' },
+        'united states': { dial: '+1', flag: '🇺🇸' },
+        'united kingdom': { dial: '+44', flag: '🇬🇧' },
+        'canada': { dial: '+1', flag: '🇨🇦' },
+        'australia': { dial: '+61', flag: '🇦🇺' },
+        'india': { dial: '+91', flag: '🇮🇳' },
+        'germany': { dial: '+49', flag: '🇩🇪' },
+        'france': { dial: '+33', flag: '🇫🇷' },
+        'kenya': { dial: '+254', flag: '🇰🇪' },
+        'south africa': { dial: '+27', flag: '🇿🇦' }
+      };
+
+      // normalize user input (remove filler words & punctuation)
+      function normalizeQuery(q) {
+        if (!q) return '';
+        let t = q.toLowerCase().trim();
+        t = t.replace(/i\s+(live|am|'m)\s+in\s+/g, '');
+        t = t.replace(/based\s+in\s+/g, '');
+        t = t.replace(/i\s+reside\s+in\s+/g, '');
+        t = t.replace(/from\s+/g, '');
+        t = t.replace(/[.,/#!$%^&*;:{}=+()\[\]\"]/g, '');
+        return t.trim();
+      }
+
+      // Levenshtein for small typo tolerance
+      function levenshtein(a, b) {
+        if (!a.length) return b.length;
+        if (!b.length) return a.length;
+        const matrix = Array.from({length: b.length + 1}, (_, i) => Array(a.length + 1).fill(0));
+        for (let i = 0; i <= b.length; i++) matrix[i][0] = i;
+        for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+        for (let i = 1; i <= b.length; i++) {
+          for (let j = 1; j <= a.length; j++) {
+            const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j] + 1,
+              matrix[i][j - 1] + 1,
+              matrix[i - 1][j - 1] + cost
+            );
+          }
+        }
+        return matrix[b.length][a.length];
+      }
+
+      // filterCountries: aliases -> substring -> token -> fuzzy
+      function filterCountries(q) {
+        const raw = normalizeQuery(q || '');
+        if (!raw) return countries.slice().sort();
+
+        if (countryAliases[raw]) return [countryAliases[raw]];
+
+        const substrMatches = countries.filter(c => c.toLowerCase().includes(raw)).sort();
+        if (substrMatches.length) return substrMatches;
+
+        const tokens = raw.split(/\s+/).filter(Boolean);
+        const tokenMatches = countries.filter(c => tokens.every(t => c.toLowerCase().includes(t))).sort();
+        if (tokenMatches.length) return tokenMatches;
+
+        const fuzzy = countries.map(c => ({name:c, d: levenshtein(c.toLowerCase(), raw)}))
+          .filter(x => x.d <= Math.max(2, Math.floor(raw.length * 0.25)))
+          .sort((a,b)=>a.d-b.d).map(x=>x.name);
+
+        return fuzzy.length ? fuzzy : countries.slice().sort();
+      }
+
+      // render list
+      function renderCountryList(filtered, highlightIndex = -1) {
+        countryList.innerHTML = '';
+        if (!filtered.length) {
+          countryList.classList.add('hidden');
+          countrySearch.setAttribute('aria-expanded','false');
+          return;
+        }
+        filtered.forEach((c,i) => {
+          const key = c.toLowerCase();
+          const d = countryData[key];
+          const div = document.createElement('div');
+          div.className = 'dropdown-item';
+          div.setAttribute('role','option');
+          div.setAttribute('data-value', c);
+          div.setAttribute('aria-selected', i === highlightIndex ? 'true' : 'false');
+          div.innerHTML = (d? `<span style="font-size:1.1rem">${d.flag}</span>` : '<span style="width:1.1rem;display:inline-block"></span>') + `<span>${c}</span>`;
+          div.addEventListener('click', ()=> selectCountry(c));
+          countryList.appendChild(div);
+        });
+        countryList.classList.remove('hidden');
+        countrySearch.setAttribute('aria-expanded','true');
+      }
+
+      // select country
+      function selectCountry(name) {
+        countrySearch.value = name;
+        countryHidden.value = name;
+
+        const key = name.toLowerCase();
+        const data = countryData[key] || null;
+        const flagEl = document.getElementById('phoneFlag');
+        const dialEl = document.getElementById('phoneDial');
+        if (data) {
+          flagEl.textContent = data.flag;
+          dialEl.textContent = data.dial;
+          phone.placeholder = 'e.g. 812345678 (omit leading 0)';
+        } else {
+          flagEl.textContent = '🏳️';
+          dialEl.textContent = '';
+          phone.placeholder = '+{countrycode} then local number';
+        }
+
+        countryList.classList.add('hidden');
+        countrySearch.setAttribute('aria-expanded','false');
+        validateField('country');
+        updateCreateButton();
+      }
+
+      // keyboard & interactions
+      let highlight = -1;
+      let currentFiltered = countries.slice().sort();
+
+      countrySearch.addEventListener('input', (e) => {
+        currentFiltered = filterCountries(e.target.value);
+        highlight = -1;
+        renderCountryList(currentFiltered, highlight);
+      });
+
+      countrySearch.addEventListener('focus', () => {
+        currentFiltered = filterCountries(countrySearch.value);
+        renderCountryList(currentFiltered, highlight);
+      });
+
+      countrySearch.addEventListener('keydown', (e) => {
+        const items = countryList.querySelectorAll('.dropdown-item');
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          highlight = Math.min(highlight + 1, items.length - 1);
+          updateHighlight(items);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          highlight = Math.max(highlight - 1, 0);
+          updateHighlight(items);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (items[highlight]) selectCountry(items[highlight].getAttribute('data-value'));
+          else if (items.length === 1) selectCountry(items[0].getAttribute('data-value'));
+          else {
+            const exact = countries.find(c => c.toLowerCase() === normalizeQuery(countrySearch.value));
+            if (exact) selectCountry(exact);
+          }
+        } else if (e.key === 'Escape') {
+          countryList.classList.add('hidden');
+          countrySearch.setAttribute('aria-expanded','false');
+        }
+      });
+
+      function updateHighlight(items) {
+        items.forEach((it, idx) => {
+          it.setAttribute('aria-selected', idx === highlight ? 'true' : 'false');
+          if (idx === highlight) it.scrollIntoView({block:'nearest'});
+        });
+      }
+
+      document.addEventListener('click', (ev) => {
+        if (!ev.target.closest('.dropdown')) {
+          countryList.classList.add('hidden');
+          countrySearch.setAttribute('aria-expanded','false');
+        }
+      });
+
+      // validation helpers (unchanged from your original)
+      const showErr = (id,msg) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (msg) { el.textContent = msg; el.classList.remove('hidden'); }
+        else { el.textContent = ''; el.classList.add('hidden'); }
+      };
+
+      function validateEmail(v) { return /^\S+@\S+\.\S+$/.test(v); }
+      function validatePhone(v) { return /^\+?[0-9 ()-]{7,25}$/.test(v); }
+
+      function passwordScore(pw) {
+        if (!pw) return 0;
+        let score=0;
+        if (pw.length >= 8) score++;
+        if (/[A-Za-z]/.test(pw)) score++;
+        if (/[0-9]/.test(pw)) score++;
+        if (/[^A-Za-z0-9]/.test(pw)) score++;
+        return score;
+      }
+      function updatePasswordMeter() {
+        const s = passwordScore(password.value);
+        const pct = (s/4)*100;
+        pwMeter.style.width = pct + '%';
+        pwLabel.textContent = s < 2 ? 'Weak' : s < 3 ? 'Fair' : 'Strong';
+      }
+
+      function validateField(name) {
+        switch(name) {
+          case 'username':
+            showErr('usernameErr', username.value.trim().length===0 ? 'Username is required.' : (username.value.trim().length<3 ? 'Username must be at least 3 characters.':'')); break;
+          case 'fullname': showErr('fullnameErr', fullname.value.trim()? '':'Full name is required.'); break;
+          case 'email': showErr('emailErr', email.value.trim()? (validateEmail(email.value)? '':'Enter a valid email.') : 'Email is required.'); break;
+          case 'phone': showErr('phoneErr', phone.value.trim()? (validatePhone(phone.value)? '':'Enter a valid phone number with country code.') : 'Phone number is required.'); break;
+          case 'country': showErr('countryErr', countryHidden.value? '':'Country is required.'); break;
+          case 'password':
+            const pw = password.value; let pwMsg='';
+            if (!pw) pwMsg='Password is required.';
+            else {
+              if (pw.length<8) pwMsg='Password must be at least 8 characters.';
+              if (!/[A-Za-z]/.test(pw)) pwMsg=(pwMsg? pwMsg+' ':'') + 'Include letters.';
+              if (!/[0-9]/.test(pw)) pwMsg=(pwMsg? pwMsg+' ':'') + 'Include a number.';
+            }
+            showErr('passwordErr', pwMsg); break;
+          case 'confirmPassword':
+            showErr('confirmErr', confirmPassword.value? (confirmPassword.value===password.value? '':'Passwords do not match.') : 'Please confirm your password.'); break;
+        }
+      }
+
+      function validateCheckboxes() {
+        const all = chkNotInvestment.checked && chkMaturity.checked && chkClassroom.checked && chkDiscipline.checked;
+        if (!all) formHint.textContent = 'All four agreements are required to create an account.';
+        else formHint.textContent = 'Ready to create account.';
+        return all;
+      }
+
+      function isFormValid() {
+        validateField('username'); validateField('fullname'); validateField('email'); validateField('phone');
+        validateField('country'); validateField('password'); validateField('confirmPassword');
+        const errs = Array.from(document.querySelectorAll('p[id$="Err"]')).filter(el => !el.classList.contains('hidden') && el.textContent.trim()!=='');
+        const checkboxesOk = validateCheckboxes();
+        const requiredFilled = username.value && fullname.value && email.value && phone.value && countryHidden.value && password.value && confirmPassword.value;
+        return errs.length===0 && checkboxesOk && requiredFilled;
+      }
+
+      function updateCreateButton() {
+        const ok = isFormValid();
+        createBtn.disabled = !ok;
+        if (ok) {
+          createBtn.classList.remove('btn-disabled');
+          createBtn.style.background = 'linear-gradient(90deg, var(--gold-1), var(--gold-2))';
+          createBtn.style.color = '#000';
+          formHint.classList.add('hidden');
+        } else {
+          createBtn.classList.add('btn-disabled');
+          createBtn.style.background = '';
+          createBtn.style.color = '';
+          formHint.classList.remove('hidden');
+        }
+      }
+
+      // wire events
+      [username, fullname, email, phone, password, confirmPassword].forEach(el => {
+        el.addEventListener('blur', (ev) => { validateField(ev.target.id); updateCreateButton(); });
+        el.addEventListener('input', () => { if (el===password) updatePasswordMeter(); updateCreateButton(); });
+      });
+
+      countrySearch.addEventListener('blur', () => {
+        setTimeout(()=> {
+          if (!countryHidden.value || countryHidden.value !== countrySearch.value) {
+            const normal = normalizeQuery(countrySearch.value);
+            const exact = countries.find(c => c.toLowerCase() === normal);
+            const alias = countryAliases[normal];
+            if (exact) countryHidden.value = exact;
+            else if (alias) countryHidden.value = alias;
+            else countryHidden.value = '';
+          }
+          validateField('country'); updateCreateButton();
+        }, 150);
+      });
+
+      [chkNotInvestment, chkMaturity, chkClassroom, chkDiscipline].forEach(chk => chk.addEventListener('change', updateCreateButton));
+
+      form.addEventListener('submit', function(evt) {
+        evt.preventDefault();
+        if (!isFormValid()) { updateCreateButton(); const firstErr = document.querySelector('p[id$="Err"]:not(.hidden)'); if (firstErr) { const forId = firstErr.id.replace('Err',''); const fld = document.getElementById(forId) || document.getElementById(forId + 'Search'); if (fld) fld.focus(); } return; }
+
+        // FORM IS VALID -> show feedback then redirect to login page
+        createBtn.disabled = true;
+        createBtn.textContent = 'Creating...';
+
+        // short delay to show creating state, then redirect to login.html
+        setTimeout(()=> {
+          // Use replace so the signup page isn't kept in history
+          window.location.replace('login.html');
+        }, 700);
+      });
+
+      // initialize
+      updatePasswordMeter();
+      updateCreateButton();
+    })();
+  </script>
+</body>
+</html>

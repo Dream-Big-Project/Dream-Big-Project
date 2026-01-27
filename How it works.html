@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>How It Works — Dream Big Project</title>
+<meta name="description" content="How Dream Big Project works — a clear, structured path from contribution to dream execution." />
+<style>
+  :root{
+    --navy:#071735;
+    --bg2:#0e274f;
+    --gold:#DCAE3A;
+    --gold-2:#F0C75E;
+    --sage:#6FBF9B;
+    --white:#ffffff;
+    --card-radius:28px;
+    --max-w:1200px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,var(--navy),var(--bg2));
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    padding:28px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:var(--max-w);
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+  }
+
+  .brand{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+
+  .logo{
+    width:72px;
+    height:72px;
+    padding:6px;
+    border-radius:12px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .logo img{ width:60px; height:60px; object-fit:contain; display:block; border-radius:8px; }
+
+  .brand .title{ font-weight:900; color:var(--white); font-size:18px; }
+  .brand .tag{ font-size:12px; color:rgba(255,255,255,0.92); font-weight:800 }
+
+  .nav-btn{
+    background:linear-gradient(135deg,var(--gold),var(--gold-2));
+    color:#000;
+    border:0;
+    padding:10px 16px;
+    border-radius:999px;
+    font-weight:900;
+    cursor:pointer;
+  }
+
+  /* White inner card */
+  .card {
+    background:var(--white);
+    border-radius:var(--card-radius);
+    padding:28px;
+    color:var(--navy);
+    box-shadow: 0 20px 60px rgba(2,6,20,0.5);
+    border: 6px solid rgba(7,23,53,0.06);
+  }
+
+  /* Heading */
+  h1{
+    margin:0 0 6px 0;
+    font-size:40px;
+    font-weight:900;
+    color:var(--sage); /* sage main heading */
+  }
+  p.lead{
+    margin:0 0 18px 0;
+    font-weight:700;
+    color:#123046;
+  }
+  .sub {
+    font-size:14px;
+    color:#123046;
+    font-weight:800;
+    margin-bottom:18px;
+  }
+
+  /* animation area */
+  .anim-area{
+    position:relative;
+    height:220px;
+    margin:10px 0 26px 0;
+    background:transparent;
+  }
+
+  /* dotted path */
+  .path{
+    position:absolute;
+    left:3%;
+    right:3%;
+    top:50%;
+    height:2px;
+    transform:translateY(-50%);
+    border-top:3px dashed rgba(7,23,53,0.08);
+    z-index:1;
+  }
+
+  /* circle (step) base */
+  .step-circle{
+    position:absolute;
+    width:88px;
+    height:88px;
+    border-radius:999px;
+    background: linear-gradient(135deg,var(--gold),var(--gold-2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow: 0 10px 30px rgba(7,23,53,0.18);
+    cursor:pointer;
+    z-index:3;
+    transition: left 600ms cubic-bezier(.2,.9,.2,1), top 600ms cubic-bezier(.2,.9,.2,1), transform 320ms ease;
+    transform: translate(-50%,-50%) scale(1);
+  }
+  .step-circle:hover{ transform: translate(-50%,-50%) scale(1.08); }
+
+  .step-icon{
+    width:44px;
+    height:44px;
+    fill:var(--navy);
+  }
+
+  .step-number{
+    position:absolute;
+    bottom:-28px;
+    left:50%;
+    transform:translateX(-50%);
+    font-weight:900;
+    color:#123046;
+    font-size:14px;
+    text-align:center;
+    z-index:4;
+  }
+
+  /* content columns below animation: text lists */
+  .details{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:20px;
+    margin-top:8px;
+  }
+
+  .details .col{
+    background:transparent;
+  }
+  .details h3{
+    color:var(--sage);
+    margin:6px 0 8px 0;
+    font-size:16px;
+    font-weight:900;
+  }
+  .bullet{
+    color:#123046;
+    font-weight:700;
+    margin:8px 0;
+  }
+  .notice{
+    margin-top:14px;
+    border-radius:12px;
+    padding:12px;
+    background:linear-gradient(180deg, rgba(111,191,155,0.06), rgba(7,23,53,0.02));
+    color:#0a2a26;
+    font-weight:800;
+  }
+
+  /* footer */
+  .divider{ width:100%; height:3px; margin:22px 0; background: linear-gradient(90deg, var(--gold), var(--gold-2)); border-radius:3px; box-shadow: 0 6px 18px rgba(220,174,58,0.10); overflow:hidden; }
+  .site-footer{ background: var(--navy); padding:14px; border-radius:12px; margin-top:18px; color:#fff; position:relative; z-index:4; box-shadow: 0 10px 40px rgba(2,6,20,0.55); }
+  .site-footer .footer-inner{ display:flex;justify-content:center;align-items:center; }
+  .site-footer .legal{ font-size:14px; color:#fff; text-align:center; font-weight:900; margin:0; }
+
+  /* Responsive */
+  @media (max-width:920px){
+    h1{ font-size:32px }
+    .anim-area{ height:260px; }
+    .step-circle{ width:74px; height:74px; }
+    .step-icon{ width:36px; height:36px; }
+    .details{ grid-template-columns: 1fr; }
+    .brand .title{ font-size:16px; }
+    .logo{ width:56px; height:56px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand" aria-label="Site brand">
+        <div class="logo" aria-hidden="false">
+          <img src="logo.png" alt="Dream Big Project logo">
+        </div>
+        <div>
+          <div class="title">Dream Big Project</div>
+          <div class="tag">Secret • Structure • Strategy</div>
+        </div>
+      </div>
+
+      <div>
+        <button class="nav-btn" onclick="location.href='big dream projects.html'">Return home</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card" aria-labelledby="how-title">
+        <h1 id="how-title">HOW IT WORKS</h1>
+        <div class="sub">Step-by-Step Overview</div>
+        <p class="lead">
+          A calm, cooperative pathway that helps members prepare, mature, and execute meaningful dream projects.
+        </p>
+
+        <!-- Animation area -->
+        <div class="anim-area" aria-hidden="false">
+          <div class="path" aria-hidden="true"></div>
+
+          <!-- Six circles (these will slide along fixed positions) -->
+          <div class="step-circle" id="c0" data-index="0" title="Join the Cooperative">
+            <svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.8 0 1.6.3 2.2.9L21 9.7a3 3 0 0 1 0 4.2l-1.4 1.4-2.1-2.1-1.4 1.4 2.3 2.3-1.3 1.3-2.3-2.3-1.6 1.6-3-3 1.6-1.6-2.3-2.3L4 15.9V9a3 3 0 0 1 3-3h1.5l1-1.1A4 4 0 0 1 12 2z" /></svg>
+            <div class="step-number">01</div>
+          </div>
+
+          <div class="step-circle" id="c1" data-index="1" title="Eligible Individuals (18+)">
+            <svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-3.3 0-6 2.7-6 6h12c0-3.3-2.7-6-6-6z"/></svg>
+            <div class="step-number">02</div>
+          </div>
+
+          <div class="step-circle" id="c2" data-index="2" title="Choose Member Tier">
+            <svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 6v6l-9 6-9-6V9l9-6zm0 2.2L5.4 9 12 13.8 18.6 9 12 5.2z"/></svg>
+            <div class="step-number">03</div>
+          </div>
+
+          <div class="step-circle" id="c3" data-index="3" title="Select Contribution Path">
+            <svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7v10a2 2 0 0 0 2 2h14v-4H5V7H3zm18-2H5a2 2 0 0 0-2 2v2h18V5zM12 10a2 2 0 1 0 .001 3.999A2 2 0 0 0 12 10z"/></svg>
+            <div class="step-number">04</div>
+          </div>
+
+          <div class="step-circle" id="c4" data-index="4" title="Learning & Preparation">
+            <svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4V6zm0 4h10v2H4v-2zm0 4h16v6H4v-6z"/></svg>
+            <div class="step-number">05</div>
+          </div>
+
+          <div class="step-circle" id="c5" data-index="5" title="Project Review & Execution">
+            <svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21l1.5-5.5L8 17l-5 4zM20.2 3.8c-.9.9-2 2-3.2 3.2-1.3 1.3-2.7 2.6-4 3.3-.9.5-2.8 2.2-3.1 3.1-.3.9.1 3 1 3.9 1.1.9 3 1.3 3.9 1 1-.3 2.6-2.2 3.1-3.1.7-1.3 2-2.7 3.3-4 1.2-1.2 2.3-2.3 3.2-3.2-.9-.9-2-2-3.2-3.2z"/></svg>
+            <div class="step-number">06</div>
+          </div>
+
+        </div>
+
+        <!-- Details below the animation -->
+        <div class="details">
+          <div class="col">
+            <h3>Process highlights</h3>
+            <div class="bullet">• Join the Cooperative Ecosystem.</div>
+            <div class="bullet">• Eligible individuals (18+)</div>
+            <div class="bullet">• Choose a Member Tier Contribution Path that suits you.</div>
+            <div class="bullet">• Select either a one-time contribution (Active Member) or a structured monthly contribution over a defined period (Passive Member).</div>
+            <div class="bullet">• Select a Dream Project.</div>
+          </div>
+
+          <div class="col">
+            <h3>Development & Support</h3>
+            <div class="bullet">• <strong>Learning & Preparation Phase</strong> — training, mentorship, and planning while waiting for Dream Project Maturity (Dream Classroom).</div>
+            <div class="bullet">• <strong>Project Review & Maturity</strong> — projects follow structured readiness & review process.</div>
+            <div class="bullet">• <strong>Project Execution Support</strong> — approved projects are supported and funded through cooperative resources & Foundation support, subject to governance review and ecosystem capacity.</div>
+
+            <div class="notice" role="note">
+              <strong>Important Clarification</strong><br>
+              • Dream Big Ecosystem is not an investment platform.<br>
+              • Does not guarantee funding amounts or timelines.<br>
+              • Does not promise profits, returns, or payouts.<br>
+              • All project support is participatory, conditional, and governance-approved.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <footer class="site-footer" role="contentinfo" aria-label="Site footer">
+        <div class="footer-inner">
+          <div class="legal">© 2026 Dream Big Project. All rights reserved.</div>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+<script>
+/*
+  Auto-slide logic (keeps circles on fixed non-overlapping positions).
+  - positions[] defines the six distinct positions (left%, top px) on the path.
+  - circles[] holds the DOM nodes. Each move() rotates assignment so each circle
+    moves to the next position. Transition-delay is applied to create the
+    "one after the other" sliding effect.
+  - intervalRotation seconds controls pacing (5s as requested).
+*/
+
+(function(){
+  const intervalRotation = 5000; // 5 seconds between rotations
+  const staggerDelay = 120; // ms delay between each circle's start (stagger)
+  const circleCount = 6;
+
+  // Positions chosen to form a gentle wave along the center line and avoid overlapping text.
+  const positions = [
+    {left: "6%",  top: 90},
+    {left: "22%", top: 50},
+    {left: "38%", top: 110},
+    {left: "54%", top: 50},
+    {left: "70%", top: 110},
+    {left: "86%", top: 70}
+  ];
+
+  // Get circle elements
+  const circles = [];
+  for (let i=0;i<circleCount;i++){
+    const el = document.getElementById('c'+i);
+    if (!el) continue;
+    circles.push(el);
+  }
+
+  // place circles initially according to positions array in order
+  function placeInitial(){
+    circles.forEach((el, i) => {
+      const pos = positions[i % positions.length];
+      el.style.left = pos.left;
+      el.style.top = pos.top + "px";
+      el.style.transitionDelay = (i * 0) + "ms"; // no initial delay
+    });
+  }
+
+  // rotate mapping so every circle moves to next position
+  function rotateOnce(){
+    circles.forEach((el, idx) => {
+      // apply staggered delay so they move one after another
+      el.style.transitionDelay = (idx * staggerDelay) + "ms";
+    });
+
+    circles.forEach((c, i) => {
+      const newPos = positions[( (i + 1) % positions.length )]; // next logical position
+      setTimeout(() => {
+        c.style.left = newPos.left;
+        c.style.top = newPos.top + "px";
+      }, 20);
+    });
+  }
+
+  placeInitial();
+
+  // Recompute mapping every intervalRotation ms
+  let rotTimer = setInterval(() => {
+    rotateOnce();
+    // rotate the positions array so next call advances again
+    setTimeout(() => {
+      const first = positions.shift();
+      positions.push(first);
+    }, 100 + (circleCount * staggerDelay));
+  }, intervalRotation);
+
+  // Pause on hover for better UX; resume on leave
+  const animArea = document.querySelector('.anim-area');
+  animArea.addEventListener('mouseenter', ()=> clearInterval(rotTimer));
+  animArea.addEventListener('mouseleave', ()=> {
+    clearInterval(rotTimer);
+    rotTimer = setInterval(() => {
+      rotateOnce();
+      setTimeout(()=>{ const first = positions.shift(); positions.push(first); }, 100 + (circleCount * staggerDelay));
+    }, intervalRotation);
+  });
+
+})();
+</script>
+
+<!-- Chatway Live Chat (placed before closing </body>) -->
+<script id="chatway" async="true" src="https://cdn.chatway.app/widget.js?id=Vykf7IgckhoX"></script>
+
+</body>
+</html>

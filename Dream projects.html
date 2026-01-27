@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dream Projects — Dream Big Project</title>
+<meta name="description" content="Explore Dream Projects within the Dream Big ecosystem" />
+
+<style>
+:root{
+  --navy:#071735;
+  --gold:#DCAE3A;
+  --white:#ffffff;
+  --radius:18px;
+  --max-w:1200px;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(180deg,var(--navy),#0b2550);
+  color:#fff;
+  padding:28px;
+}
+
+/* Layout */
+.wrap{max-width:var(--max-w);margin:auto}
+
+/* Header */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+.brand{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.logo{ width:72px;height:72px; }
+.logo img{width:100%;height:100%;object-fit:contain}
+.title{font-weight:800}
+
+/* Return home button (header) */
+.back-home{
+  background:transparent;
+  color:var(--gold);
+  border:1px solid rgba(220,174,58,0.18);
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  box-shadow: 0 10px 30px rgba(220,174,58,0.04);
+}
+.back-home:hover{
+  background: linear-gradient(90deg, rgba(210,170,60,0.06), rgba(240,199,94,0.03));
+  box-shadow: 0 14px 40px rgba(220,174,58,0.08);
+}
+
+/* Main panel */
+.panel{
+  background:var(--white);
+  color:var(--navy);
+  border-radius:22px;
+  padding:36px;
+  box-shadow:0 30px 80px rgba(0,0,0,.35);
+}
+
+/* Heading */
+.panel h1{
+  margin:0 0 22px;
+  text-align:center;
+  font-size:36px;
+  letter-spacing:3px;
+}
+.panel h1 span{ color:var(--gold); }
+
+/* Grid */
+.projects{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:22px;
+}
+
+/* Card */
+.project-card{
+  border-radius:16px;
+  overflow:hidden;
+  background:#f7f9fc;
+  transition:transform .25s ease, box-shadow .25s ease;
+  cursor:pointer;
+  text-align:center;
+}
+.project-card:focus{ outline:3px solid rgba(220,174,58,0.18); outline-offset:4px; }
+.project-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(7,23,53,.18);
+}
+.project-card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  display:block;
+}
+.project-name{
+  padding:14px;
+  font-weight:900;
+  letter-spacing:.5px;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+/* small gold dot next to names for style */
+.project-name::before{
+  content:"";
+  width:10px;height:10px;border-radius:50%;
+  background:var(--gold);
+  display:inline-block;margin-right:8px;
+}
+
+/* Footer */
+.footer{
+  margin-top:24px;
+  text-align:center;
+  font-size:14px;
+  color:rgba(255,255,255,.9);
+}
+
+/* GOLD LINE BENEATH FOOTER */
+.footer-gold-line{
+  width:100%;
+  height:6px;
+  margin-top:12px;
+  background: linear-gradient(90deg, rgba(220,174,58,1), rgba(240,199,94,1));
+  border-radius:6px;
+  box-shadow: 0 10px 30px rgba(220,174,58,0.10);
+  overflow:hidden;
+}
+
+/* Mobile */
+@media(max-width:480px){
+  .panel{padding:22px}
+  .panel h1{font-size:28px}
+  .project-card img{height:140px}
+  header{gap:8px}
+  .back-home{padding:7px 10px;font-size:14px}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand" aria-label="Site brand">
+      <div class="logo">
+        <img src="logo.png" alt="Dream Big Project logo" loading="lazy">
+      </div>
+      <div class="title">Dream Big Project</div>
+    </div>
+
+    <!-- Return Home button linking to big dream projects.html -->
+    <div>
+      <a class="back-home" href="big dream projects.html" aria-label="Return to Big Dream Projects">← Return Home</a>
+    </div>
+  </header>
+
+  <section class="panel" aria-labelledby="projects-title">
+    <h1 id="projects-title"><span>Dream</span> Projects We Fund</h1>
+
+    <div class="projects" role="list">
+      <!-- Education -->
+      <div class="project-card" role="listitem" tabindex="0" aria-label="Education project">
+        <img src="education.jpeg" alt="Education Initiative" loading="lazy" width="800" height="480">
+        <div class="project-name">🎓 Education</div>
+      </div>
+
+      <!-- Housing -->
+      <div class="project-card" role="listitem" tabindex="0" aria-label="Housing project">
+        <img src="housing.jpeg" alt="Housing Project" loading="lazy" width="800" height="480">
+        <div class="project-name">🏠 House / Housing</div>
+      </div>
+
+      <!-- Mobility -->
+      <div class="project-card" role="listitem" tabindex="0" aria-label="Mobility project">
+        <img src="mobility.jpeg" alt="Mobility and Transportation" loading="lazy" width="800" height="480">
+        <div class="project-name">🚗 Mobility</div>
+      </div>
+
+      <!-- Health -->
+      <div class="project-card" role="listitem" tabindex="0" aria-label="Health project">
+        <img src="health.jpeg" alt="Healthcare Services" loading="lazy" width="800" height="480">
+        <div class="project-name">🏥 Health</div>
+      </div>
+
+      <!-- Business -->
+      <div class="project-card" role="listitem" tabindex="0" aria-label="Business project">
+        <img src="business.jpeg" alt="Business and Entrepreneurship" loading="lazy" width="800" height="480">
+        <div class="project-name">💼 Business</div>
+      </div>
+
+      <!-- Community -->
+      <div class="project-card" role="listitem" tabindex="0" aria-label="Community project">
+        <img src="community.jpeg" alt="Community Development" loading="lazy" width="800" height="480">
+        <div class="project-name">🌍 Community</div>
+      </div>
+
+      <!-- Travel & Leisure -->
+      <div class="project-card" role="listitem" tabindex="0" aria-label="Travel and Leisure project">
+        <img src="travel.jpeg" alt="Travel and Leisure Experiences" loading="lazy" width="800" height="480">
+        <div class="project-name">✈️ Travel &amp; Leisure</div>
+      </div>
+
+      <!-- Charity (added) -->
+      <div class="project-card" role="listitem" tabindex="0" aria-label="Charity project">
+        <img src="charity.jpg" alt="Charitable Giving and Humanitarian Support" loading="lazy" width="800" height="480">
+        <div class="project-name">❤️ Charity</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    © 2026 Dream Big Project. All rights reserved.
+  </div>
+
+  <!-- decorative gold line -->
+  <div class="footer-gold-line" aria-hidden="true"></div>
+
+</div>
+
+<!-- Chatway Live Chat (placed before closing </body>) -->
+<script id="chatway" async="true" src="https://cdn.chatway.app/widget.js?id=Vykf7IgckhoX"></script>
+
+</body>
+</html>
