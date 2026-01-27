@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Disclaimer — Dream Big Project</title>
+  <style>
+    :root{
+      --navy:#0b2545;
+      --gold:#d4af37;
+      --gold-dark:#b5892b;
+      --sage:#9dbf9e;
+      --card-bg:#ffffff;
+      --soft-bg:#eef3f9;
+      --radius:20px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    html,body{height:100%;margin:0;background:var(--soft-bg);display:flex;align-items:center;justify-content:center}
+    .card{
+      width:min(1100px,96%);
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      box-shadow:0 30px 60px rgba(11,37,69,0.07), 0 8px 20px rgba(11,37,69,0.05);
+      overflow:hidden;
+      display:grid;
+      /* expanded normal state: left column is wider */
+      grid-template-columns:1.6fr 1fr;
+      gap:0;
+      align-items:stretch;
+    }
+
+    /* LEFT: text (expanded) */
+    .left{
+      padding:48px 56px;
+      background:var(--navy);
+      color:white;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      gap:18px;
+    }
+    .label{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.6)}
+    .title{margin:0;font-size:28px;line-height:1.05;color:var(--sage);font-weight:900}
+    .typed{font-weight:800;font-size:15px;color:white;line-height:1.55;white-space:pre-wrap;opacity:0;max-width:920px}
+    .fade-in{animation:fadeUp 700ms cubic-bezier(.2,.9,.2,1) both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+    /* Home button now in the flow below the copy so it won't block text */
+    .hex-home{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:92px;
+      height:82px;
+      margin-top:12px;
+      text-decoration:none;
+      text-align:center;
+      clip-path:polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%);
+      background:linear-gradient(180deg,var(--gold),var(--gold-dark));
+      box-shadow:0 8px 22px rgba(13,20,30,0.12), inset 0 -4px 8px rgba(0,0,0,0.08);
+      color:var(--navy);font-weight:900;letter-spacing:0.3px;border:none;
+    }
+    .hex-home:hover{transform:translateY(-4px);transition:transform .14s ease}
+    .hex-home span{font-size:13px;display:block}
+
+    /* RIGHT: image */
+    .right{
+      position:relative;
+      padding:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(180deg, rgba(11,37,69,0.03), rgba(11,37,69,0.01));
+    }
+    .image-wrap{
+      width:100%;
+      max-width:420px;
+      height:260px;
+      border-radius:14px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 8px 30px rgba(11,37,69,0.06);
+      padding:8px;
+    }
+    /* show full image (contain) so nothing is cropped */
+    .image-wrap img{
+      position:absolute;
+      top:0;left:0;width:100%;height:100%;object-fit:contain;opacity:0;
+      transition:opacity 900ms ease, transform 900ms ease;
+      transform-origin:center center;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+    }
+    .image-wrap img.active{opacity:1}
+    /* spin animation applied to incoming image */
+    @keyframes spinIn {
+      0%   { transform: rotateY(0deg) scale(0.96); }
+      40%  { transform: rotateY(180deg) scale(1.06); }
+      100% { transform: rotateY(360deg) scale(1); }
+    }
+    .image-wrap img.spin { animation: spinIn 900ms cubic-bezier(.2,.9,.2,1) both; }
+
+    /* fallback overlay when image fails */
+    .img-fallback{
+      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(90deg, rgba(11,37,69,0.03), rgba(11,37,69,0.02));
+      color:rgba(11,37,69,0.7);font-weight:800;z-index:20;font-size:14px;padding:12px;text-align:center;
+      display:none;
+    }
+    .img-fallback.show{display:flex}
+
+    @media (max-width:920px){
+      /* collapsed mobile: stack columns */
+      .card{grid-template-columns:1fr;gap:12px}
+      .image-wrap{height:200px;max-width:320px}
+      .left{padding:28px}
+      .right{padding:18px}
+      /* keep the hex button smaller for mobile */
+      .hex-home{width:72px;height:62px}
+      .typed{max-width:480px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="dialog" aria-labelledby="disclaimerTitle">
+    <!-- Left text column (expanded normal state) -->
+    <div class="left fade-in">
+      <div class="label">Terms of Usage</div>
+      <h2 id="disclaimerTitle" class="title">Disclaimer</h2>
+
+      <div id="typed" class="typed" aria-live="polite"></div>
+
+      <!-- Home button now placed below the text (in the flow) so it never overlaps -->
+      <a class="hex-home" href="index.html" title="Return home" aria-label="Return home">
+        <span>Home</span>
+      </a>
+    </div>
+
+    <!-- Right image column -->
+    <div class="right" aria-hidden="false">
+      <div class="image-wrap" tabindex="0" aria-label="Illustration rotating with spin every 15 seconds">
+        <!-- Use warning.png and peace.png; make sure they're in same folder as this HTML -->
+        <img src="warning.png" alt="Warning image" id="img0" class="active" />
+        <img src="peace.jpg" alt="Peace image" id="img1" />
+        <div id="fallback" class="img-fallback">Image not found — place <strong>warning.png</strong> and <strong>peace.png</strong> in this folder.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Typewriter text (white) ---
+    const text = `Dream Big Project is a community-driven platform focused on financial education, discipline, and project execution. Participation does not guarantee financial returns, profits, or funding. All contributions are voluntary, and members are responsible for their own decisions. Dream Big Project is not an investment or financial advisory service.`;
+    const typedEl = document.getElementById('typed');
+    let idx = 0;
+    const speed = 18; // ms per char
+    function type(){
+      if(idx <= text.length){
+        typedEl.style.opacity = 1;
+        typedEl.innerText = text.slice(0, idx);
+        idx++;
+        setTimeout(type, speed);
+      }
+    }
+    // start quickly so expanded text appears early
+    setTimeout(type, 350);
+
+    // --- Image switching every 15s with spin on incoming image ---
+    const img0 = document.getElementById('img0');
+    const img1 = document.getElementById('img1');
+    const imgs = [img0, img1];
+    const fallback = document.getElementById('fallback');
+    let current = 0;
+    const SWITCH_MS = 15000; // 15 seconds
+    const SPIN_DURATION = 900; // match CSS animation length (ms)
+
+    // error/load handling for fallback overlay
+    imgs.forEach(i => {
+      i.addEventListener('error', () => {
+        fallback.classList.add('show');
+        console.warn('Failed to load image:', i.getAttribute('src'));
+      });
+      i.addEventListener('load', () => {
+        if(imgs.some(im => im.complete && im.naturalWidth > 0)) fallback.classList.remove('show');
+      });
+    });
+
+    function switchImage(){
+      const next = (current + 1) % imgs.length;
+      imgs[next].classList.add('active', 'spin');
+      imgs[current].classList.remove('active');
+      setTimeout(()=> imgs[next].classList.remove('spin'), SPIN_DURATION + 40);
+      current = next;
+    }
+
+    // start interval
+    let imageTimer = setInterval(switchImage, SWITCH_MS);
+
+    // accessibility: pause switching while hovering or focusing
+    const wrap = document.querySelector('.image-wrap');
+    wrap.addEventListener('mouseenter', ()=> { clearInterval(imageTimer); imageTimer = null; });
+    wrap.addEventListener('mouseleave', ()=> { if(!imageTimer) imageTimer = setInterval(switchImage, SWITCH_MS); });
+    wrap.addEventListener('focus', ()=> { clearInterval(imageTimer); imageTimer = null; });
+    wrap.addEventListener('blur', ()=> { if(!imageTimer) imageTimer = setInterval(switchImage, SWITCH_MS); });
+
+    // preload safety
+    imgs.forEach(i => { if(!i.complete) i.onload = ()=>{}; });
+
+    // keyboard: Enter on Home navigates (for accessibility)
+    document.querySelector('.hex-home').addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' ') window.location = 'index.html';
+    });
+  </script>
+</body>
+</html>
