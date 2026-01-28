@@ -32,8 +32,7 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.45);
     }
     .viewport::before{
-      content:'';
-      position:absolute;inset:-8px;border-radius:28px;z-index:0;
+      content:''; position:absolute;inset:-8px;border-radius:28px;z-index:0;
       background:
         radial-gradient(600px 200px at 8% 8%, rgba(212,175,55,0.12), transparent 6%),
         radial-gradient(400px 200px at 92% 92%, rgba(212,175,55,0.08), transparent 8%);
@@ -141,6 +140,22 @@
       .logo { width:48px; height:48px; }
       .title { font-size:15px; }
       .text-box p { font-size:16px; }
+
+      /* Ensure last slide (index 18) has extra bottom padding on small screens
+         so acceptance area isn't covered by the fixed controls */
+      .slide[data-index="18"] .card {
+        padding-bottom: 140px; /* plenty of space for roller + proceed button */
+      }
+
+      /* Slightly reduce top spacing for the accept area on small screens */
+      .slide[data-index="18"] .accept-area {
+        margin-top: 8px;
+      }
+
+      /* Optional: nudge controls up a little on very small screens */
+      @media (max-height:640px) {
+        .controls { bottom: 8px; }
+      }
     }
   </style>
 </head>
@@ -397,6 +412,27 @@
       }
       const dots = Array.from(dotsWrap.children);
 
+      // Ensure last slide's acceptance area is visible on small screens
+      function ensureLastSlideVisible() {
+        if (index === total - 1) {
+          const lastCard = slider.querySelector('.slide[data-index="' + index + '"] .card');
+          if (!lastCard) return;
+          // small delay to allow transform/layout to complete
+          setTimeout(() => {
+            // If the card content overflows, scroll to bottom so accept-area becomes visible
+            if (lastCard.scrollHeight > lastCard.clientHeight) {
+              lastCard.scrollTop = lastCard.scrollHeight - lastCard.clientHeight;
+            }
+            // Safety: if extra padding wasn't set by CSS for whatever reason, set it here on narrow viewports
+            if (window.innerWidth <= 720) lastCard.style.paddingBottom = lastCard.style.paddingBottom || '140px';
+          }, 90);
+        } else {
+          // remove any inline padding we might have set previously
+          const lastCard = slider.querySelector('.slide[data-index="' + (total - 1) + '"] .card');
+          if (lastCard) lastCard.style.paddingBottom = '';
+        }
+      }
+
       // update UI
       function updateUI() {
         slider.style.transform = `translateX(${ -index * 100 }%)`;
@@ -418,6 +454,9 @@
           proceedWrap.classList.remove('show');
           proceedBtn.disabled = true;
         }
+
+        // make sure acceptance area is visible on small screens
+        ensureLastSlideVisible();
       }
 
       // Navigation handlers: next and prev only move one step
