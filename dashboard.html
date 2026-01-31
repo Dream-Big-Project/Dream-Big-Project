@@ -61,7 +61,7 @@
   .submit{background:var(--accent);color:var(--accent-contrast);padding:10px 14px;border-radius:10px;border:none;font-weight:700}
   /* progress bar */
   .progress-track { width:100%; background: rgba(0,0,0,0.06); height:14px; border-radius:999px; overflow:hidden; margin-top:10px; }
-  .progress-fill { height:100%; width:50%; background:var(--accent); transition: width .6s cubic-bezier(.2,.9,.2,1); box-shadow: 0 8px 30px rgba(0,0,0,0.08); border-radius:999px; }
+  .progress-fill { height:100%; width:0%; background:var(--accent); transition: width .6s cubic-bezier(.2,.9,.2,1), background .25s ease; box-shadow: 0 8px 30px rgba(0,0,0,0.08); border-radius:999px; }
   .progress-label { display:flex; justify-content:space-between; margin-top:8px; color:var(--muted); font-size:13px; }
   /* Footer: accent separator + simple copyright */
   footer{position:fixed;left:12px;right:12px;bottom:12px;background:var(--card);padding:12px;border-radius:12px;display:flex;align-items:center;box-shadow:0 8px 30px rgba(2,6,20,0.06);z-index:40;border-top:4px solid var(--accent);justify-content:center;color:var(--muted)}
@@ -138,9 +138,9 @@
         </div>
       </div>
 
-      <button class="menu-item" id="mTiers">Member Tiers<span class="hint">Upgrade</span></button>
-      <button class="menu-item" id="mViewProjects">View Projects<span class="hint">Your projects</span></button>
+      <!-- Contribution moved to the top (Member Tiers removed) -->
       <button class="menu-item" id="mContribute"><span id="contribLabel">Contribution</span><span class="hint" id="contribHint">Contribution</span></button>
+      <button class="menu-item" id="mViewProjects">View Projects<span class="hint">Your projects</span></button>
       <button class="menu-item" id="mWithdraw">Withdraw<span class="hint">Request</span></button>
       <button class="menu-item" id="mHelp">Help & Support<span class="hint">Contact</span></button>
       <div id="paymentsNavPlace"></div>
@@ -175,10 +175,10 @@
 
         <!-- Progress bar below dream funding -->
         <div class="progress-track" aria-hidden="true" id="progressTrack">
-          <div class="progress-fill" id="progressFill" style="width:50%"></div>
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
         </div>
         <div class="progress-label">
-          <div id="progressPct">50%</div>
+          <div id="progressPct">0%</div>
           <div id="progressTarget">Target: —</div>
         </div>
 
@@ -444,7 +444,6 @@ const menuPanel = document.getElementById('menuPanel');
 const overlayDim = document.getElementById('overlayDim');
 const mContribute = document.getElementById('mContribute');
 const mViewProjects = document.getElementById('mViewProjects');
-const mTiers = document.getElementById('mTiers');
 const mHelp = document.getElementById('mHelp');
 const mSettings = document.getElementById('mSettings');
 const mLogout = document.getElementById('mLogout');
@@ -657,14 +656,23 @@ mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeMod
 contribClose.addEventListener('click', ()=> closeModal(contributeModal));
 contribCloseX.addEventListener('click', ()=> closeModal(contributeModal));
 
-/* helper to update progress bar */
+/* helper to update progress bar with color ranges */
 function updateProgress(percent){
-  const p = Math.max(0, Math.min(100, percent));
+  const p = Math.max(0, Math.min(100, Math.round(percent)));
   progressFill.style.width = p + '%';
   progressPct.innerText = p + '%';
+
+  // color ranges: 0-40 red, 41-60 yellow, 61-100 green
+  let color = '#e14b4b'; // default red
+  if(p <= 40) color = '#e14b4b';
+  else if(p <= 60) color = '#f6c44b';
+  else color = '#34d399';
+  progressFill.style.background = color;
+
+  // update text color on small devices if needed
 }
 
-/* package selection: now values are numeric prices; funding = price * 100 */
+/* package selection: numeric prices; funding = price * 100 */
 packageSelect.addEventListener('change', ()=>{
   const val = packageSelect.value;
   if(!val){
@@ -673,7 +681,9 @@ packageSelect.addEventListener('change', ()=>{
     projectMeta.innerText='Choose a package from Contribution';
     dreamFunding.innerText = 'Dream Funding: $0';
     localStorage.removeItem('selectedPackage');
-    updateProgress(50); // keep bar visible
+    // reset tracker to zero as requested
+    updateProgress(0);
+    progressTarget.innerText = 'Target: —';
     return;
   }
   const price = Number(val);
@@ -688,8 +698,8 @@ packageSelect.addEventListener('change', ()=>{
   packageAmount.innerText = '(' + pkg.name + ' Contribution)';
   dreamFunding.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding);
 
-  // set bar to 50% as requested (demo)
-  updateProgress(50);
+  // set bar to 0% (per your request) so admin/actual contributions update it later
+  updateProgress(0);
   progressTarget.innerText = 'Target: $' + numberWithCommas(pkg.funding);
 });
 
@@ -1013,7 +1023,6 @@ mWithdraw.addEventListener('click', ()=>{
 /* ---------- Menu item actions ---------- */
 document.getElementById('mSettings').addEventListener('click', ()=> { closeMenu(); openSettings(); });
 document.getElementById('mViewProjects').addEventListener('click', ()=> { closeMenu(); renderProjects(); openModal(projectsModal); });
-document.getElementById('mTiers').addEventListener('click', ()=> { closeMenu(); alert('Member tiers (demo)'); });
 document.getElementById('mHelp').addEventListener('click', ()=> { closeMenu(); alert('Help & support (demo)'); });
 
 /* ---------- Settings open/close helper ---------- */
@@ -1058,7 +1067,6 @@ function applyTranslations(){
 }
 function applyTheme(){
   const theme = localStorage.getItem('theme') || 'light';
-  const root = document.documentElement;
   if(theme === 'navy'){
     document.documentElement.classList.add('theme-navy');
   } else {
@@ -1099,9 +1107,12 @@ function init(){
     packageAmount.innerText = '(' + pkg.name + ' Contribution)';
     dreamFunding.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding);
     progressTarget.innerText = 'Target: $' + numberWithCommas(pkg.funding);
+    // ensure progress shows current saved percent if you store one later; default 0
+    const savedPct = Number(localStorage.getItem('progressPercent') || '0');
+    updateProgress(savedPct);
   } else {
-    // default progress 50% so you can test color
-    updateProgress(50);
+    // default progress 0%
+    updateProgress(0);
   }
 
   // init payments nav + projects + refs
