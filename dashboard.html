@@ -6,9 +6,6 @@
   <title>Dream Big — Member Dashboard (Mobile)</title>
   <meta name="theme-color" content="#071a2a" />
   <style>
-    /* =========================
-       Visual / Layout (Mobile)
-       ========================= */
     :root{
       --bg:#061228;
       --card:#0f2a44;
@@ -20,8 +17,6 @@
       --gap:12px;
       --text:#eaf6ff;
       font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:linear-gradient(180deg,#021226 0%, #071a2a 100%);color:var(--text);-webkit-tap-highlight-color:transparent}
@@ -35,10 +30,9 @@
     button.icon-btn{background:var(--card);padding:8px;border-radius:10px;border:none;color:var(--muted);font-weight:600}
     button.logout-btn{background:linear-gradient(180deg,var(--accent),#d9a83b);color:#042137;padding:8px 12px;border-radius:10px;border:none;font-weight:700}
     .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;position:relative}
-    /* Profile menu */
     .profile-menu{position:absolute;right:0;top:58px;background:var(--card);padding:8px;border-radius:10px;min-width:160px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:30}
     .profile-menu button{display:block;width:100%;text-align:left;padding:8px;border-radius:8px;border:none;background:transparent;color:var(--text)}
-    main{flex:1;overflow:auto;padding-bottom:80px}
+    main{flex:1;overflow:auto;padding-bottom:120px}
     .welcome{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:16px}
     .welcome h2{margin:0;font-size:15px}
     .kpis{display:flex;gap:8px;margin-top:12px}
@@ -52,6 +46,13 @@
     .input,select{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
     .submit{background:var(--accent);color:#042137;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
     .tracker-title{font-weight:800}
+
+    /* NEW: main nav bar (mobile friendly) */
+    .main-nav{display:flex;gap:8px;align-items:center}
+    .nav-item{background:var(--card);padding:8px 10px;border-radius:10px;color:var(--muted);font-weight:700;border:none}
+    .nav-item.primary{background:linear-gradient(90deg,var(--accent),#e0b545);color:#042137}
+    .nav-item.small{padding:8px;border-radius:10px;font-size:13px}
+
     /* Sticky referrals bottom */
     .bottom-bar{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:20}
     .ref-count{font-weight:800;font-size:16px}
@@ -59,17 +60,22 @@
     .btn{padding:10px 12px;border-radius:10px;border:none}
     .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
     .btn.warn{background:var(--danger);color:white}
-    /* Modal */
+
+    /* Modal styling reused for several modals */
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:60}
     .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
     .modal h3{margin:0 0 6px 0}
     .modal p{color:var(--muted);margin:0 0 12px 0}
     .modal .actions{display:flex;gap:8px;justify-content:flex-end}
+    .modal .row{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .modal .copy{background:rgba(255,255,255,0.04);padding:10px;border-radius:8px;flex:1;color:var(--muted);font-size:13px;word-break:break-all}
+    .modal .copy .label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
+    .modal .copy-btn{margin-left:8px;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#042137;font-weight:700}
+
     /* Spinner overlay (segmented & animated) */
     .spinner-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:70}
     .spinner-panel{display:flex;flex-direction:column;align-items:center;gap:14px;background:rgba(2,18,30,0.92);padding:22px;border-radius:12px;backdrop-filter:blur(6px)}
     .spinner{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;position:relative}
-    /* segmented spinner with conic-gradient and rotation */
     .spinner:before{content:'';position:absolute;inset:0;border-radius:50%;background:
       conic-gradient(
         #cfd8dd 0deg 30deg,
@@ -83,13 +89,17 @@
     }
     .spinner .hole{width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#061226,#0a2938);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:6px;line-height:1.1}
     @keyframes spin{to{transform:rotate(360deg)}}
-    /* small layout tuning */
+
+    /* simple toast */
+    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:rgba(0,0,0,0.7);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:80;font-weight:700}
+
     @media(min-width:540px){.app{padding:20px}.card{padding:18px}.logo{width:48px;height:48px}}
   </style>
 </head>
 <body>
   <div class="app" id="appRoot" aria-live="polite">
-    <!-- HEADER -->
+
+    <!-- HEADER (with main nav items) -->
     <header>
       <div class="brand" role="banner">
         <div class="logo" aria-hidden="true">DB</div>
@@ -99,11 +109,14 @@
         </div>
       </div>
 
-      <div class="nav-actions" aria-hidden="false">
-        <button class="icon-btn" id="addProjectBtn" aria-label="Add project">Add</button>
-        <button class="logout-btn" id="topLogoutBtn" aria-label="Logout">Logout</button>
+      <!-- NAV ACTIONS: Member Tiers | Contribute | Logout | Help & Support -->
+      <div class="nav-actions main-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item small" id="tiersBtn" aria-haspopup="dialog">Member Tiers</button>
+        <button class="nav-item primary" id="contributeBtn" aria-haspopup="dialog">Contribute</button>
+        <button class="nav-item small" id="navLogoutBtn" aria-haspopup="dialog">Logout</button>
+        <button class="nav-item small" id="helpBtn" aria-haspopup="dialog">Help</button>
 
-        <!-- profile circle + dropdown -->
+        <!-- profile circle (keeps profile menu) -->
         <div class="profile" id="profileCircle" aria-haspopup="true" aria-expanded="false" title="Profile">
           PD
           <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
@@ -165,7 +178,6 @@
         <div id="trackerTitle" class="tracker-title">Project Tracker</div>
         <div style="margin-top:8px;color:var(--muted);font-size:13px">Recent activity will appear here.</div>
       </section>
-
     </main>
 
     <!-- REFERRAL BOTTOM BAR -->
@@ -179,7 +191,10 @@
       </div>
     </div>
 
-    <!-- CONFIRM LOGOUT MODAL -->
+    <!-- TOAST -->
+    <div class="toast" id="toast">Copied!</div>
+
+    <!-- MODALS: Logout confirm -->
     <div class="modal-backdrop" id="logoutModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="logoutTitle">
         <h3 id="logoutTitle">Confirm Logout</h3>
@@ -187,6 +202,107 @@
         <div class="actions">
           <button class="btn ghost" id="btnNo">No</button>
           <button class="btn warn" id="btnYes">Yes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Contribute (Bank or USDT TRC20) -->
+    <div class="modal-backdrop" id="contributeModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="contribTitle">
+        <h3 id="contribTitle">Contribute</h3>
+        <p>Choose your method and copy the payment details to complete the transfer.</p>
+
+        <div class="row" style="margin-top:8px">
+          <button class="btn ghost" id="methodBank">Bank Deposit</button>
+          <button class="btn ghost" id="methodUSDT">USDT (TRC20)</button>
+        </div>
+
+        <!-- Bank info -->
+        <div id="bankBlock" style="margin-top:12px;">
+          <div class="copy">
+            <span class="label">Bank: FIRST NATIONAL BANK</span>
+            <div>Account Name: DREAM BIG PROJECT</div>
+            <div>Account Number: <strong id="bankAcct">0123456789</strong></div>
+            <div>Sort Code: <strong id="sortCode">001122</strong></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="copy-btn" data-copy="bankAcct">Copy Account</button>
+            <button class="copy-btn" data-copy="sortCode">Copy Sort</button>
+          </div>
+        </div>
+
+        <!-- USDT TRC20 info -->
+        <div id="usdtBlock" style="margin-top:12px;display:none">
+          <div class="copy">
+            <span class="label">TRC20 Wallet (USDT)</span>
+            <div>Wallet Address:</div>
+            <div id="walletAddr" style="word-break:break-all"><strong>TXxExampleWalletAddress1234567890abcdef</strong></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="copy-btn" data-copy="walletAddr">Copy Wallet</button>
+            <button class="copy-btn" id="showQR">Show QR (demo)</button>
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:14px">
+          <button class="btn ghost" id="contribClose">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Member Tiers -->
+    <div class="modal-backdrop" id="tiersModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="tiersTitle">
+        <h3 id="tiersTitle">Member Tiers</h3>
+        <p>Choose a tier that fits your vision. Upgrading increases benefits and access.</p>
+        <div style="margin-top:8px;">
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
+            <div style="font-weight:800">Pathfinder (Starter)</div>
+            <div style="font-size:13px;color:var(--muted)">Access to starter projects. Referrals: 0–19.</div>
+            <div style="margin-top:8px"><button class="btn ghost">Upgrade</button></div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
+            <div style="font-weight:800">Builder (Active)</div>
+            <div style="font-size:13px;color:var(--muted)">More project access. Referrals: 20–49.</div>
+            <div style="margin-top:8px"><button class="btn ghost">Upgrade</button></div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
+            <div style="font-weight:800">Leader (Premium)</div>
+            <div style="font-size:13px;color:var(--muted)">Priority deals, staking benefits. Referrals: 50+</div>
+            <div style="margin-top:8px"><button class="btn ghost">Contact to Upgrade</button></div>
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:12px">
+          <button class="btn ghost" id="tiersClose">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Help & Support -->
+    <div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="helpTitle">
+        <h3 id="helpTitle">Help & Support</h3>
+        <p>We’re here to help. Choose a channel below.</p>
+
+        <div style="margin-top:8px">
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
+            <div style="font-weight:800">Email</div>
+            <div style="font-size:13px;color:var(--muted)">support@dreambig.example</div>
+            <div style="margin-top:8px"><button class="btn ghost" id="emailSupport">Send Email</button></div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
+            <div style="font-weight:800">WhatsApp</div>
+            <div style="font-size:13px;color:var(--muted)">+234 800 000 0000</div>
+            <div style="margin-top:8px"><button class="btn ghost" id="waSupport">Open WhatsApp</button></div>
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:12px">
+          <button class="btn ghost" id="helpClose">Close</button>
         </div>
       </div>
     </div>
@@ -200,183 +316,269 @@
         <div style="color:var(--muted);font-size:14px">Preparing to sign you out</div>
       </div>
     </div>
+
   </div>
 
   <script>
-    /*******************************
-     * DOM elements
-     *******************************/
-    const topLogoutBtn = document.getElementById('topLogoutBtn');
+    /* -------------------------
+       Elements
+       ------------------------- */
+    const tiersBtn = document.getElementById('tiersBtn');
+    const contributeBtn = document.getElementById('contributeBtn');
+    const navLogoutBtn = document.getElementById('navLogoutBtn');
+    const helpBtn = document.getElementById('helpBtn');
+
     const profileCircle = document.getElementById('profileCircle');
     const profileMenu = document.getElementById('profileMenu');
     const profileLogoutBtn = document.getElementById('profileLogoutBtn');
+
+    // Modals
     const logoutModal = document.getElementById('logoutModal');
     const btnNo = document.getElementById('btnNo');
     const btnYes = document.getElementById('btnYes');
+
+    const contributeModal = document.getElementById('contributeModal');
+    const methodBankBtn = document.getElementById('methodBank');
+    const methodUSDTBtn = document.getElementById('methodUSDT');
+    const bankBlock = document.getElementById('bankBlock');
+    const usdtBlock = document.getElementById('usdtBlock');
+    const contribClose = document.getElementById('contribClose');
+
+    const tiersModal = document.getElementById('tiersModal');
+    const tiersClose = document.getElementById('tiersClose');
+
+    const helpModal = document.getElementById('helpModal');
+    const helpClose = document.getElementById('helpClose');
+
     const spinnerOverlay = document.getElementById('spinnerOverlay');
-    const appRoot = document.getElementById('appRoot');
     const spinnerInnerText = document.getElementById('spinnerInnerText');
+
+    const toast = document.getElementById('toast');
+    const copyButtons = document.querySelectorAll('.copy-btn');
+
     const shareBtn = document.getElementById('shareBtn');
     const submitContrib = document.getElementById('submitContrib');
 
-    let logoutSource = null; // track who triggered logout (top or profile) - currently for debugging only
-
-    /*******************************
-     * Utility functions
-     *******************************/
-    function openModal(){
-      logoutModal.style.display = 'flex';
-      logoutModal.setAttribute('aria-hidden','false');
-      // trap focus if necessary (simple approach)
-      btnYes.focus();
+    /* -------------------------
+       Utility: open/close modals
+       ------------------------- */
+    function openModal(modalEl){
+      modalEl.style.display = 'flex';
+      modalEl.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
-    function closeModal(){
-      logoutModal.style.display = 'none';
-      logoutModal.setAttribute('aria-hidden','true');
+    function closeModal(modalEl){
+      modalEl.style.display = 'none';
+      modalEl.setAttribute('aria-hidden','true');
       document.body.style.overflow = '';
     }
 
-    function showSpinnerAndRedirect(redirectUrl = 'login.html'){
-      // set spinner text precisely as requested
-      spinnerInnerText.innerHTML = 'Logging out...<br>See you soon.';
-      spinnerOverlay.style.display = 'flex';
-      spinnerOverlay.setAttribute('aria-hidden','false');
+    /* -------------------------
+       Nav actions wiring
+       ------------------------- */
+    tiersBtn.addEventListener('click', ()=> openModal(tiersModal));
+    tiersClose.addEventListener('click', ()=> closeModal(tiersModal));
 
-      // subtle fade of app for smooth transition
-      appRoot.style.transition = 'opacity 450ms ease';
-      appRoot.style.opacity = '0.25';
+    contributeBtn.addEventListener('click', ()=> {
+      openModal(contributeModal);
+      // default to bank
+      showBank();
+    });
+    contribClose.addEventListener('click', ()=> closeModal(contributeModal));
 
-      // After 4s show a quick fade to black then redirect
-      setTimeout(() => {
-        document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease';
-        document.body.style.backgroundColor = '#000';
-        document.body.style.opacity = '0';
-        setTimeout(() => {
-          // redirect
-          window.location.href = redirectUrl;
-        }, 350);
-      }, 4000);
-    }
-
-    /*******************************
-     * Event wiring: Logout flows
-     *******************************/
-    // Top-right logout
-    topLogoutBtn.addEventListener('click', () => {
-      logoutSource = 'top';
-      openModal();
+    navLogoutBtn.addEventListener('click', ()=> {
+      openModal(logoutModal);
     });
 
-    // Profile menu toggle
-    profileCircle.addEventListener('click', (e) => {
+    helpBtn.addEventListener('click', ()=> openModal(helpModal));
+    helpClose.addEventListener('click', ()=> closeModal(helpModal));
+
+    profileCircle.addEventListener('click', (e)=>{
       e.stopPropagation();
       const visible = profileMenu.style.display === 'block';
       profileMenu.style.display = visible ? 'none' : 'block';
       profileCircle.setAttribute('aria-expanded', (!visible).toString());
       profileMenu.setAttribute('aria-hidden', visible ? 'true' : 'false');
     });
-
-    // clicking anywhere else closes profile menu
-    document.addEventListener('click', (e) => {
-      if(profileMenu.style.display === 'block' && !profileCircle.contains(e.target)) {
+    document.addEventListener('click', (e)=>{
+      if(profileMenu.style.display === 'block' && !profileCircle.contains(e.target)){
         profileMenu.style.display = 'none';
         profileCircle.setAttribute('aria-expanded','false');
         profileMenu.setAttribute('aria-hidden','true');
       }
     });
 
-    // profile logout (uses same confirmation)
-    profileLogoutBtn.addEventListener('click', () => {
+    profileLogoutBtn.addEventListener('click', ()=>{
       profileMenu.style.display = 'none';
-      profileCircle.setAttribute('aria-expanded','false');
-      profileMenu.setAttribute('aria-hidden','true');
-      logoutSource = 'profile';
-      openModal();
+      openModal(logoutModal);
     });
 
-    // Modal actions
-    btnNo.addEventListener('click', () => {
-      // don't log out, just close
-      closeModal();
-    });
-
-    btnYes.addEventListener('click', () => {
-      closeModal();
+    /* -------------------------
+       Logout modal actions (same as before)
+       ------------------------- */
+    btnNo.addEventListener('click', ()=> closeModal(logoutModal));
+    btnYes.addEventListener('click', ()=>{
+      closeModal(logoutModal);
       // show spinner and redirect after 4 seconds
-      showSpinnerAndRedirect('login.html');
+      spinnerInnerText.innerHTML = 'Logging out...<br>See you soon.';
+      spinnerOverlay.style.display = 'flex';
+      spinnerOverlay.setAttribute('aria-hidden','false');
+
+      document.getElementById('appRoot').style.transition = 'opacity 450ms ease';
+      document.getElementById('appRoot').style.opacity = '0.25';
+
+      setTimeout(()=>{
+        document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease';
+        document.body.style.backgroundColor = '#000';
+        document.body.style.opacity = '0';
+        setTimeout(()=> window.location.href = 'login.html', 350);
+      }, 4000);
     });
 
-    // close modal when clicking outside modal content
-    logoutModal.addEventListener('click', (ev) => {
-      if(ev.target === logoutModal){
-        closeModal();
-      }
+    // clicking outside modals closes them
+    [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => {
+      if(!m) return;
+      m.addEventListener('click', (ev)=>{
+        if(ev.target === m) closeModal(m);
+      });
     });
 
-    /*******************************
-     * Sharing and small interactions
-     *******************************/
+    /* -------------------------
+       Contribute method toggles
+       ------------------------- */
+    function showBank(){
+      bankBlock.style.display = 'block';
+      usdtBlock.style.display = 'none';
+      methodBankBtn.classList.add('primary');
+      methodUSDTBtn.classList.remove('primary');
+    }
+    function showUSDT(){
+      bankBlock.style.display = 'none';
+      usdtBlock.style.display = 'block';
+      methodUSDTBtn.classList.add('primary');
+      methodBankBtn.classList.remove('primary');
+    }
+    methodBankBtn.addEventListener('click', showBank);
+    methodUSDTBtn.addEventListener('click', showUSDT);
+
+    // demo QR button (just shows toast)
+    const showQR = document.getElementById('showQR');
+    if(showQR){
+      showQR.addEventListener('click', ()=>{
+        showToast('QR demo not available in this build.');
+      });
+    }
+
+    /* -------------------------
+       Copy to clipboard handlers
+       ------------------------- */
+    function showToast(msg){
+      toast.innerText = msg || 'Copied!';
+      toast.style.display = 'block';
+      toast.style.opacity = '1';
+      setTimeout(()=> {
+        toast.style.transition = 'opacity 300ms ease';
+        toast.style.opacity = '0';
+        setTimeout(()=> toast.style.display = 'none', 300);
+      }, 1400);
+    }
+
+    copyButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const key = e.currentTarget.getAttribute('data-copy');
+        let text = '';
+        if(key === 'bankAcct') text = document.getElementById('bankAcct').innerText.trim();
+        else if(key === 'sortCode') text = document.getElementById('sortCode').innerText.trim();
+        else if(key === 'walletAddr') text = document.getElementById('walletAddr').innerText.trim();
+
+        if(!text) {
+          showToast('Nothing to copy');
+          return;
+        }
+        if(navigator.clipboard){
+          navigator.clipboard.writeText(text).then(()=> showToast('Copied to clipboard'));
+        } else {
+          // fallback
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try{ document.execCommand('copy'); showToast('Copied to clipboard'); } catch(e){ showToast('Copy failed'); }
+          ta.remove();
+        }
+      });
+    });
+
+    /* -------------------------
+       Share and other interactions
+       ------------------------- */
     shareBtn.addEventListener('click', async () => {
       const url = location.href;
       const shareObj = { title: 'Join me on Dream Big', text: 'Sign up and start building with Dream Big', url };
       if(navigator.share){
-        try {
-          await navigator.share(shareObj);
-        } catch(e){
-          // user cancelled share or failed
-        }
+        try { await navigator.share(shareObj); } catch(e){}
       } else {
-        // fallback - copy to clipboard if available
         if(navigator.clipboard) {
-          navigator.clipboard.writeText(url).then(()=> alert('Referral link copied to clipboard.'));
+          navigator.clipboard.writeText(url).then(()=> showToast('Referral copied'));
         } else {
           alert('Copy and share your referral link: ' + url);
         }
       }
     });
 
-    // Simple contribution demo
-    submitContrib.addEventListener('click', (e) => {
+    // contribution button in main card (demo)
+    submitContrib.addEventListener('click', (e)=>{
       e.preventDefault();
       const amt = document.getElementById('amount').value.trim();
       if(!amt || isNaN(amt)) {
         alert('Please enter a valid amount.');
         return;
       }
-      // visual acknowledgement (demo)
-      alert('Contribution of $' + amt + ' submitted (demo)');
+      alert('Contribution of $' + amt + ' recorded (demo).');
       document.getElementById('amount').value = '';
     });
 
-    /*******************************
-     * Accessibility / keyboard shortcuts
-     *******************************/
-    // Esc to close modal or profile
+    /* -------------------------
+       Help actions (email/WhatsApp)
+       ------------------------- */
+    const emailSupport = document.getElementById('emailSupport');
+    const waSupport = document.getElementById('waSupport');
+
+    emailSupport.addEventListener('click', ()=> {
+      // opens email client
+      window.location.href = 'mailto:support@dreambig.example?subject=Support%20Request';
+    });
+    waSupport.addEventListener('click', ()=> {
+      // opens WhatsApp (web or app) - replace phone as needed
+      const phone = '+2348000000000';
+      const url = 'https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...');
+      window.open(url, '_blank');
+    });
+
+    /* -------------------------
+       Init small things
+       ------------------------- */
+    (function init(){
+      // set referrals (static)
+      document.getElementById('refersNum').innerText = '20';
+      document.getElementById('refCount').querySelector('strong').innerText = '20';
+
+      // set default payment info values (replace placeholders with real values)
+      // bank account & wallet already set in DOM above; adjust if needed
+    })();
+
+    // Accessibility: Esc to close open modals/menus
     document.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape') {
-        if(logoutModal.style.display === 'flex') closeModal();
-        if(profileMenu.style.display === 'block') {
+      if(e.key === 'Escape'){
+        [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => {
+          if(m && m.style.display === 'flex') closeModal(m);
+        });
+        if(profileMenu.style.display === 'block'){
           profileMenu.style.display = 'none';
           profileCircle.setAttribute('aria-expanded','false');
         }
       }
     });
-
-    /*******************************
-     * On load: set date and referral number
-     *******************************/
-    (function init(){
-      // keep the date anchored to the one you used (1/31/2026) but fallback to today's date if you want:
-      const meta = document.getElementById('metaDate');
-      if(!meta.innerText || meta.innerText.trim() === '') {
-        const d = new Date();
-        meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
-      }
-      // referrals number (static 20 as requested)
-      document.getElementById('refersNum').innerText = '20';
-      document.getElementById('refCount').querySelector('strong').innerText = '20';
-    })();
   </script>
 </body>
 </html>
