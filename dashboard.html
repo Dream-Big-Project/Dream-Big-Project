@@ -19,15 +19,12 @@
     .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#042137;font-weight:800;font-size:16px}
     .title{font-size:16px;font-weight:700}
     .meta{font-size:12px;color:var(--muted)}
-    /* single menu button */
     .menu-btn{width:44px;height:44px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;border:none;color:var(--muted);font-weight:800}
-    /* floating menu panel (hidden by default) */
-    .menu-panel{position:absolute;top:72px;right:16px;width:230px;background:linear-gradient(180deg,#072235,#0f2a44);border-radius:12px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);transform-origin:top right;opacity:0;pointer-events:none;transform:scale(.95) translateY(-6px);transition:all 180ms ease}
+    .menu-panel{position:absolute;top:72px;right:16px;width:260px;background:linear-gradient(180deg,#072235,#0f2a44);border-radius:12px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);transform-origin:top right;opacity:0;pointer-events:none;transform:scale(.95) translateY(-6px);transition:all 180ms ease;z-index:40}
     .menu-panel.open{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
     .menu-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700}
     .menu-item:hover{background:rgba(255,255,255,0.02);color:var(--text)}
     .menu-item .hint{font-size:12px;color:var(--muted);font-weight:600}
-    /* profile circle kept on header for identity but menu is primary nav */
     .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:default}
     main{flex:1;overflow:auto;padding-bottom:120px}
     .welcome{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:16px}
@@ -35,22 +32,21 @@
     .kpi{flex:1;padding:10px;background:var(--card);border-radius:12px;text-align:left}
     .kpi .num{font-size:18px;font-weight:800}
     .card{background:var(--card);padding:14px;border-radius:16px;margin-top:14px}
+    .project-title{display:flex;justify-content:space-between;align-items:center}
     .progress{height:10px;background:rgba(255,255,255,0.04);border-radius:10px;margin-top:10px;overflow:hidden}
     .progress > i{display:block;height:100%;background:linear-gradient(90deg,#ff7a5a,#f6c44b);width:25%}
     .form-row{display:flex;gap:8px;margin-top:12px}
     .input,select{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
     .submit{background:var(--accent);color:#042137;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
     .tracker-title{font-weight:800}
-    /* bottom referral bar */
     .bottom-bar{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:20}
     .ref-count{font-weight:800;font-size:16px}
     .ref-note{font-size:12px;color:var(--muted)}
     .btn{padding:10px 12px;border-radius:10px;border:none}
     .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
     .btn.warn{background:var(--danger);color:white}
-    /* shared modal */
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:60}
-    .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:300px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
     .modal h3{margin:0 0 6px 0}
     .modal p{color:var(--muted);margin:0 0 12px 0}
     .modal .actions{display:flex;gap:8px;justify-content:flex-end}
@@ -58,7 +54,6 @@
     .modal .copy{background:rgba(255,255,255,0.04);padding:10px;border-radius:8px;flex:1;color:var(--muted);font-size:13px;word-break:break-all}
     .modal .copy .label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
     .modal .copy-btn{margin-left:8px;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#042137;font-weight:700}
-    /* spinner overlay */
     .spinner-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:70}
     .spinner-panel{display:flex;flex-direction:column;align-items:center;gap:14px;background:rgba(2,18,30,0.92);padding:22px;border-radius:12px;backdrop-filter:blur(6px)}
     .spinner{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;position:relative}
@@ -81,8 +76,6 @@
 </head>
 <body>
   <div class="app" id="appRoot" aria-live="polite">
-
-    <!-- HEADER -->
     <header>
       <div class="brand" role="banner">
         <div class="logo" aria-hidden="true">DB</div>
@@ -92,33 +85,27 @@
         </div>
       </div>
 
-      <!-- Menu button -->
       <div style="position:relative">
-        <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">
-          ☰
-        </button>
-
-        <!-- Menu panel -->
+        <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">☰</button>
         <div class="menu-panel" id="menuPanel" role="menu" aria-hidden="true">
           <button class="menu-item" id="mTiers" role="menuitem"><span>Member Tiers</span><span class="hint">Upgrade</span></button>
-          <button class="menu-item" id="mContribute" role="menuitem"><span>Contribute</span><span class="hint">Bank / USDT</span></button>
+          <!-- Changed label to Contribution and default hint "Contribution" -->
+          <button class="menu-item" id="mContribute" role="menuitem"><span id="contribLabel">Contribution</span><span class="hint" id="contribHint">Contribution</span></button>
           <button class="menu-item" id="mLogout" role="menuitem"><span>Logout</span><span class="hint">Sign out</span></button>
           <button class="menu-item" id="mHelp" role="menuitem"><span>Help & Support</span><span class="hint">Contact</span></button>
         </div>
       </div>
 
-      <!-- small profile circle (keeps identity) -->
       <div class="profile" title="Profile">PD</div>
     </header>
 
-    <!-- MAIN -->
     <main>
       <section class="welcome" aria-labelledby="welcomeTitle">
         <h2 id="welcomeTitle">Welcome back, Member</h2>
         <div class="kpis" role="region" aria-label="Key performance indicators">
-          <div class="kpi" title="Active projects"><div class="num">1</div><div style="font-size:12px;color:var(--muted)">Active Projects</div></div>
-          <div class="kpi" title="Total contribution"><div class="num">$250</div><div style="font-size:12px;color:var(--muted)">Total Contribution</div></div>
-          <div class="kpi" title="Referrals"><div class="num" id="refersNum">20</div><div style="font-size:12px;color:var(--muted)">Referrals</div></div>
+          <div class="kpi"><div class="num">1</div><div style="font-size:12px;color:var(--muted)">Active Projects</div></div>
+          <div class="kpi"><div class="num">$250</div><div style="font-size:12px;color:var(--muted)">Total Contribution</div></div>
+          <div class="kpi"><div class="num" id="refersNum">20</div><div style="font-size:12px;color:var(--muted)">Referrals</div></div>
         </div>
       </section>
 
@@ -136,7 +123,11 @@
           <input class="input" id="amount" placeholder="250" inputmode="numeric" aria-label="Amount">
         </div>
         <div class="form-row">
-          <select class="input" id="method" aria-label="Payment method"><option>Bank Deposit</option><option>Card</option><option>USSD</option></select>
+          <!-- only two options: Bank Deposit & USDT (TRC20) -->
+          <select class="input" id="method" aria-label="Payment method">
+            <option value="bank">Bank Deposit</option>
+            <option value="usdt">USDT (TRC20)</option>
+          </select>
           <button class="submit" id="submitContrib">Submit</button>
         </div>
       </article>
@@ -147,7 +138,6 @@
       </section>
     </main>
 
-    <!-- REFERRAL BOTTOM BAR -->
     <div class="bottom-bar" role="region" aria-label="referrals">
       <div>
         <div class="ref-count" id="refCount">Referrals: <strong>20</strong></div>
@@ -158,10 +148,9 @@
       </div>
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast">Copied!</div>
 
-    <!-- Modals (logout, contribute, tiers, help) -->
+    <!-- Modals -->
     <div class="modal-backdrop" id="logoutModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="logoutTitle">
         <h3 id="logoutTitle">Confirm Logout</h3>
@@ -261,7 +250,6 @@
       </div>
     </div>
 
-    <!-- Spinner overlay -->
     <div class="spinner-overlay" id="spinnerOverlay" aria-hidden="true">
       <div class="spinner-panel" role="status" aria-live="polite">
         <div class="spinner" aria-hidden="true">
@@ -279,6 +267,8 @@
     const menuPanel = document.getElementById('menuPanel');
     const mTiers = document.getElementById('mTiers');
     const mContribute = document.getElementById('mContribute');
+    const contribHint = document.getElementById('contribHint');
+    const contribLabel = document.getElementById('contribLabel');
     const mLogout = document.getElementById('mLogout');
     const mHelp = document.getElementById('mHelp');
 
@@ -306,97 +296,71 @@
     const showQR = document.getElementById('showQR');
     const shareBtn = document.getElementById('shareBtn');
     const submitContrib = document.getElementById('submitContrib');
+    const methodSelect = document.getElementById('method');
 
-    // Toggle menu
-    function openMenu(){
-      menuPanel.classList.add('open');
-      menuBtn.setAttribute('aria-expanded','true');
-      // close on outside click
-      setTimeout(()=> {
-        document.addEventListener('click', docClickCloseMenu);
-      }, 10);
-    }
-    function closeMenu(){
-      menuPanel.classList.remove('open');
-      menuBtn.setAttribute('aria-expanded','false');
-      document.removeEventListener('click', docClickCloseMenu);
-    }
-    function docClickCloseMenu(e){
-      const panel = menuPanel;
-      const btn = menuBtn;
-      if(!panel.contains(e.target) && !btn.contains(e.target)) closeMenu();
-    }
-    menuBtn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      if(menuPanel.classList.contains('open')) closeMenu(); else openMenu();
-    });
+    // Menu open/close
+    function openMenu(){ menuPanel.classList.add('open'); menuBtn.setAttribute('aria-expanded','true'); setTimeout(()=> document.addEventListener('click', docClickCloseMenu), 10); }
+    function closeMenu(){ menuPanel.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); document.removeEventListener('click', docClickCloseMenu); }
+    function docClickCloseMenu(e){ if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu(); }
+    menuBtn.addEventListener('click', (e)=>{ e.stopPropagation(); if(menuPanel.classList.contains('open')) closeMenu(); else openMenu(); });
 
-    // Menu item actions: open modals and close menu
+    // Menu actions (open modals)
     mTiers.addEventListener('click', ()=>{ closeMenu(); openModal(tiersModal); });
     mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); showBank(); });
     mLogout.addEventListener('click', ()=>{ closeMenu(); openModal(logoutModal); });
     mHelp.addEventListener('click', ()=>{ closeMenu(); openModal(helpModal); });
 
     // Generic modal open/close
-    function openModal(el){
-      el.style.display = 'flex';
-      el.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-      // focus first button inside if possible
-      const btn = el.querySelector('button');
-      if(btn) btn.focus();
-    }
-    function closeModal(el){
-      el.style.display = 'none';
-      el.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-    }
+    function openModal(el){ el.style.display = 'flex'; el.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden'; const btn = el.querySelector('button'); if(btn) btn.focus(); }
+    function closeModal(el){ el.style.display = 'none'; el.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
 
-    // Close modals on backdrop click
-    [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => {
-      if(!m) return;
-      m.addEventListener('click', (ev) => { if(ev.target === m) closeModal(m); });
-    });
+    // Close on backdrop click
+    [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => { if(!m) return; m.addEventListener('click', (ev)=> { if(ev.target === m) closeModal(m); }); });
 
-    // Logout flow
+    // Logout modal
     btnNo.addEventListener('click', ()=> closeModal(logoutModal));
     btnYes.addEventListener('click', ()=> {
-      // close modal, show spinner + redirect after 4s
       closeModal(logoutModal);
       spinnerInnerText.innerHTML = 'Logging out...<br>See you soon.';
       spinnerOverlay.style.display = 'flex';
       spinnerOverlay.setAttribute('aria-hidden','false');
-
       document.getElementById('appRoot').style.transition = 'opacity 450ms ease';
       document.getElementById('appRoot').style.opacity = '0.25';
-
-      setTimeout(()=>{
-        document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease';
-        document.body.style.backgroundColor = '#000';
-        document.body.style.opacity = '0';
-        setTimeout(()=> window.location.href = 'login.html', 350);
-      }, 4000);
+      setTimeout(()=>{ document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease'; document.body.style.backgroundColor = '#000'; document.body.style.opacity = '0'; setTimeout(()=> window.location.href = 'login.html', 350); }, 4000);
     });
 
-    // Member tiers modal
-    tiersClose.addEventListener('click', ()=> closeModal(tiersModal));
-
-    // Contribute modal toggles
-    function showBank(){ bankBlock.style.display = 'block'; usdtBlock.style.display = 'none'; methodBankBtn.classList.add('primary'); methodUSDTBtn.classList.remove('primary'); }
-    function showUSDT(){ bankBlock.style.display = 'none'; usdtBlock.style.display = 'block'; methodUSDTBtn.classList.add('primary'); methodBankBtn.classList.remove('primary'); }
+    // Contribute toggles - only Bank & USDT (TRC20)
+    function showBank(){
+      bankBlock.style.display = 'block';
+      usdtBlock.style.display = 'none';
+      methodBankBtn.classList.add('primary');
+      methodUSDTBtn.classList.remove('primary');
+      // update menu hint and main select
+      contribHint.innerText = 'Bank Deposit';
+      methodSelect.value = 'bank';
+    }
+    function showUSDT(){
+      bankBlock.style.display = 'none';
+      usdtBlock.style.display = 'block';
+      methodUSDTBtn.classList.add('primary');
+      methodBankBtn.classList.remove('primary');
+      contribHint.innerText = 'USDT (TRC20)';
+      methodSelect.value = 'usdt';
+    }
     methodBankBtn.addEventListener('click', showBank);
     methodUSDTBtn.addEventListener('click', showUSDT);
     contribClose.addEventListener('click', ()=> closeModal(contributeModal));
-    if(showQR) showQR.addEventListener('click', ()=> showToast('QR demo not available in this build.'));
 
-    // Help modal
-    helpClose.addEventListener('click', ()=> closeModal(helpModal));
-    document.getElementById('emailSupport').addEventListener('click', ()=> { window.location.href = 'mailto:support@dreambig.example?subject=Support%20Request'; });
-    document.getElementById('waSupport').addEventListener('click', ()=> { const phone = '+2348000000000'; window.open('https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...'), '_blank'); });
+    // Keep the main form select and menu hint synced when user changes the main select directly
+    methodSelect.addEventListener('change', (e)=>{
+      const v = e.target.value;
+      if(v === 'bank') contribHint.innerText = 'Bank Deposit';
+      else if(v === 'usdt') contribHint.innerText = 'USDT (TRC20)';
+    });
 
     // Copy to clipboard
     function showToast(msg){ toast.innerText = msg || 'Copied!'; toast.style.display = 'block'; toast.style.opacity = '1'; setTimeout(()=> { toast.style.transition = 'opacity 300ms ease'; toast.style.opacity = '0'; setTimeout(()=> { toast.style.display = 'none'; toast.style.transition=''; }, 300); }, 1400); }
-    document.querySelectorAll('.copy-btn').forEach(btn => {
+    copyButtons.forEach(btn => {
       btn.addEventListener('click', (e)=>{
         const key = e.currentTarget.getAttribute('data-copy');
         let text = '';
@@ -411,7 +375,10 @@
       });
     });
 
-    // Share / contribution demo
+    // QR demo
+    if(showQR) showQR.addEventListener('click', ()=> showToast('QR demo not available in this build.'));
+
+    // Share and contribution demo
     shareBtn.addEventListener('click', async ()=> {
       const url = location.href;
       const shareObj = { title:'Join me on Dream Big', text:'Sign up and start building with Dream Big', url };
@@ -419,12 +386,14 @@
     });
     submitContrib.addEventListener('click', (e)=>{ e.preventDefault(); const amt = document.getElementById('amount').value.trim(); if(!amt || isNaN(amt)){ alert('Please enter a valid amount.'); return; } alert('Contribution of $' + amt + ' recorded (demo).'); document.getElementById('amount').value=''; });
 
-    // Keyboard accessibility (Esc to close)
+    // Help actions
+    document.getElementById('emailSupport').addEventListener('click', ()=> { window.location.href = 'mailto:support@dreambig.example?subject=Support%20Request'; });
+    document.getElementById('waSupport').addEventListener('click', ()=> { const phone = '+2348000000000'; window.open('https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...'), '_blank'); });
+
+    // Accessibility: Esc closes menu/modals
     document.addEventListener('keydown', (e)=> {
       if(e.key === 'Escape'){
-        // close menu
         if(menuPanel.classList.contains('open')) closeMenu();
-        // close modals
         [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => { if(m && m.style.display === 'flex') closeModal(m); });
       }
     });
@@ -433,7 +402,10 @@
     (function init(){
       document.getElementById('refersNum').innerText = '20';
       document.getElementById('refCount').querySelector('strong')?.innerText = '20';
-      // default payment info placeholders are already in DOM (replace before production)
+      // default contribution hint remains "Contribution" until user picks a method
+      // ensure main select matches default (let's keep default as bank)
+      methodSelect.value = 'bank';
+      contribHint.innerText = 'Contribution';
     })();
   </script>
 </body>
