@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dream Big — Dashboard (Fixed Stage)</title>
+<title>Dream Big — Member Dashboard (Polished)</title>
 <style>
   :root{
     --navy:#071735;
@@ -12,156 +12,167 @@
     --gold-2:#F0C75E;
     --muted:#9fb0c7;
     --card-radius:12px;
-    --stage-w:995px;
-    --stage-h:985px;
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --stage-w:995px;  /* user requested width */
+    --stage-h:985px;  /* user requested height */
+    --sidebar-w:300px;
+    --focus: 0 10px 30px rgba(2,6,20,0.35);
+    --glass-dark: rgba(255,255,255,0.03);
+    --glass-light: rgba(7,23,53,0.04);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   }
 
-  /* Themes */
+  /* THEMES */
   body.dark{
     --bg: linear-gradient(180deg,var(--navy),var(--navy-2));
     --surface: rgba(255,255,255,0.03);
-    --text:#ffffff;
-    --glass: rgba(255,255,255,0.03);
-    --muted: #9fb0c7;
+    --text:#fff;
+    --muted:#9fb0c7;
+    --glass: var(--glass-dark);
   }
   body.light{
     --bg: linear-gradient(180deg,#f6f8fb,#eef3fb);
     --surface: #ffffff;
     --text:#071735;
-    --glass: rgba(7,23,53,0.04);
-    --muted: #6b7280;
+    --muted:#6b7280;
+    --glass: var(--glass-light);
   }
 
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
-  /* Fixed stage requested */
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden}
+  /* Stage container fixed-ish but responsive */
   .stage{
     width: var(--stage-w);
     height: var(--stage-h);
-    max-width: 100%;
-    max-height: 100%;
-    margin: 18px auto;
-    border-radius: 14px;
-    overflow: auto;
+    max-width: calc(100% - 32px);
+    max-height: calc(100% - 32px);
+    margin: 16px auto;
+    border-radius: 12px;
     display:grid;
     grid-template-columns: 1fr;
     background: transparent;
-    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
   }
 
-  /* Larger screens layout */
   @media(min-width:980px){
-    .stage { grid-template-columns: var(--sidebar-w, 300px) 1fr; gap:18px; padding:18px; }
+    .stage{ grid-template-columns: var(--sidebar-w) 1fr; gap:18px; padding:18px; }
   }
+  @media(max-width:1000px){ .stage{ width: calc(100% - 24px); height: auto; } }
 
-  /* Sidebar overlay and panel */
-  .overlay { position:fixed; inset:0; background:rgba(2,6,20,0.45); opacity:0; pointer-events:none; transition:opacity .32s ease; z-index:90; }
+  /* Overlay for mobile slide-in sidebar */
+  .overlay { position:fixed; inset:0; background:rgba(2,6,20,0.45); opacity:0; pointer-events:none; transition:opacity .32s ease; z-index:60; }
   .overlay.show { opacity:1; pointer-events:auto; }
 
+  /* Sidebar */
   .sidebar {
-    width:300px;
     background:var(--surface);
-    padding:18px;
     border-radius:12px;
-    box-shadow:0 12px 40px rgba(2,6,20,0.45);
+    box-shadow: var(--focus);
+    padding:16px;
     transform: translateX(-22px);
     opacity:0;
     transition: transform .34s cubic-bezier(.2,.9,.2,1), opacity .34s ease;
-    z-index:95;
+    z-index:70;
     position:fixed;
-    left:18px;
-    top:18px;
-    bottom:18px;
-    overflow:auto;
+    left:16px; top:16px; bottom:16px; width:var(--sidebar-w);
+    display:flex; flex-direction:column; gap:12px; overflow:auto;
   }
-  .sidebar.open { transform: translateX(0); opacity:1; }
-  /* On large screens, make sidebar static within stage */
+  .sidebar.open{ transform: translateX(0); opacity:1; }
+  /* On desktop show sidebar inline */
   @media(min-width:980px){
-    .sidebar{ position:relative; left:auto; top:auto; bottom:auto; transform:none; opacity:1; }
+    .sidebar{ position:relative; transform:none; opacity:1; left:auto; top:auto; bottom:auto; }
     .overlay{ display:none; }
   }
 
   .brand{display:flex;gap:12px;align-items:center}
-  .mark{width:54px;height:54px;border-radius:12px;background:linear-gradient(90deg,var(--gold),var(--gold-2));}
-  .brand .title{font-weight:900}
+  .mark{width:56px;height:56px;border-radius:12px;background:linear-gradient(90deg,var(--gold),var(--gold-2));flex-shrink:0}
+  .brand .label{font-weight:900;font-size:18px}
   .muted{color:var(--muted);font-weight:800;font-size:13px}
 
-  nav.main-nav{margin-top:18px;display:flex;flex-direction:column;gap:8px}
-  .nav-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer;font-weight:800}
-  .nav-item:hover{background:var(--glass)}
-
-  .tiers{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(220,174,58,0.06), rgba(255,255,255,0.01));}
+  .tiers{margin-top:10px;padding:12px;border-radius:10px;background: linear-gradient(90deg, rgba(220,174,58,0.06), rgba(255,255,255,0.01));}
   .tier-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:var(--navy);font-weight:900}
 
-  .sidebar-footer{position:absolute;left:18px;right:18px;bottom:18px}
-  .logout-btn{width:100%;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);font-weight:900;cursor:pointer}
+  nav.main-nav{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;font-weight:900;cursor:pointer;transition:background .18s,transform .12s;
+  }
+  .nav-item:hover{ background:var(--glass); transform: translateY(-1px) }
+  .nav-item.active{ background: linear-gradient(90deg, rgba(220,174,58,0.12), rgba(240,199,94,0.04)); color:var(--navy) }
+
+  .sidebar-footer{ margin-top:auto; }
+  .logout { width:100%; padding:10px; border-radius:10px; font-weight:900; cursor:pointer; background:transparent; border:1px solid rgba(255,255,255,0.06) }
 
   /* Main area */
-  .main { padding:18px; min-height:calc(var(--stage-h) - 36px); box-sizing:border-box; }
-  .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
-  .left-controls{display:flex;gap:12px;align-items:center}
-  .menu-btn{background:transparent;border:0;color:var(--text);font-weight:900;padding:8px 12px;border-radius:8px;cursor:pointer}
-  .title{font-weight:900;font-size:20px}
-  .right-controls{display:flex;gap:12px;align-items:center}
-  .theme-btn{padding:8px;border-radius:8px;border:0;background:var(--glass);cursor:pointer}
-  .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(180deg,#0c3a6b,#0b2340);display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer}
+  .main { padding:18px; overflow:auto; box-sizing:border-box; min-height: calc(var(--stage-h) - 36px); }
+  .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+  .left-controls{ display:flex; gap:12px; align-items:center }
+  .menu-btn{ background:transparent;border:0;padding:8px 12px;border-radius:8px;font-weight:900; cursor:pointer }
+  .title{ font-weight:900; font-size:20px }
+  .right-controls{ display:flex; gap:12px; align-items:center }
 
-  .profile-menu{position:absolute;right:28px;top:68px;background:var(--surface);padding:8px;border-radius:10px;display:none;box-shadow:0 12px 40px rgba(2,6,20,0.25);min-width:180px}
-  .profile-menu a{display:block;padding:8px;border-radius:8px;text-decoration:none;color:var(--text);font-weight:800}
-  .profile-menu a:hover{background:var(--glass)}
+  .theme-btn{ padding:8px;border-radius:8px; border:0;background:var(--glass); cursor:pointer; font-weight:900; }
+  .avatar{ width:44px; height:44px; border-radius:50%; background:linear-gradient(180deg,#0c3a6b,#0b2340); display:flex; align-items:center; justify-content:center; font-weight:900; cursor:pointer }
 
-  .layout{display:grid;gap:12px;grid-template-columns:1fr}
-  @media(min-width:980px){ .layout{grid-template-columns:1fr 360px} }
+  .profile-menu{ position:absolute; right:28px; top:70px; background:var(--surface); padding:8px; border-radius:10px; box-shadow:var(--focus); display:none; min-width:190px; z-index:100; }
+  .profile-menu a{ display:block; padding:8px; border-radius:8px; text-decoration:none; color:var(--text); font-weight:800 }
+  .profile-menu a:hover{ background:var(--glass) }
 
-  .card{background:var(--surface);padding:12px;border-radius:12px;box-shadow:0 12px 40px rgba(2,6,20,0.12)}
-  .kpi-row{display:flex;gap:12px;flex-wrap:wrap}
-  .kpi{min-width:160px;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent);font-weight:900}
+  .layout{ display:grid; gap:12px; grid-template-columns:1fr; }
+  @media(min-width:980px){ .layout{ grid-template-columns: 1fr 360px } }
 
-  /* placed layout per user request:
-     - top row: Active Projects + Total Contribution
-     - below them: Referrals + Wallet
-  */
-  .kpi-top { display:flex; gap:12px; margin-bottom:12px; }
-  .kpi-bottom { display:flex; gap:12px; margin-bottom:12px; }
+  .card{ background:var(--surface); padding:12px; border-radius:12px; box-shadow: 0 12px 40px rgba(2,6,20,0.12); }
+  .kpi-row{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px }
+  .kpi{ min-width:160px; padding:12px; border-radius:10px; background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent); font-weight:900 }
 
-  .projects{display:flex;flex-direction:column;gap:12px;margin-top:6px}
-  .project{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px}
-  .project .meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .progress{height:12px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden;margin-top:8px}
-  .progress i{display:block;height:100%;width:0%;transition:width .8s cubic-bezier(.2,.9,.2,1)}
+  /* user asked: top row only Active Projects & Total Contribution; referrals & wallet below */
+  .kpi-top{ display:flex; gap:12px; margin-bottom:12px }
+  .kpi-bottom{ display:flex; gap:12px; margin-bottom:12px }
 
-  .muted-sm{color:var(--muted);font-weight:800;font-size:13px}
+  .projects{ display:flex; flex-direction:column; gap:12px; margin-top:8px }
+  .project{ background: rgba(255,255,255,0.02); padding:12px; border-radius:10px }
+  .project .meta{ display:flex; justify-content:space-between; align-items:center }
+  .progress{ height:12px; background: rgba(255,255,255,0.03); border-radius:999px; overflow:hidden; margin-top:8px }
+  .progress i{ display:block; height:100%; width:0%; transition:width .9s cubic-bezier(.2,.9,.2,1) }
 
-  /* form controls */
-  input, select { padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text) }
+  .muted-sm{ color:var(--muted); font-weight:800; font-size:13px }
 
-  footer.site-footer{margin-top:12px;text-align:center;color:var(--muted);font-weight:800;padding:10px}
+  input, select { padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text) }
 
-  /* responsive smaller than stage: allow full width and auto-height */
-  @media(max-width:1000px){
-    .stage{ width: calc(100% - 24px); height: auto; margin:12px; border-radius:12px; }
-    .sidebar{ left:8px; top:8px; bottom:8px; width:84%; max-width:380px; border-radius:12px; }
-  }
+  .btn { background:linear-gradient(90deg,var(--gold),var(--gold-2)); color:var(--navy); padding:10px 12px; border-radius:10px; border:0; font-weight:900; cursor:pointer; box-shadow:0 8px 24px rgba(2,6,20,0.12) }
+  .btn:hover{ transform:translateY(-2px) }
+
+  /* toast */
+  .toast-wrap{ position: fixed; top:18px; right:18px; display:flex; flex-direction:column; gap:8px; z-index:200; max-width:360px }
+  .toast{ background: #0b2038; color: #fff; padding:12px 14px; border-radius:10px; box-shadow:var(--focus); font-weight:800; opacity:0; transform:translateY(-8px); transition:opacity .28s, transform .28s }
+  .toast.show{ opacity:1; transform:translateY(0) }
+  .toast.success{ background: linear-gradient(90deg,#1b5e20,#2e7d32) }
+  .toast.info{ background: linear-gradient(90deg,#1f4f86,#2f66a6) }
+
+  footer.site-footer{ text-align:center; color:var(--muted); font-weight:800; padding:12px; margin-top:12px }
+
+  /* Focus outlines */
+  :focus{ outline: 3px solid rgba(220,174,58,0.18); outline-offset:3px; border-radius:8px }
+
 </style>
 </head>
 <body class="dark">
 
-  <!-- overlay and sidebar -->
+  <!-- overlay (mobile) -->
   <div id="overlay" class="overlay" aria-hidden="true"></div>
 
-  <aside id="sidebar" class="sidebar" aria-hidden="true">
-    <div class="brand">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar" aria-hidden="true" role="navigation" aria-label="Primary">
+    <div class="brand" style="gap:12px">
       <div class="mark" aria-hidden="true"></div>
       <div>
-        <div class="title">Dream Big Project</div>
+        <div class="label">Dream Big Project</div>
         <div class="muted">Member Dashboard</div>
       </div>
     </div>
 
-    <div class="tiers" role="region" aria-label="Member tier summary">
+    <div class="tiers" role="region" aria-label="Member tier">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div class="muted">Your Tier</div>
+          <div class="muted">Your tier</div>
           <div style="font-weight:900">Pathfinder <span class="tier-badge">PRO</span></div>
         </div>
         <div style="text-align:right">
@@ -170,36 +181,35 @@
         </div>
       </div>
       <div style="height:8px"></div>
-      <div class="progress" style="height:12px"><i style="width:33%;background:linear-gradient(90deg,var(--gold),var(--gold-2))"></i></div>
+      <div class="progress"><i style="width:33%; background: linear-gradient(90deg,var(--gold),var(--gold-2))"></i></div>
       <div style="height:8px"></div>
-      <button id="viewTiersBtn" class="btn">View Tier Details</button>
+      <button id="viewTiersBtn" class="btn" aria-expanded="false">View Tier Details</button>
     </div>
 
-    <nav class="main-nav" role="navigation" aria-label="Main">
-      <div class="nav-item" data-target="dashboard">🏠 <div>Dashboard</div></div>
-      <div class="nav-item" data-target="projects">📁 <div>My Projects</div></div>
-      <div class="nav-item" data-target="tracker">📊 <div>Project Tracker</div></div>
-      <div class="nav-item" data-target="referrals">🔗 <div>Referrals & Rewards</div></div>
-      <div class="nav-item" data-target="wallet">💼 <div>Wallet</div></div>
-      <div class="nav-item" data-target="docs">📄 <div>Documents</div></div>
-      <div class="nav-item" data-target="settings">⚙️ <div>Settings & Privacy</div></div>
-      <div class="nav-item" data-target="help">❓ <div>Help & Support</div></div>
+    <nav class="main-nav" role="navigation" aria-label="Main navigation">
+      <div class="nav-item active" data-target="dashboard" tabindex="0">🏠 <div>Dashboard</div></div>
+      <div class="nav-item" data-target="projects" tabindex="0">📁 <div>My Projects</div></div>
+      <div class="nav-item" data-target="tracker" tabindex="0">📊 <div>Project Tracker</div></div>
+      <div class="nav-item" data-target="referrals" tabindex="0">🔗 <div>Referrals & Rewards</div></div>
+      <div class="nav-item" data-target="wallet" tabindex="0">💼 <div>Wallet</div></div>
+      <div class="nav-item" data-target="docs" tabindex="0">📄 <div>Documents</div></div>
+      <div class="nav-item" data-target="settings" tabindex="0">⚙️ <div>Settings & Privacy</div></div>
+      <div class="nav-item" data-target="help" tabindex="0">❓ <div>Help & Support</div></div>
     </nav>
 
     <div class="sidebar-footer">
-      <button id="sidebarLogout" class="logout-btn">Logout</button>
+      <button id="sidebarLogout" class="logout">Logout</button>
     </div>
   </aside>
 
-  <!-- stage -->
-  <div class="stage" role="application" aria-label="Dream Big Dashboard">
+  <!-- Stage & main -->
+  <div class="stage">
     <main class="main" role="main">
-
-      <div class="topbar">
+      <div class="topbar" role="banner">
         <div class="left-controls">
-          <button id="menuBtn" class="menu-btn" aria-controls="sidebar" aria-expanded="false">☰</button>
+          <button id="menuBtn" class="menu-btn" aria-controls="sidebar" aria-expanded="false" title="Open menu">☰</button>
           <div>
-            <div class="title">Dashboard</div>
+            <div class="title" id="pageTitle">Dashboard</div>
             <div class="muted-sm" id="todayLabel">—</div>
           </div>
         </div>
@@ -218,10 +228,9 @@
       </div>
 
       <div class="layout">
-        <!-- left column -->
         <section>
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="card" aria-labelledby="overviewTitle">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
               <div>
                 <div style="font-weight:900">Welcome back, <span id="displayName">Member</span></div>
                 <div class="muted-sm">Pathfinder • Active</div>
@@ -231,19 +240,17 @@
 
             <div style="height:12px"></div>
 
-            <!-- TOP KPIs: Active Projects + Total Contribution -->
+            <!-- Top KPIs -->
             <div class="kpi-top">
               <div class="kpi"><div class="muted-sm">Active Projects</div><div style="font-size:18px;font-weight:900" id="kActive">0</div></div>
               <div class="kpi"><div class="muted-sm">Total Contribution</div><div style="font-size:18px;font-weight:900" id="kTotal">$0</div></div>
             </div>
 
-            <!-- SECONDARY KPIs: Referrals + Wallet (moved below) -->
+            <!-- Secondary KPIs below -->
             <div class="kpi-bottom">
               <div class="kpi"><div class="muted-sm">Referrals</div><div style="font-size:18px;font-weight:900" id="kRef">0</div></div>
               <div class="kpi"><div class="muted-sm">Wallet Balance</div><div style="font-size:18px;font-weight:900" id="kWallet">$0</div></div>
             </div>
-
-            <div style="height:12px"></div>
 
             <div class="projects" id="projectsList" aria-live="polite"></div>
 
@@ -251,16 +258,15 @@
 
             <div class="muted-sm">Add Contribution / Project</div>
             <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-              <input id="projName" placeholder="Project name" />
-              <input id="projAmt" type="number" placeholder="Amount USD" value="250" />
-              <select id="projTier"><option>Seed</option><option>Spark</option><option>Builder</option><option>Creator</option><option>Visionary</option><option>Pathfinder</option></select>
-              <select id="projPay"><option>Bank Deposit</option><option>USDT</option></select>
+              <input id="projName" placeholder="Project name" aria-label="Project name" />
+              <input id="projAmt" type="number" placeholder="Amount USD" aria-label="Amount in USD" value="250" />
+              <select id="projTier" aria-label="Project tier"><option>Seed</option><option>Spark</option><option>Builder</option><option>Creator</option><option>Visionary</option><option>Pathfinder</option></select>
+              <select id="projPay" aria-label="Payment method"><option>Bank Deposit</option><option>USDT</option></select>
               <button id="projSubmit" class="btn">Submit</button>
             </div>
           </div>
         </section>
 
-        <!-- right column: single tracker panel -->
         <aside>
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center">
@@ -277,7 +283,7 @@
             </div>
             <div style="height:8px"></div>
             <div style="display:flex;gap:8px">
-              <input id="referralLink" value="https://dreambigpro.com/r/PRIN1234" />
+              <input id="referralLink" value="https://dreambigpro.com/r/PRIN1234" aria-label="Referral link"/>
               <button id="copyBtn" class="btn">Copy</button>
             </div>
             <div style="height:10px"></div>
@@ -291,12 +297,15 @@
         </aside>
       </div>
 
-      <footer class="site-footer">© 2026 Dream Big Project. All rights reserved.</footer>
+      <footer class="site-footer" role="contentinfo">© 2026 Dream Big Project. All rights reserved.</footer>
     </main>
   </div>
 
+  <!-- Toast container -->
+  <div class="toast-wrap" id="toasts" aria-live="polite" aria-atomic="true"></div>
+
 <script>
-  // Elements
+  /* ============ Utility & UI helpers ============ */
   const overlay = document.getElementById('overlay');
   const sidebar = document.getElementById('sidebar');
   const menuBtn = document.getElementById('menuBtn');
@@ -305,48 +314,72 @@
   const profileMenu = document.getElementById('profileMenu');
   const projSubmit = document.getElementById('projSubmit');
   const trackerArea = document.getElementById('trackerArea');
+  const toasts = document.getElementById('toasts');
 
-  // Data
-  const projects = [];
-  let referrals = 14;
-  let walletBalance = 0;
-
-  // Utilities
-  function addMonths(date, months){ const d=new Date(date); d.setMonth(d.getMonth()+months); return d; }
-  function pct(start, end){ const s=new Date(start), e=new Date(end), n=new Date(); if(n<=s) return 0; if(n>=e) return 100; return Math.floor(((n-s)/(e-s))*100); }
-  function countdown(end){ const n=new Date(), e=new Date(end); if(n>=e) return 'Matured'; const diff = e - n; const days = Math.floor(diff/(1000*60*60*24)); return Math.floor(days/30) + 'm ' + (days%30) + 'd'; }
-  function progressColor(p){
-    if(p <= 40) return '#D9534F'; // red
-    if(p <= 60) return '#F0AD4E'; // yellow
-    return '#28A745'; // green
+  // small helpers
+  function toast(message, type='info', timeout=2800){
+    const t = document.createElement('div'); t.className = 'toast ' + (type==='success' ? 'success' : 'info'); t.textContent = message;
+    toasts.appendChild(t);
+    // show
+    requestAnimationFrame(()=> t.classList.add('show'));
+    setTimeout(()=> { t.classList.remove('show'); setTimeout(()=> t.remove(), 320); }, timeout);
   }
 
-  // Theme (persist)
+  function addMonths(d, m){ const dt=new Date(d); dt.setMonth(dt.getMonth()+m); return dt; }
+  function pct(start, end){ const s=new Date(start), e=new Date(end), n=new Date(); if(n<=s) return 0; if(n>=e) return 100; return Math.floor(((n-s)/(e-s))*100) }
+  function countdownText(end){ const n=new Date(), e=new Date(end); if(n>=e) return 'Matured'; const diff = e - n; const days = Math.floor(diff / (1000*60*60*24)); return Math.floor(days/30) + 'm ' + (days%30) + 'd' }
+  function progressColor(p){ if(p<=40) return '#D9534F'; if(p<=60) return '#F0AD4E'; return '#28A745' }
+
+  /* ===== Theme persisted ===== */
   const initialTheme = localStorage.getItem('db-theme') || 'dark';
   setTheme(initialTheme);
-  function setTheme(t){
+  function setTheme(theme){
     document.body.classList.remove('dark','light');
-    document.body.classList.add(t);
-    localStorage.setItem('db-theme', t);
-    themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
+    document.body.classList.add(theme);
+    localStorage.setItem('db-theme', theme);
+    themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
   }
   themeToggle.addEventListener('click', ()=> setTheme(document.body.classList.contains('dark') ? 'light' : 'dark'));
 
-  // Menu (open/close)
-  function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true'); }
-  function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','true'); menuBtn.setAttribute('aria-expanded','false'); }
-  menuBtn.addEventListener('click', ()=> { if(sidebar.classList.contains('open')) closeSidebar(); else openSidebar(); } );
+  /* ===== Sidebar open/close behavior (mobile & desktop safe) ===== */
+  function openSidebar(){
+    sidebar.classList.add('open'); overlay.classList.add('show'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeSidebar(){
+    sidebar.classList.remove('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','true'); menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click', ()=> { if(sidebar.classList.contains('open')) closeSidebar(); else openSidebar(); });
   overlay.addEventListener('click', closeSidebar);
 
-  // Profile menu
-  profileBtn.addEventListener('click', (e)=>{ e.stopPropagation(); const vis = profileMenu.style.display === 'block'; profileMenu.style.display = vis ? 'none' : 'block'; profileMenu.setAttribute('aria-hidden', String(!vis)); });
-  document.addEventListener('click', (e)=>{ if(!profileMenu.contains(e.target) && !profileBtn.contains(e.target)){ profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true'); } });
+  // On larger screens keep sidebar visible (static)
+  function adjustSidebarForScreen(){ if(window.innerWidth >= 980){ sidebar.classList.add('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true'); } else { closeSidebar(); } }
+  window.addEventListener('resize', adjustSidebarForScreen);
+  adjustSidebarForScreen();
 
-  // Logout handlers
-  document.getElementById('sidebarLogout').addEventListener('click', ()=> window.location.href='login.html');
-  document.getElementById('profileLogout').addEventListener('click', (e)=>{ e.preventDefault(); window.location.href='login.html' });
+  /* ===== Profile dropdown ===== */
+  profileBtn.addEventListener('click', (e)=> { e.stopPropagation(); profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block'; profileMenu.setAttribute('aria-hidden', profileMenu.style.display === 'block' ? 'false' : 'true'); });
+  document.addEventListener('click', (e)=> { if(!profileMenu.contains(e.target) && !profileBtn.contains(e.target)){ profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true'); } });
 
-  // Render functions
+  document.getElementById('profileLogout').addEventListener('click', (e)=> { e.preventDefault(); window.location.href = 'login.html'; });
+
+  /* ===== Polished nav behavior ===== */
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click', ()=> {
+      // set active
+      document.querySelectorAll('.nav-item').forEach(n=> n.classList.remove('active'));
+      item.classList.add('active');
+      // update central title
+      const label = item.textContent.trim();
+      document.getElementById('pageTitle').textContent = label;
+      // close sidebar on mobile
+      if(window.innerWidth < 980) closeSidebar();
+    });
+    item.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); } });
+  });
+
+  /* ===== Data + Rendering ===== */
+  const projects = [];
+  let referrals = 14, walletBalance = 0;
   function renderOverview(){
     document.getElementById('kActive').textContent = projects.length;
     const total = projects.reduce((s,p)=> s + Number(p.amount), 0);
@@ -358,73 +391,85 @@
 
   function renderProjects(){
     const list = document.getElementById('projectsList'); list.innerHTML = '';
-    trackerArea.innerHTML = '';
-    projects.forEach((p, idx) => {
-      const per = pct(p.start, p.maturity);
+    const track = document.getElementById('trackerArea'); track.innerHTML = '';
+    projects.forEach((p)=>{
+      const per = pct(p.start,p.maturity);
       // project card
-      const item = document.createElement('div'); item.className='project';
-      item.innerHTML = `
+      const card = document.createElement('div'); card.className = 'project';
+      card.innerHTML = `
         <div class="meta">
-          <div>
-            <strong>${p.name}</strong>
-            <div class="muted-sm">${p.tier} • $${p.amount}</div>
-          </div>
-          <div style="text-align:right">
-            <div class="muted-sm">Matures in</div>
-            <strong>${countdown(p.maturity)}</strong>
-          </div>
+          <div><strong>${p.name}</strong><div class="muted-sm">${p.tier} • $${p.amount}</div></div>
+          <div style="text-align:right"><div class="muted-sm">Matures in</div><strong>${countdownText(p.maturity)}</strong></div>
         </div>
         <div class="progress"><i style="width:${per}%; background:${progressColor(per)}"></i></div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px">
-          <div class="muted-sm">${per}%</div>
-          <div class="muted-sm">Target: $${p.amount*10}</div>
-        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px"><div class="muted-sm">${per}%</div><div class="muted-sm">Target: $${p.amount*10}</div></div>
       `;
-      list.appendChild(item);
+      list.appendChild(card);
 
-      // tracker card (single tracker area will contain one card per project; user asked 1 tracker but allow multiple if multiple projects)
-      const tr = document.createElement('div'); tr.className='card'; tr.style.marginBottom='10px';
-      tr.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${p.name}</strong><div class="muted-sm">${p.tier}</div></div><div>${per}%</div></div><div style="height:8px"></div><div class="progress"><i style="width:${per}%; background:${progressColor(per)}"></i></div><div class="muted-sm" style="margin-top:6px">${countdown(p.maturity)}</div>`;
-      trackerArea.appendChild(tr);
+      // tracker card (single panel with one card per project)
+      const tr = document.createElement('div'); tr.className = 'card'; tr.style.marginBottom='10px';
+      tr.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${p.name}</strong><div class="muted-sm">${p.tier}</div></div><div><span style="padding:6px 10px;border-radius:999px;background:${per>=61? '#e8f7ea': per>=41? '#fffaf0':'#fdecea'};color:${per>=61? '#19692f':per>=41? '#b36a00':'#9b2b2b'};font-weight:900">${per<=40?'EARLY':per<=60?'MID':'MATURE'}</span></div></div><div style="height:8px"></div><div class="progress"><i style="width:${per}%; background:${progressColor(per)}"></i></div><div class="muted-sm" style="margin-top:6px">${countdownText(p.maturity)}</div>`;
+      track.appendChild(tr);
     });
     renderOverview();
   }
 
-  // seed demo
+  // seed sample project
   (function seed(){
     const now = new Date();
-    projects.push({name:'Agro Processing', amount:250, tier:'Spark', start:addMonths(now,-6).toISOString(), maturity:addMonths(now,18).toISOString()});
+    projects.push({ name:'Agro Processing Unit', amount:250, tier:'Spark', start:addMonths(now,-6).toISOString(), maturity:addMonths(now,18).toISOString() });
     renderProjects();
   })();
 
-  // add project (UI only)
+  /* ===== Add project (with toast) ===== */
   document.getElementById('projSubmit').addEventListener('click', ()=>{
     const name = document.getElementById('projName').value || 'Untitled';
     const amt = Number(document.getElementById('projAmt').value) || 0;
-    if(amt <= 0){ alert('Enter a valid amount'); return; }
+    if(amt <= 0){ toast('Enter a valid contribution amount', 'info'); return; }
     const tier = document.getElementById('projTier').value;
     const start = new Date(), maturity = addMonths(start,24);
-    projects.unshift({name, amount:amt, tier, start:start.toISOString(), maturity:maturity.toISOString()});
-    alert('Contribution recorded — project added to your dashboard (simulation).');
-    document.getElementById('projName').value = '';
+    projects.unshift({ name, amount:amt, tier, start:start.toISOString(), maturity:maturity.toISOString() });
     renderProjects();
+    toast('Contribution recorded — project added to your dashboard', 'success');
+    document.getElementById('projName').value = '';
   });
 
   // copy referral
-  document.getElementById('copyBtn').addEventListener('click', ()=>{
+  document.getElementById('copyBtn').addEventListener('click', ()=> {
     const el = document.getElementById('referralLink'); el.select(); document.execCommand('copy');
-    const b = document.getElementById('copyBtn'); b.textContent = 'Copied'; setTimeout(()=> b.textContent = 'Copy',1200);
+    toast('Referral link copied', 'success');
   });
 
-  // set today label
+  // view tiers action
+  document.getElementById('viewTiersBtn').addEventListener('click', ()=> {
+    toast('Opening Tier Details (UI only)', 'info', 2000);
+  });
+
+  // sidebar logout
+  document.getElementById('sidebarLogout').addEventListener('click', ()=> { window.location.href = 'login.html'; });
+
+  // helper to set today
   document.getElementById('todayLabel').textContent = new Date().toLocaleDateString();
 
-  // ensure sidebar is hidden by default on small screens
-  function ensureSidebarState(){
-    if(window.innerWidth < 980){ closeSidebar(); } else { sidebar.classList.add('open'); overlay.classList.remove('show'); }
+  // ensure sidebar state on load/resize
+  function readySidebar(){
+    if(window.innerWidth >= 980){
+      sidebar.classList.add('open');
+      overlay.classList.remove('show');
+      sidebar.setAttribute('aria-hidden','false');
+      menuBtn.setAttribute('aria-expanded','true');
+    } else {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      sidebar.setAttribute('aria-hidden','true');
+      menuBtn.setAttribute('aria-expanded','false');
+    }
   }
-  window.addEventListener('resize', ensureSidebarState);
-  ensureSidebarState();
+  window.addEventListener('resize', readySidebar);
+  readySidebar();
+
+  // small keyboard nav support for menu button
+  menuBtn.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); menuBtn.click(); } });
 
 </script>
 </body>
