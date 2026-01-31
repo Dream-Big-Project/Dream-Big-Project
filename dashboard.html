@@ -7,16 +7,9 @@
   <meta name="theme-color" content="#071a2a" />
   <style>
     :root{
-      --bg:#061228;
-      --card:#0f2a44;
-      --muted:#9fb3c7;
-      --accent:#f6c44b;
-      --danger:#e14b4b;
-      --glass: rgba(255,255,255,0.03);
-      --radius:14px;
-      --gap:12px;
-      --text:#eaf6ff;
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      --bg:#061228; --card:#0f2a44; --muted:#9fb3c7; --accent:#f6c44b; --danger:#e14b4b;
+      --glass: rgba(255,255,255,0.03); --radius:14px; --gap:12px; --text:#eaf6ff;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:linear-gradient(180deg,#021226 0%, #071a2a 100%);color:var(--text);-webkit-tap-highlight-color:transparent}
@@ -26,42 +19,36 @@
     .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#042137;font-weight:800;font-size:16px}
     .title{font-size:16px;font-weight:700}
     .meta{font-size:12px;color:var(--muted)}
-    .nav-actions{display:flex;align-items:center;gap:8px}
-    button.icon-btn{background:var(--card);padding:8px;border-radius:10px;border:none;color:var(--muted);font-weight:600}
-    button.logout-btn{background:linear-gradient(180deg,var(--accent),#d9a83b);color:#042137;padding:8px 12px;border-radius:10px;border:none;font-weight:700}
-    .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;position:relative}
-    .profile-menu{position:absolute;right:0;top:58px;background:var(--card);padding:8px;border-radius:10px;min-width:160px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:30}
-    .profile-menu button{display:block;width:100%;text-align:left;padding:8px;border-radius:8px;border:none;background:transparent;color:var(--text)}
+    /* single menu button */
+    .menu-btn{width:44px;height:44px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;border:none;color:var(--muted);font-weight:800}
+    /* floating menu panel (hidden by default) */
+    .menu-panel{position:absolute;top:72px;right:16px;width:230px;background:linear-gradient(180deg,#072235,#0f2a44);border-radius:12px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);transform-origin:top right;opacity:0;pointer-events:none;transform:scale(.95) translateY(-6px);transition:all 180ms ease}
+    .menu-panel.open{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
+    .menu-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700}
+    .menu-item:hover{background:rgba(255,255,255,0.02);color:var(--text)}
+    .menu-item .hint{font-size:12px;color:var(--muted);font-weight:600}
+    /* profile circle kept on header for identity but menu is primary nav */
+    .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:default}
     main{flex:1;overflow:auto;padding-bottom:120px}
     .welcome{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:16px}
-    .welcome h2{margin:0;font-size:15px}
     .kpis{display:flex;gap:8px;margin-top:12px}
     .kpi{flex:1;padding:10px;background:var(--card);border-radius:12px;text-align:left}
     .kpi .num{font-size:18px;font-weight:800}
     .card{background:var(--card);padding:14px;border-radius:16px;margin-top:14px}
-    .project-title{display:flex;justify-content:space-between;align-items:center}
     .progress{height:10px;background:rgba(255,255,255,0.04);border-radius:10px;margin-top:10px;overflow:hidden}
     .progress > i{display:block;height:100%;background:linear-gradient(90deg,#ff7a5a,#f6c44b);width:25%}
     .form-row{display:flex;gap:8px;margin-top:12px}
     .input,select{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
     .submit{background:var(--accent);color:#042137;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
     .tracker-title{font-weight:800}
-
-    /* NEW: main nav bar (mobile friendly) */
-    .main-nav{display:flex;gap:8px;align-items:center}
-    .nav-item{background:var(--card);padding:8px 10px;border-radius:10px;color:var(--muted);font-weight:700;border:none}
-    .nav-item.primary{background:linear-gradient(90deg,var(--accent),#e0b545);color:#042137}
-    .nav-item.small{padding:8px;border-radius:10px;font-size:13px}
-
-    /* Sticky referrals bottom */
+    /* bottom referral bar */
     .bottom-bar{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:20}
     .ref-count{font-weight:800;font-size:16px}
     .ref-note{font-size:12px;color:var(--muted)}
     .btn{padding:10px 12px;border-radius:10px;border:none}
     .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
     .btn.warn{background:var(--danger);color:white}
-
-    /* Modal styling reused for several modals */
+    /* shared modal */
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:60}
     .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
     .modal h3{margin:0 0 6px 0}
@@ -71,8 +58,7 @@
     .modal .copy{background:rgba(255,255,255,0.04);padding:10px;border-radius:8px;flex:1;color:var(--muted);font-size:13px;word-break:break-all}
     .modal .copy .label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
     .modal .copy-btn{margin-left:8px;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#042137;font-weight:700}
-
-    /* Spinner overlay (segmented & animated) */
+    /* spinner overlay */
     .spinner-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:70}
     .spinner-panel{display:flex;flex-direction:column;align-items:center;gap:14px;background:rgba(2,18,30,0.92);padding:22px;border-radius:12px;backdrop-filter:blur(6px)}
     .spinner{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;position:relative}
@@ -89,17 +75,14 @@
     }
     .spinner .hole{width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#061226,#0a2938);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:6px;line-height:1.1}
     @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* simple toast */
     .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:rgba(0,0,0,0.7);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:80;font-weight:700}
-
     @media(min-width:540px){.app{padding:20px}.card{padding:18px}.logo{width:48px;height:48px}}
   </style>
 </head>
 <body>
   <div class="app" id="appRoot" aria-live="polite">
 
-    <!-- HEADER (with main nav items) -->
+    <!-- HEADER -->
     <header>
       <div class="brand" role="banner">
         <div class="logo" aria-hidden="true">DB</div>
@@ -109,22 +92,23 @@
         </div>
       </div>
 
-      <!-- NAV ACTIONS: Member Tiers | Contribute | Logout | Help & Support -->
-      <div class="nav-actions main-nav" role="navigation" aria-label="Main navigation">
-        <button class="nav-item small" id="tiersBtn" aria-haspopup="dialog">Member Tiers</button>
-        <button class="nav-item primary" id="contributeBtn" aria-haspopup="dialog">Contribute</button>
-        <button class="nav-item small" id="navLogoutBtn" aria-haspopup="dialog">Logout</button>
-        <button class="nav-item small" id="helpBtn" aria-haspopup="dialog">Help</button>
+      <!-- Menu button -->
+      <div style="position:relative">
+        <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">
+          ☰
+        </button>
 
-        <!-- profile circle (keeps profile menu) -->
-        <div class="profile" id="profileCircle" aria-haspopup="true" aria-expanded="false" title="Profile">
-          PD
-          <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
-            <button id="profileView">View Profile</button>
-            <button id="profileLogoutBtn">Logout</button>
-          </div>
+        <!-- Menu panel -->
+        <div class="menu-panel" id="menuPanel" role="menu" aria-hidden="true">
+          <button class="menu-item" id="mTiers" role="menuitem"><span>Member Tiers</span><span class="hint">Upgrade</span></button>
+          <button class="menu-item" id="mContribute" role="menuitem"><span>Contribute</span><span class="hint">Bank / USDT</span></button>
+          <button class="menu-item" id="mLogout" role="menuitem"><span>Logout</span><span class="hint">Sign out</span></button>
+          <button class="menu-item" id="mHelp" role="menuitem"><span>Help & Support</span><span class="hint">Contact</span></button>
         </div>
       </div>
+
+      <!-- small profile circle (keeps identity) -->
+      <div class="profile" title="Profile">PD</div>
     </header>
 
     <!-- MAIN -->
@@ -132,37 +116,20 @@
       <section class="welcome" aria-labelledby="welcomeTitle">
         <h2 id="welcomeTitle">Welcome back, Member</h2>
         <div class="kpis" role="region" aria-label="Key performance indicators">
-          <div class="kpi" title="Active projects">
-            <div class="num">1</div>
-            <div style="font-size:12px;color:var(--muted)">Active Projects</div>
-          </div>
-          <div class="kpi" title="Total contribution">
-            <div class="num">$250</div>
-            <div style="font-size:12px;color:var(--muted)">Total Contribution</div>
-          </div>
-          <div class="kpi" title="Referrals">
-            <div class="num" id="refersNum">20</div>
-            <div style="font-size:12px;color:var(--muted)">Referrals</div>
-          </div>
+          <div class="kpi" title="Active projects"><div class="num">1</div><div style="font-size:12px;color:var(--muted)">Active Projects</div></div>
+          <div class="kpi" title="Total contribution"><div class="num">$250</div><div style="font-size:12px;color:var(--muted)">Total Contribution</div></div>
+          <div class="kpi" title="Referrals"><div class="num" id="refersNum">20</div><div style="font-size:12px;color:var(--muted)">Referrals</div></div>
         </div>
       </section>
 
       <article class="card" aria-labelledby="projectHead">
         <div class="project-title" id="projectHead">
-          <div>
-            <div style="font-weight:800">Agro Processing</div>
-            <div style="font-size:12px;color:var(--muted)">Spark • $250</div>
-          </div>
+          <div><div style="font-weight:800">Agro Processing</div><div style="font-size:12px;color:var(--muted)">Spark • $250</div></div>
           <div style="text-align:right;color:var(--muted)"><div style="font-weight:800">Matures in</div><div>18m</div></div>
         </div>
 
-        <div class="progress" aria-hidden="true" style="margin-top:12px">
-          <i style="width:25%"></i>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:10px;color:var(--muted);font-size:13px">
-          <div>25%</div>
-          <div>Target: $1,000</div>
-        </div>
+        <div class="progress" aria-hidden="true" style="margin-top:12px"><i style="width:25%"></i></div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;color:var(--muted);font-size:13px"><div>25%</div><div>Target: $1,000</div></div>
 
         <div class="form-row" style="margin-top:14px">
           <input class="input" id="projName" placeholder="Project name" aria-label="Project name">
@@ -191,10 +158,10 @@
       </div>
     </div>
 
-    <!-- TOAST -->
+    <!-- Toast -->
     <div class="toast" id="toast">Copied!</div>
 
-    <!-- MODALS: Logout confirm -->
+    <!-- Modals (logout, contribute, tiers, help) -->
     <div class="modal-backdrop" id="logoutModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="logoutTitle">
         <h3 id="logoutTitle">Confirm Logout</h3>
@@ -206,21 +173,18 @@
       </div>
     </div>
 
-    <!-- MODAL: Contribute (Bank or USDT TRC20) -->
     <div class="modal-backdrop" id="contributeModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="contribTitle">
         <h3 id="contribTitle">Contribute</h3>
-        <p>Choose your method and copy the payment details to complete the transfer.</p>
+        <p>Choose a method then copy the payment details to complete your transfer.</p>
 
         <div class="row" style="margin-top:8px">
           <button class="btn ghost" id="methodBank">Bank Deposit</button>
           <button class="btn ghost" id="methodUSDT">USDT (TRC20)</button>
         </div>
 
-        <!-- Bank info -->
         <div id="bankBlock" style="margin-top:12px;">
-          <div class="copy">
-            <span class="label">Bank: FIRST NATIONAL BANK</span>
+          <div class="copy"><span class="label">Bank: FIRST NATIONAL BANK</span>
             <div>Account Name: DREAM BIG PROJECT</div>
             <div>Account Number: <strong id="bankAcct">0123456789</strong></div>
             <div>Sort Code: <strong id="sortCode">001122</strong></div>
@@ -231,10 +195,8 @@
           </div>
         </div>
 
-        <!-- USDT TRC20 info -->
         <div id="usdtBlock" style="margin-top:12px;display:none">
-          <div class="copy">
-            <span class="label">TRC20 Wallet (USDT)</span>
+          <div class="copy"><span class="label">TRC20 Wallet (USDT)</span>
             <div>Wallet Address:</div>
             <div id="walletAddr" style="word-break:break-all"><strong>TXxExampleWalletAddress1234567890abcdef</strong></div>
           </div>
@@ -250,7 +212,6 @@
       </div>
     </div>
 
-    <!-- MODAL: Member Tiers -->
     <div class="modal-backdrop" id="tiersModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="tiersTitle">
         <h3 id="tiersTitle">Member Tiers</h3>
@@ -261,53 +222,46 @@
             <div style="font-size:13px;color:var(--muted)">Access to starter projects. Referrals: 0–19.</div>
             <div style="margin-top:8px"><button class="btn ghost">Upgrade</button></div>
           </div>
-
           <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
             <div style="font-weight:800">Builder (Active)</div>
             <div style="font-size:13px;color:var(--muted)">More project access. Referrals: 20–49.</div>
             <div style="margin-top:8px"><button class="btn ghost">Upgrade</button></div>
           </div>
-
           <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
             <div style="font-weight:800">Leader (Premium)</div>
             <div style="font-size:13px;color:var(--muted)">Priority deals, staking benefits. Referrals: 50+</div>
             <div style="margin-top:8px"><button class="btn ghost">Contact to Upgrade</button></div>
           </div>
         </div>
-
         <div class="actions" style="margin-top:12px">
           <button class="btn ghost" id="tiersClose">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- MODAL: Help & Support -->
     <div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="helpTitle">
         <h3 id="helpTitle">Help & Support</h3>
         <p>We’re here to help. Choose a channel below.</p>
-
         <div style="margin-top:8px">
           <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
             <div style="font-weight:800">Email</div>
             <div style="font-size:13px;color:var(--muted)">support@dreambig.example</div>
             <div style="margin-top:8px"><button class="btn ghost" id="emailSupport">Send Email</button></div>
           </div>
-
           <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
             <div style="font-weight:800">WhatsApp</div>
             <div style="font-size:13px;color:var(--muted)">+234 800 000 0000</div>
             <div style="margin-top:8px"><button class="btn ghost" id="waSupport">Open WhatsApp</button></div>
           </div>
         </div>
-
         <div class="actions" style="margin-top:12px">
           <button class="btn ghost" id="helpClose">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- SPINNER OVERLAY -->
+    <!-- Spinner overlay -->
     <div class="spinner-overlay" id="spinnerOverlay" aria-hidden="true">
       <div class="spinner-panel" role="status" aria-live="polite">
         <div class="spinner" aria-hidden="true">
@@ -320,22 +274,19 @@
   </div>
 
   <script>
-    /* -------------------------
-       Elements
-       ------------------------- */
-    const tiersBtn = document.getElementById('tiersBtn');
-    const contributeBtn = document.getElementById('contributeBtn');
-    const navLogoutBtn = document.getElementById('navLogoutBtn');
-    const helpBtn = document.getElementById('helpBtn');
+    // Elements
+    const menuBtn = document.getElementById('menuBtn');
+    const menuPanel = document.getElementById('menuPanel');
+    const mTiers = document.getElementById('mTiers');
+    const mContribute = document.getElementById('mContribute');
+    const mLogout = document.getElementById('mLogout');
+    const mHelp = document.getElementById('mHelp');
 
-    const profileCircle = document.getElementById('profileCircle');
-    const profileMenu = document.getElementById('profileMenu');
-    const profileLogoutBtn = document.getElementById('profileLogoutBtn');
-
-    // Modals
     const logoutModal = document.getElementById('logoutModal');
     const btnNo = document.getElementById('btnNo');
     const btnYes = document.getElementById('btnYes');
+    const spinnerOverlay = document.getElementById('spinnerOverlay');
+    const spinnerInnerText = document.getElementById('spinnerInnerText');
 
     const contributeModal = document.getElementById('contributeModal');
     const methodBankBtn = document.getElementById('methodBank');
@@ -350,76 +301,68 @@
     const helpModal = document.getElementById('helpModal');
     const helpClose = document.getElementById('helpClose');
 
-    const spinnerOverlay = document.getElementById('spinnerOverlay');
-    const spinnerInnerText = document.getElementById('spinnerInnerText');
-
-    const toast = document.getElementById('toast');
     const copyButtons = document.querySelectorAll('.copy-btn');
-
+    const toast = document.getElementById('toast');
+    const showQR = document.getElementById('showQR');
     const shareBtn = document.getElementById('shareBtn');
     const submitContrib = document.getElementById('submitContrib');
 
-    /* -------------------------
-       Utility: open/close modals
-       ------------------------- */
-    function openModal(modalEl){
-      modalEl.style.display = 'flex';
-      modalEl.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
+    // Toggle menu
+    function openMenu(){
+      menuPanel.classList.add('open');
+      menuBtn.setAttribute('aria-expanded','true');
+      // close on outside click
+      setTimeout(()=> {
+        document.addEventListener('click', docClickCloseMenu);
+      }, 10);
     }
-    function closeModal(modalEl){
-      modalEl.style.display = 'none';
-      modalEl.setAttribute('aria-hidden','true');
+    function closeMenu(){
+      menuPanel.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded','false');
+      document.removeEventListener('click', docClickCloseMenu);
+    }
+    function docClickCloseMenu(e){
+      const panel = menuPanel;
+      const btn = menuBtn;
+      if(!panel.contains(e.target) && !btn.contains(e.target)) closeMenu();
+    }
+    menuBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(menuPanel.classList.contains('open')) closeMenu(); else openMenu();
+    });
+
+    // Menu item actions: open modals and close menu
+    mTiers.addEventListener('click', ()=>{ closeMenu(); openModal(tiersModal); });
+    mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); showBank(); });
+    mLogout.addEventListener('click', ()=>{ closeMenu(); openModal(logoutModal); });
+    mHelp.addEventListener('click', ()=>{ closeMenu(); openModal(helpModal); });
+
+    // Generic modal open/close
+    function openModal(el){
+      el.style.display = 'flex';
+      el.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+      // focus first button inside if possible
+      const btn = el.querySelector('button');
+      if(btn) btn.focus();
+    }
+    function closeModal(el){
+      el.style.display = 'none';
+      el.setAttribute('aria-hidden','true');
       document.body.style.overflow = '';
     }
 
-    /* -------------------------
-       Nav actions wiring
-       ------------------------- */
-    tiersBtn.addEventListener('click', ()=> openModal(tiersModal));
-    tiersClose.addEventListener('click', ()=> closeModal(tiersModal));
-
-    contributeBtn.addEventListener('click', ()=> {
-      openModal(contributeModal);
-      // default to bank
-      showBank();
-    });
-    contribClose.addEventListener('click', ()=> closeModal(contributeModal));
-
-    navLogoutBtn.addEventListener('click', ()=> {
-      openModal(logoutModal);
+    // Close modals on backdrop click
+    [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => {
+      if(!m) return;
+      m.addEventListener('click', (ev) => { if(ev.target === m) closeModal(m); });
     });
 
-    helpBtn.addEventListener('click', ()=> openModal(helpModal));
-    helpClose.addEventListener('click', ()=> closeModal(helpModal));
-
-    profileCircle.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      const visible = profileMenu.style.display === 'block';
-      profileMenu.style.display = visible ? 'none' : 'block';
-      profileCircle.setAttribute('aria-expanded', (!visible).toString());
-      profileMenu.setAttribute('aria-hidden', visible ? 'true' : 'false');
-    });
-    document.addEventListener('click', (e)=>{
-      if(profileMenu.style.display === 'block' && !profileCircle.contains(e.target)){
-        profileMenu.style.display = 'none';
-        profileCircle.setAttribute('aria-expanded','false');
-        profileMenu.setAttribute('aria-hidden','true');
-      }
-    });
-
-    profileLogoutBtn.addEventListener('click', ()=>{
-      profileMenu.style.display = 'none';
-      openModal(logoutModal);
-    });
-
-    /* -------------------------
-       Logout modal actions (same as before)
-       ------------------------- */
+    // Logout flow
     btnNo.addEventListener('click', ()=> closeModal(logoutModal));
-    btnYes.addEventListener('click', ()=>{
+    btnYes.addEventListener('click', ()=> {
+      // close modal, show spinner + redirect after 4s
       closeModal(logoutModal);
-      // show spinner and redirect after 4 seconds
       spinnerInnerText.innerHTML = 'Logging out...<br>See you soon.';
       spinnerOverlay.style.display = 'flex';
       spinnerOverlay.setAttribute('aria-hidden','false');
@@ -435,150 +378,63 @@
       }, 4000);
     });
 
-    // clicking outside modals closes them
-    [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => {
-      if(!m) return;
-      m.addEventListener('click', (ev)=>{
-        if(ev.target === m) closeModal(m);
-      });
-    });
+    // Member tiers modal
+    tiersClose.addEventListener('click', ()=> closeModal(tiersModal));
 
-    /* -------------------------
-       Contribute method toggles
-       ------------------------- */
-    function showBank(){
-      bankBlock.style.display = 'block';
-      usdtBlock.style.display = 'none';
-      methodBankBtn.classList.add('primary');
-      methodUSDTBtn.classList.remove('primary');
-    }
-    function showUSDT(){
-      bankBlock.style.display = 'none';
-      usdtBlock.style.display = 'block';
-      methodUSDTBtn.classList.add('primary');
-      methodBankBtn.classList.remove('primary');
-    }
+    // Contribute modal toggles
+    function showBank(){ bankBlock.style.display = 'block'; usdtBlock.style.display = 'none'; methodBankBtn.classList.add('primary'); methodUSDTBtn.classList.remove('primary'); }
+    function showUSDT(){ bankBlock.style.display = 'none'; usdtBlock.style.display = 'block'; methodUSDTBtn.classList.add('primary'); methodBankBtn.classList.remove('primary'); }
     methodBankBtn.addEventListener('click', showBank);
     methodUSDTBtn.addEventListener('click', showUSDT);
+    contribClose.addEventListener('click', ()=> closeModal(contributeModal));
+    if(showQR) showQR.addEventListener('click', ()=> showToast('QR demo not available in this build.'));
 
-    // demo QR button (just shows toast)
-    const showQR = document.getElementById('showQR');
-    if(showQR){
-      showQR.addEventListener('click', ()=>{
-        showToast('QR demo not available in this build.');
-      });
-    }
+    // Help modal
+    helpClose.addEventListener('click', ()=> closeModal(helpModal));
+    document.getElementById('emailSupport').addEventListener('click', ()=> { window.location.href = 'mailto:support@dreambig.example?subject=Support%20Request'; });
+    document.getElementById('waSupport').addEventListener('click', ()=> { const phone = '+2348000000000'; window.open('https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...'), '_blank'); });
 
-    /* -------------------------
-       Copy to clipboard handlers
-       ------------------------- */
-    function showToast(msg){
-      toast.innerText = msg || 'Copied!';
-      toast.style.display = 'block';
-      toast.style.opacity = '1';
-      setTimeout(()=> {
-        toast.style.transition = 'opacity 300ms ease';
-        toast.style.opacity = '0';
-        setTimeout(()=> toast.style.display = 'none', 300);
-      }, 1400);
-    }
-
-    copyButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    // Copy to clipboard
+    function showToast(msg){ toast.innerText = msg || 'Copied!'; toast.style.display = 'block'; toast.style.opacity = '1'; setTimeout(()=> { toast.style.transition = 'opacity 300ms ease'; toast.style.opacity = '0'; setTimeout(()=> { toast.style.display = 'none'; toast.style.transition=''; }, 300); }, 1400); }
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', (e)=>{
         const key = e.currentTarget.getAttribute('data-copy');
         let text = '';
         if(key === 'bankAcct') text = document.getElementById('bankAcct').innerText.trim();
         else if(key === 'sortCode') text = document.getElementById('sortCode').innerText.trim();
         else if(key === 'walletAddr') text = document.getElementById('walletAddr').innerText.trim();
-
-        if(!text) {
-          showToast('Nothing to copy');
-          return;
-        }
-        if(navigator.clipboard){
-          navigator.clipboard.writeText(text).then(()=> showToast('Copied to clipboard'));
-        } else {
-          // fallback
-          const ta = document.createElement('textarea');
-          ta.value = text;
-          document.body.appendChild(ta);
-          ta.select();
-          try{ document.execCommand('copy'); showToast('Copied to clipboard'); } catch(e){ showToast('Copy failed'); }
-          ta.remove();
+        if(!text){ showToast('Nothing to copy'); return; }
+        if(navigator.clipboard){ navigator.clipboard.writeText(text).then(()=> showToast('Copied to clipboard')); } else {
+          const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+          try{ document.execCommand('copy'); showToast('Copied to clipboard'); } catch(e){ showToast('Copy failed'); } ta.remove();
         }
       });
     });
 
-    /* -------------------------
-       Share and other interactions
-       ------------------------- */
-    shareBtn.addEventListener('click', async () => {
+    // Share / contribution demo
+    shareBtn.addEventListener('click', async ()=> {
       const url = location.href;
-      const shareObj = { title: 'Join me on Dream Big', text: 'Sign up and start building with Dream Big', url };
-      if(navigator.share){
-        try { await navigator.share(shareObj); } catch(e){}
-      } else {
-        if(navigator.clipboard) {
-          navigator.clipboard.writeText(url).then(()=> showToast('Referral copied'));
-        } else {
-          alert('Copy and share your referral link: ' + url);
-        }
-      }
+      const shareObj = { title:'Join me on Dream Big', text:'Sign up and start building with Dream Big', url };
+      if(navigator.share){ try{ await navigator.share(shareObj); } catch(e){} } else { if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); else alert('Copy and share: ' + url); }
     });
+    submitContrib.addEventListener('click', (e)=>{ e.preventDefault(); const amt = document.getElementById('amount').value.trim(); if(!amt || isNaN(amt)){ alert('Please enter a valid amount.'); return; } alert('Contribution of $' + amt + ' recorded (demo).'); document.getElementById('amount').value=''; });
 
-    // contribution button in main card (demo)
-    submitContrib.addEventListener('click', (e)=>{
-      e.preventDefault();
-      const amt = document.getElementById('amount').value.trim();
-      if(!amt || isNaN(amt)) {
-        alert('Please enter a valid amount.');
-        return;
-      }
-      alert('Contribution of $' + amt + ' recorded (demo).');
-      document.getElementById('amount').value = '';
-    });
-
-    /* -------------------------
-       Help actions (email/WhatsApp)
-       ------------------------- */
-    const emailSupport = document.getElementById('emailSupport');
-    const waSupport = document.getElementById('waSupport');
-
-    emailSupport.addEventListener('click', ()=> {
-      // opens email client
-      window.location.href = 'mailto:support@dreambig.example?subject=Support%20Request';
-    });
-    waSupport.addEventListener('click', ()=> {
-      // opens WhatsApp (web or app) - replace phone as needed
-      const phone = '+2348000000000';
-      const url = 'https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...');
-      window.open(url, '_blank');
-    });
-
-    /* -------------------------
-       Init small things
-       ------------------------- */
-    (function init(){
-      // set referrals (static)
-      document.getElementById('refersNum').innerText = '20';
-      document.getElementById('refCount').querySelector('strong').innerText = '20';
-
-      // set default payment info values (replace placeholders with real values)
-      // bank account & wallet already set in DOM above; adjust if needed
-    })();
-
-    // Accessibility: Esc to close open modals/menus
-    document.addEventListener('keydown', (e) => {
+    // Keyboard accessibility (Esc to close)
+    document.addEventListener('keydown', (e)=> {
       if(e.key === 'Escape'){
-        [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => {
-          if(m && m.style.display === 'flex') closeModal(m);
-        });
-        if(profileMenu.style.display === 'block'){
-          profileMenu.style.display = 'none';
-          profileCircle.setAttribute('aria-expanded','false');
-        }
+        // close menu
+        if(menuPanel.classList.contains('open')) closeMenu();
+        // close modals
+        [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => { if(m && m.style.display === 'flex') closeModal(m); });
       }
     });
+
+    // init
+    (function init(){
+      document.getElementById('refersNum').innerText = '20';
+      document.getElementById('refCount').querySelector('strong')?.innerText = '20';
+      // default payment info placeholders are already in DOM (replace before production)
+    })();
   </script>
 </body>
 </html>
