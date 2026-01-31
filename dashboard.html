@@ -1006,10 +1006,13 @@ btnYes.addEventListener('click', ()=> {
 });
 document.getElementById('mLogout').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
 
-/* ---------- Withdraw handler (demo) ---------- */
+/* ---------- Withdraw handler: navigate to withdraw.html ---------- */
 mWithdraw.addEventListener('click', ()=>{
   closeMenu();
-  alert('Withdraw flow (demo): opens withdraw request screen in production.');
+  // navigate to withdraw page in the same tab
+  window.location.href = 'withdraw.html';
+  // if you prefer to open in a new tab, replace with:
+  // window.open('withdraw.html', '_blank');
 });
 
 /* ---------- Sharing ---------- */
