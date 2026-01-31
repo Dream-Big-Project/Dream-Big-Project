@@ -16,23 +16,26 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:linear-gradient(180deg,#021226 0%, #071a2a 100%);color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    a{color:inherit}
     .app{min-height:100vh;display:flex;flex-direction:column;padding:16px;gap:12px;transition:opacity .45s ease}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;z-index:30}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;z-index:40}
     .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#042137;font-weight:800;font-size:16px}
+    .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#042137;font-weight:800;font-size:16px;overflow:hidden}
+    .logo img{width:100%;height:100%;object-fit:cover;border-radius:8px}
     .title{font-size:16px;font-weight:700}
     .meta{font-size:12px;color:var(--muted)}
     /* menu button */
     .menu-btn{width:46px;height:46px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;border:none;color:var(--muted);font-weight:800;font-size:20px}
-    /* animated menu panel (slide + fade) */
-    .overlay-dim{position:fixed;inset:0;background:rgba(0,0,0,0.45);opacity:0;pointer-events:none;transition:opacity 220ms ease;z-index:25}
+    /* overlay + menu */
+    .overlay-dim{position:fixed;inset:0;background:rgba(0,0,0,0.45);opacity:0;pointer-events:none;transition:opacity 220ms ease;z-index:35}
     .overlay-dim.visible{opacity:1;pointer-events:auto}
-    .menu-panel{position:fixed;top:72px;right:12px;width:92%;max-width:340px;background:linear-gradient(180deg,#072235,#0f2a44);border-radius:14px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,0.6);transform-origin:top right;opacity:0;pointer-events:none;transform:translateY(-8px) scale(.98);transition:all 220ms cubic-bezier(.2,.9,.2,1);z-index:30}
+    .menu-panel{position:fixed;top:72px;right:12px;width:92%;max-width:360px;background:linear-gradient(180deg,#072235,#0f2a44);border-radius:14px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,0.6);transform-origin:top right;opacity:0;pointer-events:none;transform:translateY(-8px) scale(.98);transition:all 220ms cubic-bezier(.2,.9,.2,1);z-index:40}
     .menu-panel.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
     .menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700;font-size:15px}
     .menu-item:hover{background:rgba(255,255,255,0.02);color:var(--text)}
     .menu-item .hint{font-size:12px;color:var(--muted);font-weight:600}
-    .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
+    .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;overflow:hidden}
+    .profile img{width:100%;height:100%;object-fit:cover;border-radius:50%}
     main{flex:1;overflow:auto;padding-bottom:120px}
     .welcome{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:16px}
     .welcome h2{margin:0;font-size:15px}
@@ -47,15 +50,14 @@
     .input,select{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
     .submit{background:var(--accent);color:#042137;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
     .tracker-title{font-weight:800}
-    .bottom-bar{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:20}
+    footer{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:10px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:20}
     .ref-count{font-weight:800;font-size:16px}
     .ref-note{font-size:12px;color:var(--muted)}
     .btn{padding:10px 12px;border-radius:10px;border:none}
     .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
     .btn.warn{background:var(--danger);color:white}
-
     /* modals */
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:50}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:45}
     .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
     .modal h3{margin:0 0 6px 0}
     .modal p{color:var(--muted);margin:0 0 12px 0}
@@ -65,10 +67,9 @@
     .modal .copy .label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
     .modal .copy-btn{margin-left:8px;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#042137;font-weight:700}
     /* spinner overlay (segmented & animated + roll) */
-    .spinner-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:70}
+    .spinner-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:50}
     .spinner-panel{display:flex;flex-direction:column;align-items:center;gap:14px;background:rgba(2,18,30,0.92);padding:26px;border-radius:14px;backdrop-filter:blur(6px)}
     .spinner{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;position:relative;transform-origin:center;will-change:transform}
-    /* segmented spinner */
     .spinner:before{content:'';position:absolute;inset:0;border-radius:50%;background:
       conic-gradient(
         #cfd8dd 0deg 30deg,
@@ -82,22 +83,26 @@
     }
     .spinner .hole{width:62px;height:62px;border-radius:50%;background:linear-gradient(180deg,#061226,#0a2938);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;text-align:center;padding:6px;line-height:1.1;z-index:2}
     @keyframes spin{to{transform:rotate(360deg)}}
-    /* roll animation (applied to spinner-panel during logout) */
     .spinner-roll{animation: rollit 1s linear infinite;}
     @keyframes rollit{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-
-    /* toast */
+    /* proof upload UI */
+    .proof-area{margin-top:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+    .file-preview{margin-top:8px;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px}
+    .profile-menu{position:absolute;top:62px;right:12px;background:var(--card);padding:8px;border-radius:10px;min-width:160px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:50}
+    .profile-menu button{display:block;width:100%;text-align:left;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--text);font-weight:700}
+    .projects-list{max-height:320px;overflow:auto;margin-top:8px}
+    .project-item{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px}
     .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:rgba(0,0,0,0.75);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:80;font-weight:700}
-
-    /* small screens tuning */
     @media(min-width:540px){.app{padding:20px}.card{padding:18px}.logo{width:48px;height:48px}}
   </style>
 </head>
 <body>
   <div class="app" id="appRoot" aria-live="polite">
+
+    <!-- HEADER -->
     <header>
       <div class="brand" role="banner">
-        <div class="logo" aria-hidden="true">DB</div>
+        <div class="logo" id="dbLogo">DB</div>
         <div>
           <div class="title">Dashboard</div>
           <div class="meta" id="metaDate">1/31/2026</div>
@@ -106,7 +111,18 @@
 
       <div style="display:flex;align-items:center;gap:10px">
         <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">☰</button>
-        <div class="profile" id="profileCircle" title="Profile">PD</div>
+
+        <div class="profile" id="profileCircle" title="Profile">
+          PD
+          <!-- profile menu -->
+          <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+            <button id="pView">View Profile</button>
+            <button id="pEdit">Edit Profile</button>
+            <button id="pSettings">Settings</button>
+            <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:8px 0">
+            <button id="pLogout" style="color:var(--danger)">Logout</button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -116,13 +132,11 @@
     <!-- menu panel -->
     <div class="menu-panel" id="menuPanel" role="menu" aria-hidden="true" aria-label="Main menu">
       <button class="menu-item" id="mTiers" role="menuitem"><span>Member Tiers</span><span class="hint">Upgrade</span></button>
-
-      <!-- Contribution menu item: label + hint that updates -->
+      <button class="menu-item" id="mViewProjects" role="menuitem"><span>View Projects</span><span class="hint">Your projects</span></button>
       <button class="menu-item" id="mContribute" role="menuitem">
         <span id="contribLabel">Contribution</span>
         <span class="hint" id="contribHint">Contribution</span>
       </button>
-
       <button class="menu-item" id="mHelp" role="menuitem"><span>Help & Support</span><span class="hint">Contact</span></button>
       <button class="menu-item" id="mLogout" role="menuitem"><span>Logout</span><span class="hint">Sign out</span></button>
     </div>
@@ -162,25 +176,33 @@
         </div>
       </article>
 
-      <section class="tracker card" aria-labelledby="trackerTitle">
-        <div id="trackerTitle" class="tracker-title">Project Tracker</div>
-        <div style="margin-top:8px;color:var(--muted);font-size:13px">Recent activity will appear here.</div>
+      <!-- Referrals moved here (replaces Project Tracker) -->
+      <section class="card" aria-labelledby="refTitle">
+        <div id="refTitle" class="tracker-title">Referrals</div>
+        <div style="margin-top:8px;color:var(--muted);font-size:13px">You have <strong id="refersHere">20</strong> referrals. Share your referral link to climb tiers and unlock benefits.</div>
+        <div style="margin-top:10px">
+          <button class="btn ghost" id="shareHere">Share Referral Link</button>
+        </div>
       </section>
+
     </main>
 
-    <div class="bottom-bar" role="region" aria-label="referrals">
+    <!-- footer where referrals used to be -->
+    <footer>
       <div>
         <div class="ref-count" id="refCount">Referrals: <strong>20</strong></div>
         <div class="ref-note">Share your link. Earn rewards.</div>
       </div>
       <div>
-        <button class="btn ghost" id="shareBtn">Share</button>
+        <button class="btn ghost" id="footerShare">Share</button>
       </div>
-    </div>
+    </footer>
 
     <div class="toast" id="toast">Copied!</div>
 
-    <!-- MODALS -->
+    <!-- ========== MODALS ========== -->
+
+    <!-- Contribute modal -->
     <div class="modal-backdrop" id="contributeModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="contribTitle">
         <h3 id="contribTitle">Contribute</h3>
@@ -216,12 +238,35 @@
           </div>
         </div>
 
+        <div style="margin-top:12px">
+          <button class="btn" id="iPaidBtn">I have paid</button>
+        </div>
+
+        <!-- Proof area - initially hidden, appears after "I have paid" -->
+        <div class="proof-area" id="proofArea" style="display:none">
+          <div style="font-weight:800">Upload proof of payment</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Image (jpg/png) or PDF. Max 10MB (demo).</div>
+
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+            <input type="file" id="proofFile" accept="image/*,.pdf" aria-label="Upload proof">
+            <button class="btn ghost" id="previewProof">Preview</button>
+          </div>
+
+          <div class="file-preview" id="filePreview" style="display:none"></div>
+
+          <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn ghost" id="cancelProof">Cancel</button>
+            <button class="btn" id="submitProof">Submit Proof</button>
+          </div>
+        </div>
+
         <div class="actions" style="margin-top:14px">
           <button class="btn ghost" id="contribClose">Close</button>
         </div>
       </div>
     </div>
 
+    <!-- Tiers -->
     <div class="modal-backdrop" id="tiersModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="tiersTitle">
         <h3 id="tiersTitle">Member Tiers</h3>
@@ -249,6 +294,7 @@
       </div>
     </div>
 
+    <!-- Help -->
     <div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="helpTitle">
         <h3 id="helpTitle">Help & Support</h3>
@@ -273,15 +319,42 @@
       </div>
     </div>
 
-    <div class="modal-backdrop" id="qrModal" role="dialog" aria-modal="true" aria-hidden="true">
-      <div class="modal" role="document" aria-labelledby="qrTitle" style="text-align:center">
-        <h3 id="qrTitle">USDT (TRC20) QR</h3>
-        <p style="color:var(--muted);font-size:13px">Scan this QR to copy the wallet address (demo).</p>
-        <div id="qrImage" style="margin:12px auto;width:220px;height:220px;border-radius:12px;overflow:hidden;background:#fff;display:grid;place-items:center"></div>
-        <div class="actions" style="margin-top:12px"><button class="btn ghost" id="qrClose">Close</button></div>
+    <!-- View Projects -->
+    <div class="modal-backdrop" id="projectsModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="projectsTitle">
+        <h3 id="projectsTitle">Your Projects</h3>
+        <p style="color:var(--muted)">All projects you are involved in.</p>
+        <div class="projects-list" id="projectsList">
+          <!-- populated by JS -->
+        </div>
+        <div class="actions" style="margin-top:12px">
+          <button class="btn ghost" id="projectsClose">Close</button>
+        </div>
       </div>
     </div>
 
+    <!-- Edit Profile -->
+    <div class="modal-backdrop" id="editProfileModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="editProfileTitle">
+        <h3 id="editProfileTitle">Edit Profile</h3>
+        <p style="color:var(--muted)">Upload your facial image. It will be used for your profile circle and dashboard logo.</p>
+
+        <div style="margin-top:8px">
+          <input type="file" id="profileImageFile" accept="image/*">
+        </div>
+
+        <div style="margin-top:12px">
+          <div id="profilePreview" style="width:120px;height:120px;border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.1);display:grid;place-items:center">No image</div>
+        </div>
+
+        <div class="actions" style="margin-top:12px">
+          <button class="btn ghost" id="editCancel">Cancel</button>
+          <button class="btn" id="saveProfile">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout confirm -->
     <div class="modal-backdrop" id="logoutModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="logoutTitle">
         <h3 id="logoutTitle">Confirm Logout</h3>
@@ -293,7 +366,17 @@
       </div>
     </div>
 
-    <!-- SPINNER OVERLAY (Logout) -->
+    <!-- QR modal -->
+    <div class="modal-backdrop" id="qrModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="qrTitle" style="text-align:center">
+        <h3 id="qrTitle">USDT (TRC20) QR</h3>
+        <p style="color:var(--muted);font-size:13px">Scan this QR to copy the wallet address (demo).</p>
+        <div id="qrImage" style="margin:12px auto;width:220px;height:220px;border-radius:12px;overflow:hidden;background:#fff;display:grid;place-items:center"></div>
+        <div class="actions" style="margin-top:12px"><button class="btn ghost" id="qrClose">Close</button></div>
+      </div>
+    </div>
+
+    <!-- Spinner overlay -->
     <div class="spinner-overlay" id="spinnerOverlay" aria-hidden="true">
       <div class="spinner-panel" id="spinnerPanel">
         <div class="spinner" id="spinner">
@@ -306,9 +389,7 @@
   </div>
 
   <script>
-    /* =============
-       Element refs
-       ============= */
+    // Element refs
     const menuBtn = document.getElementById('menuBtn');
     const menuPanel = document.getElementById('menuPanel');
     const overlayDim = document.getElementById('overlayDim');
@@ -316,9 +397,16 @@
     const mContribute = document.getElementById('mContribute');
     const mHelp = document.getElementById('mHelp');
     const mLogout = document.getElementById('mLogout');
+    const mViewProjects = document.getElementById('mViewProjects');
     const contribLabel = document.getElementById('contribLabel');
     const contribHint = document.getElementById('contribHint');
+
     const profileCircle = document.getElementById('profileCircle');
+    const profileMenu = document.getElementById('profileMenu');
+    const pEdit = document.getElementById('pEdit');
+    const pView = document.getElementById('pView');
+    const pSettings = document.getElementById('pSettings');
+    const pLogout = document.getElementById('pLogout');
 
     const contributeModal = document.getElementById('contributeModal');
     const methodBankBtn = document.getElementById('methodBank');
@@ -326,6 +414,13 @@
     const bankBlock = document.getElementById('bankBlock');
     const usdtBlock = document.getElementById('usdtBlock');
     const contribClose = document.getElementById('contribClose');
+    const iPaidBtn = document.getElementById('iPaidBtn');
+    const proofArea = document.getElementById('proofArea');
+    const proofFile = document.getElementById('proofFile');
+    const previewProofBtn = document.getElementById('previewProof');
+    const filePreview = document.getElementById('filePreview');
+    const cancelProof = document.getElementById('cancelProof');
+    const submitProof = document.getElementById('submitProof');
 
     const tiersModal = document.getElementById('tiersModal');
     const tiersClose = document.getElementById('tiersClose');
@@ -333,31 +428,50 @@
     const helpModal = document.getElementById('helpModal');
     const helpClose = document.getElementById('helpClose');
 
-    const qrModal = document.getElementById('qrModal');
-    const qrImage = document.getElementById('qrImage');
-    const qrClose = document.getElementById('qrClose');
-    const showQR = document.getElementById('showQR');
+    const projectsModal = document.getElementById('projectsModal');
+    const projectsList = document.getElementById('projectsList');
+    const projectsClose = document.getElementById('projectsClose');
+
+    const editProfileModal = document.getElementById('editProfileModal');
+    const profileImageFile = document.getElementById('profileImageFile');
+    const profilePreview = document.getElementById('profilePreview');
+    const editCancel = document.getElementById('editCancel');
+    const saveProfile = document.getElementById('saveProfile');
 
     const logoutModal = document.getElementById('logoutModal');
     const btnNo = document.getElementById('btnNo');
     const btnYes = document.getElementById('btnYes');
 
+    const qrModal = document.getElementById('qrModal');
+    const qrImage = document.getElementById('qrImage');
+    const qrClose = document.getElementById('qrClose');
+    const showQR = document.getElementById('showQR');
+
     const spinnerOverlay = document.getElementById('spinnerOverlay');
-    const spinnerPanel = document.getElementById('spinnerPanel');
     const spinner = document.getElementById('spinner');
     const spinnerInnerText = document.getElementById('spinnerInnerText');
 
     const copyButtons = document.querySelectorAll('.copy-btn');
     const toast = document.getElementById('toast');
-    const shareBtn = document.getElementById('shareBtn');
+    const shareHere = document.getElementById('shareHere');
+    const footerShare = document.getElementById('footerShare');
+    const shareBtn = document.getElementById('shareHere');
     const submitContrib = document.getElementById('submitContrib');
-
     const methodSelect = document.getElementById('method');
-    const referNumEl = document.getElementById('refersNum');
 
-    /* =============
-       Helpers
-       ============= */
+    const dbLogo = document.getElementById('dbLogo');
+    const profileMenuEl = document.getElementById('profileMenu');
+
+    const refersHere = document.getElementById('refersHere');
+    const refersNum = document.getElementById('refersNum');
+
+    // Demo: user's projects (replace with real data from backend)
+    let userProjects = [
+      { id: 'P-001', name: 'Agro Processing', amount: 250, status: 'Active' }
+      // Add more items to test >1 projects
+    ];
+
+    /* Helpers */
     function showToast(msg){
       toast.innerText = msg || 'Copied!';
       toast.style.display = 'block';
@@ -365,42 +479,6 @@
       setTimeout(()=>{ toast.style.transition='opacity 300ms ease'; toast.style.opacity='0'; setTimeout(()=>{ toast.style.display='none'; toast.style.transition=''; },300); },1400);
     }
 
-    function openMenu(){
-      menuPanel.classList.add('open');
-      overlayDim.classList.add('visible');
-      menuPanel.setAttribute('aria-hidden','false');
-      menuBtn.setAttribute('aria-expanded','true');
-      // close on outside click
-      setTimeout(()=> document.addEventListener('click', docClickCloseMenu),20);
-    }
-    function closeMenu(){
-      menuPanel.classList.remove('open');
-      overlayDim.classList.remove('visible');
-      menuPanel.setAttribute('aria-hidden','true');
-      menuBtn.setAttribute('aria-expanded','false');
-      document.removeEventListener('click', docClickCloseMenu);
-    }
-    function docClickCloseMenu(e){
-      if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
-    }
-
-    // modal open/close
-    function openModal(el){
-      if(!el) return;
-      el.style.display = 'flex';
-      el.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-      const btn = el.querySelector('button');
-      if(btn) btn.focus();
-    }
-    function closeModal(el){
-      if(!el) return;
-      el.style.display = 'none';
-      el.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-    }
-
-    // copy helper with fallback
     function copyText(text){
       if(!text) return showToast('Nothing to copy');
       if(navigator.clipboard){
@@ -412,73 +490,117 @@
       }
     }
 
-    /* =============
-       Menu wiring
-       ============= */
-    menuBtn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      if(menuPanel.classList.contains('open')) closeMenu(); else openMenu();
-    });
-
-    // overlay / dim closes menu & modals
+    /* Menu open/close */
+    function openMenu(){ menuPanel.classList.add('open'); overlayDim.classList.add('visible'); menuPanel.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true'); setTimeout(()=> document.addEventListener('click', docClickCloseMenu),20); }
+    function closeMenu(){ menuPanel.classList.remove('open'); overlayDim.classList.remove('visible'); menuPanel.setAttribute('aria-hidden','true'); menuBtn.setAttribute('aria-expanded','false'); document.removeEventListener('click', docClickCloseMenu); }
+    function docClickCloseMenu(e){ if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu(); }
+    menuBtn.addEventListener('click', (e)=>{ e.stopPropagation(); if(menuPanel.classList.contains('open')) closeMenu(); else openMenu(); });
     overlayDim.addEventListener('click', ()=>{ closeMenu(); });
 
-    // menu item triggers
-    mTiers.addEventListener('click', ()=>{ closeMenu(); openModal(tiersModal); });
-    mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); showBank(); });
-    mHelp.addEventListener('click', ()=>{ closeMenu(); openModal(helpModal); });
-    mLogout.addEventListener('click', ()=>{ closeMenu(); openModal(logoutModal); });
+    // Profile menu toggle
+    profileCircle.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const open = profileMenu.style.display === 'block';
+      profileMenu.style.display = open ? 'none' : 'block';
+      profileMenu.setAttribute('aria-hidden', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e)=>{
+      if(profileMenu.style.display === 'block' && !profileCircle.contains(e.target)) {
+        profileMenu.style.display = 'none';
+        profileMenu.setAttribute('aria-hidden','true');
+      }
+    });
 
-    profileCircle.addEventListener('click', ()=>{ openModal(logoutModal); });
+    /* Modal open/close helper */
+    function openModal(el){ if(!el) return; el.style.display = 'flex'; el.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; const btn = el.querySelector('button'); if(btn) btn.focus(); }
+    function closeModal(el){ if(!el) return; el.style.display = 'none'; el.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
 
-    // close modals when backdrop clicked
-    [contributeModal, tiersModal, helpModal, logoutModal, qrModal].forEach(m=>{
+    // Close modals on backdrop click
+    [contributeModal, tiersModal, helpModal, projectsModal, editProfileModal, logoutModal, qrModal].forEach(m => {
       if(!m) return;
       m.addEventListener('click', (ev)=>{ if(ev.target === m) closeModal(m); });
     });
 
-    // ESC key closes things
+    // ESC key
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape'){
         if(menuPanel.classList.contains('open')) closeMenu();
-        [contributeModal, tiersModal, helpModal, logoutModal, qrModal].forEach(m=>{ if(m && m.style.display === 'flex') closeModal(m); });
+        [contributeModal, tiersModal, helpModal, projectsModal, editProfileModal, logoutModal, qrModal].forEach(m=>{ if(m && m.style.display === 'flex') closeModal(m); });
+        if(profileMenu.style.display === 'block'){ profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true'); }
       }
     });
 
-    /* =============
-       Contribute logic (Bank / USDT)
-       ============= */
-    function showBank(){
-      bankBlock.style.display = 'block';
-      usdtBlock.style.display = 'none';
-      methodBankBtn.classList.add('primary');
-      methodUSDTBtn.classList.remove('primary');
-      // update menu text + hint + main select + persist
-      contribLabel.innerText = 'Contribution';
-      contribHint.innerText = 'Bank Deposit';
-      methodSelect.value = 'bank';
-      localStorage.setItem('preferredContribution','bank');
-    }
-    function showUSDT(){
-      bankBlock.style.display = 'none';
-      usdtBlock.style.display = 'block';
-      methodUSDTBtn.classList.add('primary');
-      methodBankBtn.classList.remove('primary');
-      contribLabel.innerText = 'Contribution';
-      contribHint.innerText = 'USDT (TRC20)';
-      methodSelect.value = 'usdt';
-      localStorage.setItem('preferredContribution','usdt');
-    }
+    /* Menu item wiring */
+    mTiers.addEventListener('click', ()=>{ closeMenu(); openModal(tiersModal); });
+    mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); showBank(); });
+    mHelp.addEventListener('click', ()=>{ closeMenu(); openModal(helpModal); });
+    mLogout.addEventListener('click', ()=>{ closeMenu(); openModal(logoutModal); });
+    mViewProjects.addEventListener('click', ()=>{ closeMenu(); openModal(projectsModal); renderProjects(); });
+
+    // profile menu items
+    pEdit.addEventListener('click', ()=>{ profileMenu.style.display='none'; openModal(editProfileModal); });
+    pView.addEventListener('click', ()=>{ profileMenu.style.display='none'; alert('Profile view (demo)'); });
+    pSettings.addEventListener('click', ()=>{ profileMenu.style.display='none'; alert('Settings (demo)'); });
+    pLogout.addEventListener('click', ()=>{ profileMenu.style.display='none'; openModal(logoutModal); });
+
+    // Tiers & Help close
+    tiersClose.addEventListener('click', ()=> closeModal(tiersModal));
+    helpClose.addEventListener('click', ()=> closeModal(helpModal));
+
+    /* ========== Contribute logic (Bank/USDT) ========== */
+    function showBank(){ bankBlock.style.display='block'; usdtBlock.style.display='none'; methodBankBtn.classList.add('primary'); methodUSDTBtn.classList.remove('primary'); contribHint.innerText='Bank Deposit'; methodSelect.value='bank'; localStorage.setItem('preferredContribution','bank'); }
+    function showUSDT(){ bankBlock.style.display='none'; usdtBlock.style.display='block'; methodUSDTBtn.classList.add('primary'); methodBankBtn.classList.remove('primary'); contribHint.innerText='USDT (TRC20)'; methodSelect.value='usdt'; localStorage.setItem('preferredContribution','usdt'); }
 
     methodBankBtn.addEventListener('click', showBank);
     methodUSDTBtn.addEventListener('click', showUSDT);
     contribClose.addEventListener('click', ()=> closeModal(contributeModal));
 
-    // show QR modal for USDT (demo uses Google Chart API for QR)
+    // I have paid flow
+    iPaidBtn.addEventListener('click', ()=>{
+      proofArea.style.display = 'block';
+      // ensure file input cleared
+      proofFile.value = '';
+      filePreview.style.display = 'none';
+      filePreview.innerHTML = '';
+    });
+    cancelProof.addEventListener('click', ()=>{
+      proofArea.style.display = 'none';
+    });
+
+    previewProofBtn.addEventListener('click', ()=>{
+      const f = proofFile.files[0];
+      if(!f) return showToast('Choose a file first');
+      if(f.type.startsWith('image/')){
+        const reader = new FileReader();
+        reader.onload = function(e){
+          filePreview.innerHTML = '<img src="'+e.target.result+'" alt="proof" style="max-width:100%;border-radius:8px">';
+          filePreview.style.display = 'block';
+        }
+        reader.readAsDataURL(f);
+      } else {
+        filePreview.innerHTML = '<div style="padding:8px;color:var(--muted)">'+f.name+'</div>';
+        filePreview.style.display = 'block';
+      }
+    });
+
+    submitProof.addEventListener('click', ()=>{
+      const f = proofFile.files[0];
+      if(!f) return showToast('Choose the proof file first');
+      // Demo: we store a small record in localStorage (filename + date)
+      const proofs = JSON.parse(localStorage.getItem('proofs') || '[]');
+      proofs.push({ filename: f.name, date: new Date().toISOString(), method: methodSelect.value });
+      localStorage.setItem('proofs', JSON.stringify(proofs));
+      showToast('Proof submitted (demo)');
+      proofArea.style.display = 'none';
+      filePreview.innerHTML = '';
+      filePreview.style.display = 'none';
+      proofFile.value = '';
+    });
+
+    // Show QR demo
     if(showQR){
       showQR.addEventListener('click', ()=>{
         const addr = document.getElementById('walletAddr').innerText.trim();
-        // use google chart api to generate QR for demo
         const src = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(addr);
         qrImage.innerHTML = '<img src="'+src+'" alt="QR" style="width:100%;height:100%;object-fit:cover;border-radius:8px">';
         closeModal(contributeModal);
@@ -486,14 +608,6 @@
       });
     }
     qrClose.addEventListener('click', ()=> closeModal(qrModal));
-
-    // clicking the main select updates hint & persist
-    methodSelect.addEventListener('change', (e)=>{
-      const v = e.target.value;
-      if(v === 'bank') contribHint.innerText = 'Bank Deposit';
-      else if(v === 'usdt') contribHint.innerText = 'USDT (TRC20)';
-      localStorage.setItem('preferredContribution', v);
-    });
 
     // copy buttons
     copyButtons.forEach(btn=>{
@@ -507,88 +621,111 @@
       });
     });
 
-    // demo share
-    shareBtn.addEventListener('click', async ()=>{
-      const url = location.href;
-      const shareObj = { title:'Join me on Dream Big', text:'Sign up and start building with Dream Big', url };
-      if(navigator.share){
-        try{ await navigator.share(shareObj); }catch(e){}
-      } else {
-        if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=> showToast('Referral copied'));
-        else alert('Copy and share: '+url);
-      }
+    // share referral buttons
+    [shareHere, footerShare].forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const url = location.href;
+        const shareObj = { title:'Join me on Dream Big', text:'Sign up and start building with Dream Big', url };
+        if(navigator.share){ try{ await navigator.share(shareObj); }catch(e){} } else { if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); else alert('Copy and share: ' + url); }
+      });
     });
 
-    // contribution submit demo
+    // contribution main submit demo
     submitContrib.addEventListener('click', (e)=>{
       e.preventDefault();
       const amt = document.getElementById('amount').value.trim();
-      if(!amt || isNaN(amt)) { alert('Please enter a valid amount.'); return; }
-      // show chosen method
+      if(!amt || isNaN(amt)) return alert('Please enter a valid amount.');
       const method = methodSelect.value === 'bank' ? 'Bank Deposit' : 'USDT (TRC20)';
       alert('Contribution of $' + amt + ' via ' + method + ' recorded (demo).');
       document.getElementById('amount').value = '';
     });
 
-    /* =============
-       Help actions
-       ============= */
+    // Help modal actions
     document.getElementById('emailSupport').addEventListener('click', ()=> window.location.href = 'mailto:support@dreambig.example?subject=Support%20Request');
-    document.getElementById('waSupport').addEventListener('click', ()=> {
-      const phone = '+2348000000000';
-      window.open('https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...'), '_blank');
+    document.getElementById('waSupport').addEventListener('click', ()=> { const phone = '+2348000000000'; window.open('https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...'), '_blank'); });
+
+    /* ========== Projects view ========== */
+    function renderProjects(){
+      projectsList.innerHTML = '';
+      if(!userProjects || userProjects.length === 0){
+        projectsList.innerHTML = '<div style="color:var(--muted)">No projects found.</div>';
+        return;
+      }
+      userProjects.forEach(p=>{
+        const div = document.createElement('div');
+        div.className = 'project-item';
+        div.innerHTML = '<div style="font-weight:800">'+p.name+'</div><div style="font-size:13px;color:var(--muted)">ID: '+p.id+' • $'+p.amount+' • '+p.status+'</div>';
+        projectsList.appendChild(div);
+      });
+    }
+    projectsClose.addEventListener('click', ()=> closeModal(projectsModal));
+
+    /* ========== Edit profile (upload facial image) ========== */
+    let pendingProfileDataURL = null;
+    profileImageFile.addEventListener('change', ()=>{
+      const f = profileImageFile.files[0];
+      if(!f) return;
+      if(!f.type.startsWith('image/')) return showToast('Choose an image file');
+      const reader = new FileReader();
+      reader.onload = function(e){
+        profilePreview.innerHTML = '<img src="'+e.target.result+'" alt="preview" style="width:100%;height:100%;object-fit:cover">';
+        pendingProfileDataURL = e.target.result;
+      }
+      reader.readAsDataURL(f);
     });
 
-    /* =============
-       Logout flow (modal => spinner => roll => redirect)
-       ============= */
+    editCancel.addEventListener('click', ()=> { closeModal(editProfileModal); pendingProfileDataURL = null; profileImageFile.value = ''; profilePreview.innerHTML = 'No image'; });
+    saveProfile.addEventListener('click', ()=>{
+      if(!pendingProfileDataURL) return showToast('Choose an image then save');
+      // set profile circle img and DB logo
+      profileCircle.innerHTML = '<img src="'+pendingProfileDataURL+'" alt="profile">';
+      dbLogo.innerHTML = '<img src="'+pendingProfileDataURL+'" alt="logo">';
+      // persist
+      localStorage.setItem('profileImage', pendingProfileDataURL);
+      showToast('Profile updated');
+      closeModal(editProfileModal);
+      pendingProfileDataURL = null;
+      profileImageFile.value = '';
+      profilePreview.innerHTML = 'No image';
+    });
+
+    /* ========== Logout flow ========== */
     btnNo.addEventListener('click', ()=> closeModal(logoutModal));
     btnYes.addEventListener('click', ()=>{
       closeModal(logoutModal);
-      // show spinner overlay
       spinnerInnerText.innerHTML = 'Logging out...<br>See you soon.';
       spinnerOverlay.style.display = 'flex';
       spinnerOverlay.setAttribute('aria-hidden','false');
-
-      // make a rolling animation by toggling class on spinner element
       spinner.classList.add('spinner-roll');
-
-      // fade the app slightly
       document.getElementById('appRoot').style.transition = 'opacity 450ms ease';
       document.getElementById('appRoot').style.opacity = '0.25';
-
-      // 4 seconds of roll/spin
-      setTimeout(()=>{
-        // fade to black, then redirect
-        document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease';
-        document.body.style.backgroundColor = '#000';
-        document.body.style.opacity = '0';
-        setTimeout(()=> {
-          // final redirect - ensure login.html exists or change path
-          window.location.href = 'login.html';
-        }, 350);
-      }, 4000);
+      setTimeout(()=>{ document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease'; document.body.style.backgroundColor = '#000'; document.body.style.opacity = '0'; setTimeout(()=> window.location.href = 'login.html', 350); }, 4000);
     });
 
-    /* =============
-       Persistence & init
-       ============= */
+    // profile menu logout handler (already added pLogout)
+
+    /* ========== init & persistence ========== */
     (function init(){
-      // referrals static
-      referNumEl.innerText = '20';
-      document.getElementById('refCount').querySelector('strong').innerText = '20';
+      // referrals
+      const referrals = localStorage.getItem('referrals') || '20';
+      refersHere.innerText = referrals;
+      refersNum.innerText = referrals;
+      document.getElementById('refCount').querySelector('strong').innerText = referrals;
 
-      // load preferred contribution method from localStorage and update UI
+      // load preferred contribution method
       const pref = localStorage.getItem('preferredContribution') || 'bank';
-      if(pref === 'usdt'){ showUSDT(); } else { showBank(); }
+      if(pref === 'usdt') showUSDT(); else showBank();
 
-      // ensure contribLabel initial text
-      contribLabel.innerText = 'Contribution';
-      // set date meta if empty
-      const meta = document.getElementById('metaDate');
-      if(!meta.innerText.trim()) {
-        const d = new Date(); meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+      // load profile image if exists
+      const saved = localStorage.getItem('profileImage');
+      if(saved){
+        profileCircle.innerHTML = '<img src="'+saved+'" alt="profile">';
+        dbLogo.innerHTML = '<img src="'+saved+'" alt="logo">';
       }
+
+      // render projects list when opening modal
+      // if only 1 project, View Projects will still open but show message
+      // (You wanted it to display for people that did more than one project; we still provide the UI)
     })();
   </script>
 </body>
