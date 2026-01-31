@@ -1,33 +1,41 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Dream Big — Member Dashboard (Mobile)</title>
-  <meta name="theme-color" content="#071a2a" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Dream Big — Dashboard</title>
+  <meta name="theme-color" content="#071a2a"/>
   <style>
     :root{
       --bg:#061228; --card:#0f2a44; --muted:#9fb3c7; --accent:#f6c44b; --danger:#e14b4b;
-      --glass: rgba(255,255,255,0.03); --radius:14px; --gap:12px; --text:#eaf6ff;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --gap:12px;
+      --text:#eaf6ff;
       font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#021226 0%, #071a2a 100%);color:var(--text);-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#021226 0%, #071a2a 100%);color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
     .app{min-height:100vh;display:flex;flex-direction:column;padding:16px;gap:12px;transition:opacity .45s ease}
-    header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;z-index:30}
     .brand{display:flex;align-items:center;gap:12px}
     .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#042137;font-weight:800;font-size:16px}
     .title{font-size:16px;font-weight:700}
     .meta{font-size:12px;color:var(--muted)}
-    .menu-btn{width:44px;height:44px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;border:none;color:var(--muted);font-weight:800}
-    .menu-panel{position:absolute;top:72px;right:16px;width:260px;background:linear-gradient(180deg,#072235,#0f2a44);border-radius:12px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);transform-origin:top right;opacity:0;pointer-events:none;transform:scale(.95) translateY(-6px);transition:all 180ms ease;z-index:40}
-    .menu-panel.open{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
-    .menu-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700}
+    /* menu button */
+    .menu-btn{width:46px;height:46px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;border:none;color:var(--muted);font-weight:800;font-size:20px}
+    /* animated menu panel (slide + fade) */
+    .overlay-dim{position:fixed;inset:0;background:rgba(0,0,0,0.45);opacity:0;pointer-events:none;transition:opacity 220ms ease;z-index:25}
+    .overlay-dim.visible{opacity:1;pointer-events:auto}
+    .menu-panel{position:fixed;top:72px;right:12px;width:92%;max-width:340px;background:linear-gradient(180deg,#072235,#0f2a44);border-radius:14px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,0.6);transform-origin:top right;opacity:0;pointer-events:none;transform:translateY(-8px) scale(.98);transition:all 220ms cubic-bezier(.2,.9,.2,1);z-index:30}
+    .menu-panel.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+    .menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700;font-size:15px}
     .menu-item:hover{background:rgba(255,255,255,0.02);color:var(--text)}
     .menu-item .hint{font-size:12px;color:var(--muted);font-weight:600}
-    .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:default}
+    .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
     main{flex:1;overflow:auto;padding-bottom:120px}
     .welcome{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:16px}
+    .welcome h2{margin:0;font-size:15px}
     .kpis{display:flex;gap:8px;margin-top:12px}
     .kpi{flex:1;padding:10px;background:var(--card);border-radius:12px;text-align:left}
     .kpi .num{font-size:18px;font-weight:800}
@@ -45,18 +53,22 @@
     .btn{padding:10px 12px;border-radius:10px;border:none}
     .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
     .btn.warn{background:var(--danger);color:white}
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:60}
-    .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:300px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+
+    /* modals */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:50}
+    .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
     .modal h3{margin:0 0 6px 0}
     .modal p{color:var(--muted);margin:0 0 12px 0}
     .modal .actions{display:flex;gap:8px;justify-content:flex-end}
     .modal .row{display:flex;gap:8px;align-items:center;margin-top:10px}
-    .modal .copy{background:rgba(255,255,255,0.04);padding:10px;border-radius:8px;flex:1;color:var(--muted);font-size:13px;word-break:break-all}
+    .modal .copy{background:rgba(255,255,255,0.04);padding:12px;border-radius:8px;flex:1;color:var(--muted);font-size:14px;word-break:break-all}
     .modal .copy .label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
     .modal .copy-btn{margin-left:8px;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#042137;font-weight:700}
+    /* spinner overlay (segmented & animated + roll) */
     .spinner-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:70}
-    .spinner-panel{display:flex;flex-direction:column;align-items:center;gap:14px;background:rgba(2,18,30,0.92);padding:22px;border-radius:12px;backdrop-filter:blur(6px)}
-    .spinner{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;position:relative}
+    .spinner-panel{display:flex;flex-direction:column;align-items:center;gap:14px;background:rgba(2,18,30,0.92);padding:26px;border-radius:14px;backdrop-filter:blur(6px)}
+    .spinner{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;position:relative;transform-origin:center;will-change:transform}
+    /* segmented spinner */
     .spinner:before{content:'';position:absolute;inset:0;border-radius:50%;background:
       conic-gradient(
         #cfd8dd 0deg 30deg,
@@ -66,11 +78,18 @@
         #6f7f8f 120deg 150deg,
         rgba(255,255,255,0.03) 150deg 360deg
       );
-      animation:spin 0.95s linear infinite
+      animation:spin 0.95s linear infinite;
     }
-    .spinner .hole{width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#061226,#0a2938);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:6px;line-height:1.1}
+    .spinner .hole{width:62px;height:62px;border-radius:50%;background:linear-gradient(180deg,#061226,#0a2938);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;text-align:center;padding:6px;line-height:1.1;z-index:2}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:rgba(0,0,0,0.7);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:80;font-weight:700}
+    /* roll animation (applied to spinner-panel during logout) */
+    .spinner-roll{animation: rollit 1s linear infinite;}
+    @keyframes rollit{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+    /* toast */
+    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:rgba(0,0,0,0.75);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:80;font-weight:700}
+
+    /* small screens tuning */
     @media(min-width:540px){.app{padding:20px}.card{padding:18px}.logo{width:48px;height:48px}}
   </style>
 </head>
@@ -85,19 +104,28 @@
         </div>
       </div>
 
-      <div style="position:relative">
+      <div style="display:flex;align-items:center;gap:10px">
         <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">☰</button>
-        <div class="menu-panel" id="menuPanel" role="menu" aria-hidden="true">
-          <button class="menu-item" id="mTiers" role="menuitem"><span>Member Tiers</span><span class="hint">Upgrade</span></button>
-          <!-- Changed label to Contribution and default hint "Contribution" -->
-          <button class="menu-item" id="mContribute" role="menuitem"><span id="contribLabel">Contribution</span><span class="hint" id="contribHint">Contribution</span></button>
-          <button class="menu-item" id="mLogout" role="menuitem"><span>Logout</span><span class="hint">Sign out</span></button>
-          <button class="menu-item" id="mHelp" role="menuitem"><span>Help & Support</span><span class="hint">Contact</span></button>
-        </div>
+        <div class="profile" id="profileCircle" title="Profile">PD</div>
       </div>
-
-      <div class="profile" title="Profile">PD</div>
     </header>
+
+    <!-- overlay dim behind menu -->
+    <div class="overlay-dim" id="overlayDim" tabindex="-1"></div>
+
+    <!-- menu panel -->
+    <div class="menu-panel" id="menuPanel" role="menu" aria-hidden="true" aria-label="Main menu">
+      <button class="menu-item" id="mTiers" role="menuitem"><span>Member Tiers</span><span class="hint">Upgrade</span></button>
+
+      <!-- Contribution menu item: label + hint that updates -->
+      <button class="menu-item" id="mContribute" role="menuitem">
+        <span id="contribLabel">Contribution</span>
+        <span class="hint" id="contribHint">Contribution</span>
+      </button>
+
+      <button class="menu-item" id="mHelp" role="menuitem"><span>Help & Support</span><span class="hint">Contact</span></button>
+      <button class="menu-item" id="mLogout" role="menuitem"><span>Logout</span><span class="hint">Sign out</span></button>
+    </div>
 
     <main>
       <section class="welcome" aria-labelledby="welcomeTitle">
@@ -111,7 +139,10 @@
 
       <article class="card" aria-labelledby="projectHead">
         <div class="project-title" id="projectHead">
-          <div><div style="font-weight:800">Agro Processing</div><div style="font-size:12px;color:var(--muted)">Spark • $250</div></div>
+          <div>
+            <div style="font-weight:800">Agro Processing</div>
+            <div style="font-size:12px;color:var(--muted)">Spark • $250</div>
+          </div>
           <div style="text-align:right;color:var(--muted)"><div style="font-weight:800">Matures in</div><div>18m</div></div>
         </div>
 
@@ -123,7 +154,6 @@
           <input class="input" id="amount" placeholder="250" inputmode="numeric" aria-label="Amount">
         </div>
         <div class="form-row">
-          <!-- only two options: Bank Deposit & USDT (TRC20) -->
           <select class="input" id="method" aria-label="Payment method">
             <option value="bank">Bank Deposit</option>
             <option value="usdt">USDT (TRC20)</option>
@@ -150,18 +180,7 @@
 
     <div class="toast" id="toast">Copied!</div>
 
-    <!-- Modals -->
-    <div class="modal-backdrop" id="logoutModal" role="dialog" aria-modal="true" aria-hidden="true">
-      <div class="modal" role="document" aria-labelledby="logoutTitle">
-        <h3 id="logoutTitle">Confirm Logout</h3>
-        <p>Are you sure you want to log out?</p>
-        <div class="actions">
-          <button class="btn ghost" id="btnNo">No</button>
-          <button class="btn warn" id="btnYes">Yes</button>
-        </div>
-      </div>
-    </div>
-
+    <!-- MODALS -->
     <div class="modal-backdrop" id="contributeModal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal" role="document" aria-labelledby="contribTitle">
         <h3 id="contribTitle">Contribute</h3>
@@ -172,6 +191,7 @@
           <button class="btn ghost" id="methodUSDT">USDT (TRC20)</button>
         </div>
 
+        <!-- Bank info -->
         <div id="bankBlock" style="margin-top:12px;">
           <div class="copy"><span class="label">Bank: FIRST NATIONAL BANK</span>
             <div>Account Name: DREAM BIG PROJECT</div>
@@ -184,6 +204,7 @@
           </div>
         </div>
 
+        <!-- USDT TRC20 info -->
         <div id="usdtBlock" style="margin-top:12px;display:none">
           <div class="copy"><span class="label">TRC20 Wallet (USDT)</span>
             <div>Wallet Address:</div>
@@ -191,7 +212,7 @@
           </div>
           <div style="display:flex;gap:8px;margin-top:8px">
             <button class="copy-btn" data-copy="walletAddr">Copy Wallet</button>
-            <button class="copy-btn" id="showQR">Show QR (demo)</button>
+            <button class="copy-btn" id="showQR">Show QR</button>
           </div>
         </div>
 
@@ -238,21 +259,44 @@
             <div style="font-size:13px;color:var(--muted)">support@dreambig.example</div>
             <div style="margin-top:8px"><button class="btn ghost" id="emailSupport">Send Email</button></div>
           </div>
+
           <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-top:8px">
             <div style="font-weight:800">WhatsApp</div>
             <div style="font-size:13px;color:var(--muted)">+234 800 000 0000</div>
             <div style="margin-top:8px"><button class="btn ghost" id="waSupport">Open WhatsApp</button></div>
           </div>
         </div>
+
         <div class="actions" style="margin-top:12px">
           <button class="btn ghost" id="helpClose">Close</button>
         </div>
       </div>
     </div>
 
+    <div class="modal-backdrop" id="qrModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="qrTitle" style="text-align:center">
+        <h3 id="qrTitle">USDT (TRC20) QR</h3>
+        <p style="color:var(--muted);font-size:13px">Scan this QR to copy the wallet address (demo).</p>
+        <div id="qrImage" style="margin:12px auto;width:220px;height:220px;border-radius:12px;overflow:hidden;background:#fff;display:grid;place-items:center"></div>
+        <div class="actions" style="margin-top:12px"><button class="btn ghost" id="qrClose">Close</button></div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="logoutModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="logoutTitle">
+        <h3 id="logoutTitle">Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+        <div class="actions">
+          <button class="btn ghost" id="btnNo">No</button>
+          <button class="btn warn" id="btnYes">Yes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPINNER OVERLAY (Logout) -->
     <div class="spinner-overlay" id="spinnerOverlay" aria-hidden="true">
-      <div class="spinner-panel" role="status" aria-live="polite">
-        <div class="spinner" aria-hidden="true">
+      <div class="spinner-panel" id="spinnerPanel">
+        <div class="spinner" id="spinner">
           <div class="hole" id="spinnerInnerText">Logging out...<br>See you soon.</div>
         </div>
         <div style="color:var(--muted);font-size:14px">Preparing to sign you out</div>
@@ -262,21 +306,19 @@
   </div>
 
   <script>
-    // Elements
+    /* =============
+       Element refs
+       ============= */
     const menuBtn = document.getElementById('menuBtn');
     const menuPanel = document.getElementById('menuPanel');
+    const overlayDim = document.getElementById('overlayDim');
     const mTiers = document.getElementById('mTiers');
     const mContribute = document.getElementById('mContribute');
-    const contribHint = document.getElementById('contribHint');
-    const contribLabel = document.getElementById('contribLabel');
-    const mLogout = document.getElementById('mLogout');
     const mHelp = document.getElementById('mHelp');
-
-    const logoutModal = document.getElementById('logoutModal');
-    const btnNo = document.getElementById('btnNo');
-    const btnYes = document.getElementById('btnYes');
-    const spinnerOverlay = document.getElementById('spinnerOverlay');
-    const spinnerInnerText = document.getElementById('spinnerInnerText');
+    const mLogout = document.getElementById('mLogout');
+    const contribLabel = document.getElementById('contribLabel');
+    const contribHint = document.getElementById('contribHint');
+    const profileCircle = document.getElementById('profileCircle');
 
     const contributeModal = document.getElementById('contributeModal');
     const methodBankBtn = document.getElementById('methodBank');
@@ -291,121 +333,262 @@
     const helpModal = document.getElementById('helpModal');
     const helpClose = document.getElementById('helpClose');
 
+    const qrModal = document.getElementById('qrModal');
+    const qrImage = document.getElementById('qrImage');
+    const qrClose = document.getElementById('qrClose');
+    const showQR = document.getElementById('showQR');
+
+    const logoutModal = document.getElementById('logoutModal');
+    const btnNo = document.getElementById('btnNo');
+    const btnYes = document.getElementById('btnYes');
+
+    const spinnerOverlay = document.getElementById('spinnerOverlay');
+    const spinnerPanel = document.getElementById('spinnerPanel');
+    const spinner = document.getElementById('spinner');
+    const spinnerInnerText = document.getElementById('spinnerInnerText');
+
     const copyButtons = document.querySelectorAll('.copy-btn');
     const toast = document.getElementById('toast');
-    const showQR = document.getElementById('showQR');
     const shareBtn = document.getElementById('shareBtn');
     const submitContrib = document.getElementById('submitContrib');
+
     const methodSelect = document.getElementById('method');
+    const referNumEl = document.getElementById('refersNum');
 
-    // Menu open/close
-    function openMenu(){ menuPanel.classList.add('open'); menuBtn.setAttribute('aria-expanded','true'); setTimeout(()=> document.addEventListener('click', docClickCloseMenu), 10); }
-    function closeMenu(){ menuPanel.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); document.removeEventListener('click', docClickCloseMenu); }
-    function docClickCloseMenu(e){ if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu(); }
-    menuBtn.addEventListener('click', (e)=>{ e.stopPropagation(); if(menuPanel.classList.contains('open')) closeMenu(); else openMenu(); });
+    /* =============
+       Helpers
+       ============= */
+    function showToast(msg){
+      toast.innerText = msg || 'Copied!';
+      toast.style.display = 'block';
+      toast.style.opacity = '1';
+      setTimeout(()=>{ toast.style.transition='opacity 300ms ease'; toast.style.opacity='0'; setTimeout(()=>{ toast.style.display='none'; toast.style.transition=''; },300); },1400);
+    }
 
-    // Menu actions (open modals)
-    mTiers.addEventListener('click', ()=>{ closeMenu(); openModal(tiersModal); });
-    mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); showBank(); });
-    mLogout.addEventListener('click', ()=>{ closeMenu(); openModal(logoutModal); });
-    mHelp.addEventListener('click', ()=>{ closeMenu(); openModal(helpModal); });
+    function openMenu(){
+      menuPanel.classList.add('open');
+      overlayDim.classList.add('visible');
+      menuPanel.setAttribute('aria-hidden','false');
+      menuBtn.setAttribute('aria-expanded','true');
+      // close on outside click
+      setTimeout(()=> document.addEventListener('click', docClickCloseMenu),20);
+    }
+    function closeMenu(){
+      menuPanel.classList.remove('open');
+      overlayDim.classList.remove('visible');
+      menuPanel.setAttribute('aria-hidden','true');
+      menuBtn.setAttribute('aria-expanded','false');
+      document.removeEventListener('click', docClickCloseMenu);
+    }
+    function docClickCloseMenu(e){
+      if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
+    }
 
-    // Generic modal open/close
-    function openModal(el){ el.style.display = 'flex'; el.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden'; const btn = el.querySelector('button'); if(btn) btn.focus(); }
-    function closeModal(el){ el.style.display = 'none'; el.setAttribute('aria-hidden','true'); document.body.style.overflow = ''; }
+    // modal open/close
+    function openModal(el){
+      if(!el) return;
+      el.style.display = 'flex';
+      el.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+      const btn = el.querySelector('button');
+      if(btn) btn.focus();
+    }
+    function closeModal(el){
+      if(!el) return;
+      el.style.display = 'none';
+      el.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+    }
 
-    // Close on backdrop click
-    [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => { if(!m) return; m.addEventListener('click', (ev)=> { if(ev.target === m) closeModal(m); }); });
+    // copy helper with fallback
+    function copyText(text){
+      if(!text) return showToast('Nothing to copy');
+      if(navigator.clipboard){
+        return navigator.clipboard.writeText(text).then(()=> showToast('Copied to clipboard'));
+      } else {
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); showToast('Copied to clipboard'); } catch(e){ showToast('Copy failed'); }
+        ta.remove();
+      }
+    }
 
-    // Logout modal
-    btnNo.addEventListener('click', ()=> closeModal(logoutModal));
-    btnYes.addEventListener('click', ()=> {
-      closeModal(logoutModal);
-      spinnerInnerText.innerHTML = 'Logging out...<br>See you soon.';
-      spinnerOverlay.style.display = 'flex';
-      spinnerOverlay.setAttribute('aria-hidden','false');
-      document.getElementById('appRoot').style.transition = 'opacity 450ms ease';
-      document.getElementById('appRoot').style.opacity = '0.25';
-      setTimeout(()=>{ document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease'; document.body.style.backgroundColor = '#000'; document.body.style.opacity = '0'; setTimeout(()=> window.location.href = 'login.html', 350); }, 4000);
+    /* =============
+       Menu wiring
+       ============= */
+    menuBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(menuPanel.classList.contains('open')) closeMenu(); else openMenu();
     });
 
-    // Contribute toggles - only Bank & USDT (TRC20)
+    // overlay / dim closes menu & modals
+    overlayDim.addEventListener('click', ()=>{ closeMenu(); });
+
+    // menu item triggers
+    mTiers.addEventListener('click', ()=>{ closeMenu(); openModal(tiersModal); });
+    mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); showBank(); });
+    mHelp.addEventListener('click', ()=>{ closeMenu(); openModal(helpModal); });
+    mLogout.addEventListener('click', ()=>{ closeMenu(); openModal(logoutModal); });
+
+    profileCircle.addEventListener('click', ()=>{ openModal(logoutModal); });
+
+    // close modals when backdrop clicked
+    [contributeModal, tiersModal, helpModal, logoutModal, qrModal].forEach(m=>{
+      if(!m) return;
+      m.addEventListener('click', (ev)=>{ if(ev.target === m) closeModal(m); });
+    });
+
+    // ESC key closes things
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape'){
+        if(menuPanel.classList.contains('open')) closeMenu();
+        [contributeModal, tiersModal, helpModal, logoutModal, qrModal].forEach(m=>{ if(m && m.style.display === 'flex') closeModal(m); });
+      }
+    });
+
+    /* =============
+       Contribute logic (Bank / USDT)
+       ============= */
     function showBank(){
       bankBlock.style.display = 'block';
       usdtBlock.style.display = 'none';
       methodBankBtn.classList.add('primary');
       methodUSDTBtn.classList.remove('primary');
-      // update menu hint and main select
+      // update menu text + hint + main select + persist
+      contribLabel.innerText = 'Contribution';
       contribHint.innerText = 'Bank Deposit';
       methodSelect.value = 'bank';
+      localStorage.setItem('preferredContribution','bank');
     }
     function showUSDT(){
       bankBlock.style.display = 'none';
       usdtBlock.style.display = 'block';
       methodUSDTBtn.classList.add('primary');
       methodBankBtn.classList.remove('primary');
+      contribLabel.innerText = 'Contribution';
       contribHint.innerText = 'USDT (TRC20)';
       methodSelect.value = 'usdt';
+      localStorage.setItem('preferredContribution','usdt');
     }
+
     methodBankBtn.addEventListener('click', showBank);
     methodUSDTBtn.addEventListener('click', showUSDT);
     contribClose.addEventListener('click', ()=> closeModal(contributeModal));
 
-    // Keep the main form select and menu hint synced when user changes the main select directly
+    // show QR modal for USDT (demo uses Google Chart API for QR)
+    if(showQR){
+      showQR.addEventListener('click', ()=>{
+        const addr = document.getElementById('walletAddr').innerText.trim();
+        // use google chart api to generate QR for demo
+        const src = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(addr);
+        qrImage.innerHTML = '<img src="'+src+'" alt="QR" style="width:100%;height:100%;object-fit:cover;border-radius:8px">';
+        closeModal(contributeModal);
+        openModal(qrModal);
+      });
+    }
+    qrClose.addEventListener('click', ()=> closeModal(qrModal));
+
+    // clicking the main select updates hint & persist
     methodSelect.addEventListener('change', (e)=>{
       const v = e.target.value;
       if(v === 'bank') contribHint.innerText = 'Bank Deposit';
       else if(v === 'usdt') contribHint.innerText = 'USDT (TRC20)';
+      localStorage.setItem('preferredContribution', v);
     });
 
-    // Copy to clipboard
-    function showToast(msg){ toast.innerText = msg || 'Copied!'; toast.style.display = 'block'; toast.style.opacity = '1'; setTimeout(()=> { toast.style.transition = 'opacity 300ms ease'; toast.style.opacity = '0'; setTimeout(()=> { toast.style.display = 'none'; toast.style.transition=''; }, 300); }, 1400); }
-    copyButtons.forEach(btn => {
+    // copy buttons
+    copyButtons.forEach(btn=>{
       btn.addEventListener('click', (e)=>{
         const key = e.currentTarget.getAttribute('data-copy');
         let text = '';
         if(key === 'bankAcct') text = document.getElementById('bankAcct').innerText.trim();
         else if(key === 'sortCode') text = document.getElementById('sortCode').innerText.trim();
         else if(key === 'walletAddr') text = document.getElementById('walletAddr').innerText.trim();
-        if(!text){ showToast('Nothing to copy'); return; }
-        if(navigator.clipboard){ navigator.clipboard.writeText(text).then(()=> showToast('Copied to clipboard')); } else {
-          const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
-          try{ document.execCommand('copy'); showToast('Copied to clipboard'); } catch(e){ showToast('Copy failed'); } ta.remove();
-        }
+        copyText(text);
       });
     });
 
-    // QR demo
-    if(showQR) showQR.addEventListener('click', ()=> showToast('QR demo not available in this build.'));
-
-    // Share and contribution demo
-    shareBtn.addEventListener('click', async ()=> {
+    // demo share
+    shareBtn.addEventListener('click', async ()=>{
       const url = location.href;
       const shareObj = { title:'Join me on Dream Big', text:'Sign up and start building with Dream Big', url };
-      if(navigator.share){ try{ await navigator.share(shareObj); } catch(e){} } else { if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); else alert('Copy and share: ' + url); }
-    });
-    submitContrib.addEventListener('click', (e)=>{ e.preventDefault(); const amt = document.getElementById('amount').value.trim(); if(!amt || isNaN(amt)){ alert('Please enter a valid amount.'); return; } alert('Contribution of $' + amt + ' recorded (demo).'); document.getElementById('amount').value=''; });
-
-    // Help actions
-    document.getElementById('emailSupport').addEventListener('click', ()=> { window.location.href = 'mailto:support@dreambig.example?subject=Support%20Request'; });
-    document.getElementById('waSupport').addEventListener('click', ()=> { const phone = '+2348000000000'; window.open('https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...'), '_blank'); });
-
-    // Accessibility: Esc closes menu/modals
-    document.addEventListener('keydown', (e)=> {
-      if(e.key === 'Escape'){
-        if(menuPanel.classList.contains('open')) closeMenu();
-        [logoutModal, contributeModal, tiersModal, helpModal].forEach(m => { if(m && m.style.display === 'flex') closeModal(m); });
+      if(navigator.share){
+        try{ await navigator.share(shareObj); }catch(e){}
+      } else {
+        if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=> showToast('Referral copied'));
+        else alert('Copy and share: '+url);
       }
     });
 
-    // init
+    // contribution submit demo
+    submitContrib.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const amt = document.getElementById('amount').value.trim();
+      if(!amt || isNaN(amt)) { alert('Please enter a valid amount.'); return; }
+      // show chosen method
+      const method = methodSelect.value === 'bank' ? 'Bank Deposit' : 'USDT (TRC20)';
+      alert('Contribution of $' + amt + ' via ' + method + ' recorded (demo).');
+      document.getElementById('amount').value = '';
+    });
+
+    /* =============
+       Help actions
+       ============= */
+    document.getElementById('emailSupport').addEventListener('click', ()=> window.location.href = 'mailto:support@dreambig.example?subject=Support%20Request');
+    document.getElementById('waSupport').addEventListener('click', ()=> {
+      const phone = '+2348000000000';
+      window.open('https://wa.me/' + phone.replace(/\D/g,'') + '?text=' + encodeURIComponent('Hello Dream Big Support, I need help with...'), '_blank');
+    });
+
+    /* =============
+       Logout flow (modal => spinner => roll => redirect)
+       ============= */
+    btnNo.addEventListener('click', ()=> closeModal(logoutModal));
+    btnYes.addEventListener('click', ()=>{
+      closeModal(logoutModal);
+      // show spinner overlay
+      spinnerInnerText.innerHTML = 'Logging out...<br>See you soon.';
+      spinnerOverlay.style.display = 'flex';
+      spinnerOverlay.setAttribute('aria-hidden','false');
+
+      // make a rolling animation by toggling class on spinner element
+      spinner.classList.add('spinner-roll');
+
+      // fade the app slightly
+      document.getElementById('appRoot').style.transition = 'opacity 450ms ease';
+      document.getElementById('appRoot').style.opacity = '0.25';
+
+      // 4 seconds of roll/spin
+      setTimeout(()=>{
+        // fade to black, then redirect
+        document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease';
+        document.body.style.backgroundColor = '#000';
+        document.body.style.opacity = '0';
+        setTimeout(()=> {
+          // final redirect - ensure login.html exists or change path
+          window.location.href = 'login.html';
+        }, 350);
+      }, 4000);
+    });
+
+    /* =============
+       Persistence & init
+       ============= */
     (function init(){
-      document.getElementById('refersNum').innerText = '20';
-      document.getElementById('refCount').querySelector('strong')?.innerText = '20';
-      // default contribution hint remains "Contribution" until user picks a method
-      // ensure main select matches default (let's keep default as bank)
-      methodSelect.value = 'bank';
-      contribHint.innerText = 'Contribution';
+      // referrals static
+      referNumEl.innerText = '20';
+      document.getElementById('refCount').querySelector('strong').innerText = '20';
+
+      // load preferred contribution method from localStorage and update UI
+      const pref = localStorage.getItem('preferredContribution') || 'bank';
+      if(pref === 'usdt'){ showUSDT(); } else { showBank(); }
+
+      // ensure contribLabel initial text
+      contribLabel.innerText = 'Contribution';
+      // set date meta if empty
+      const meta = document.getElementById('metaDate');
+      if(!meta.innerText.trim()) {
+        const d = new Date(); meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+      }
     })();
   </script>
 </body>
