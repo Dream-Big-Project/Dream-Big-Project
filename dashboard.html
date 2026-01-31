@@ -1,451 +1,382 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Dream Big — Dashboard (Mobile Fixed)</title>
-<style>
-  :root{
-    --navy:#071735;
-    --navy-2:#0e274f;
-    --gold:#DCAE3A;
-    --gold-2:#F0C75E;
-    --muted:#9fb0c7;
-    --card-radius:12px;
-    --sidebar-w:300px;
-    --max-w:1200px;
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
-
-  /* THEME TOKENS */
-  body.dark{
-    --bg: linear-gradient(180deg,var(--navy),var(--navy-2));
-    --surface: rgba(255,255,255,0.03);
-    --text:#fff;
-    --glass: rgba(255,255,255,0.03);
-    --muted: #9fb0c7;
-  }
-  body.light{
-    --bg: linear-gradient(180deg,#f6f8fb,#eef3fb);
-    --surface: #ffffff;
-    --text:#071735;
-    --glass: rgba(7,23,53,0.04);
-    --muted: #6b7280;
-  }
-
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden}
-  .app{max-width:var(--max-w);margin:18px auto;height:calc(100vh - 36px);display:grid;grid-template-columns:1fr;gap:18px;padding:0 12px;box-sizing:border-box}
-
-  @media(min-width:980px){ .app{ grid-template-columns: var(--sidebar-w) 1fr; } }
-
-  /* OVERLAY (in markup now) */
-  .overlay { position:fixed; inset:0; background:rgba(2,6,20,0.45); opacity:0; pointer-events:none; transition:opacity .28s ease; z-index:60; -webkit-tap-highlight-color: transparent; }
-  .overlay.show { opacity:1; pointer-events:auto; }
-
-  /* SIDEBAR */
-  .sidebar {
-    background:var(--surface);
-    border-radius:12px;
-    padding:16px;
-    box-shadow:0 12px 40px rgba(2,6,20,0.35);
-    overflow:auto;
-    height:100%;
-    box-sizing:border-box;
-    transform: translateX(-20px);
-    opacity:0;
-    transition: transform .28s cubic-bezier(.2,.9,.2,1), opacity .28s ease;
-    z-index:70;
-    position:fixed;
-    left:12px; top:12px; bottom:12px; width:var(--sidebar-w);
-  }
-  .sidebar.open{ transform: translateX(0); opacity:1; }
-  /* desktop: sidebar inline */
-  @media(min-width:980px){
-    .sidebar{ position:relative; transform:none; opacity:1; left:auto; top:auto; bottom:auto; }
-    .overlay{ display:none; }
-  }
-
-  .brand{display:flex;gap:12px;align-items:center}
-  .mark{width:54px;height:54px;border-radius:12px;background:linear-gradient(90deg,var(--gold),var(--gold-2));flex-shrink:0}
-  .title{font-weight:900}
-  .muted{color:var(--muted);font-weight:800;font-size:13px}
-
-  .tiers{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(220,174,58,0.06), rgba(255,255,255,0.01));}
-  .tier-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:var(--navy);font-weight:900}
-
-  nav.main-nav{ margin-top:16px; display:flex; flex-direction:column; gap:8px }
-  .nav-item{ display:flex; align-items:center; gap:10px; padding:12px; border-radius:10px; cursor:pointer; font-weight:900; user-select:none; }
-  .nav-item:active{ transform: translateY(1px) }
-  .nav-item:hover{ background:var(--glass) }
-  .nav-item.active{ background: linear-gradient(90deg, rgba(220,174,58,0.12), rgba(240,199,94,0.04)); color:var(--navy) }
-
-  .sidebar-footer{ margin-top:auto; padding-top:12px }
-  .logout-btn{ width:100%; padding:12px; border-radius:10px; font-weight:900; cursor:pointer; background:transparent; border:1px solid rgba(255,255,255,0.06) }
-
-  /* MAIN */
-  .main { background:transparent; padding:18px; overflow:auto; height:100%; box-sizing:border-box; -webkit-overflow-scrolling:touch }
-  .topbar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
-  .left-controls{ display:flex; align-items:center; gap:12px; }
-  .menu-btn{ background:transparent; border:0; color:var(--text); font-weight:900; padding:10px 14px; border-radius:10px; cursor:pointer; font-size:18px; -webkit-tap-highlight-color: transparent }
-  .page-title{ font-weight:900; font-size:20px }
-  .actions{ display:flex; gap:10px; align-items:center }
-
-  .theme-btn{ padding:8px; border-radius:10px; background:var(--glass); border:0; cursor:pointer; font-weight:900; min-width:44px; min-height:44px }
-  .avatar{ width:44px; height:44px; border-radius:50%; background:linear-gradient(180deg,#0c3a6b,#0b2340); display:flex; align-items:center; justify-content:center; font-weight:900; cursor:pointer }
-
-  .profile-menu{ position:fixed; right:18px; top:74px; background:var(--surface); padding:8px; border-radius:10px; box-shadow:0 12px 40px rgba(2,6,20,0.25); display:none; min-width:160px; z-index:200; }
-  .profile-menu a{ display:block; padding:8px; border-radius:8px; text-decoration:none; color:var(--text); font-weight:800 }
-  .profile-menu a:hover{ background:var(--glass) }
-
-  .layout{ display:grid; gap:12px; grid-template-columns:1fr; }
-  @media(min-width:980px){ .layout{ grid-template-columns:1fr 360px } }
-
-  .card{ background:var(--surface); padding:12px; border-radius:12px; box-shadow:0 12px 40px rgba(2,6,20,0.12); }
-  .kpi-row{ display:flex; gap:12px; flex-wrap:wrap }
-  .kpi{ min-width:140px; padding:12px; border-radius:10px; background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent); font-weight:900 }
-
-  .kpi-top, .kpi-bottom { display:flex; gap:12px; margin-bottom:12px; }
-  .projects { display:flex; flex-direction:column; gap:12px; margin-top:8px }
-  .project { background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; }
-  .project .meta{ display:flex; justify-content:space-between; align-items:center }
-  .progress{ height:12px; background: rgba(255,255,255,0.03); border-radius:999px; overflow:hidden; margin-top:8px }
-  .progress i{ display:block; height:100%; width:0%; transition: width .8s cubic-bezier(.2,.9,.2,1) }
-
-  input, select { padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text); min-width:120px }
-
-  .btn { background:linear-gradient(90deg,var(--gold),var(--gold-2)); color:var(--navy); padding:10px 12px; border-radius:10px; border:0; font-weight:900; cursor:pointer; box-shadow:0 8px 24px rgba(2,6,20,0.12); min-height:44px }
-  .btn:active{ transform:translateY(1px) }
-
-  /* Toasts */
-  .toast-wrap{ position: fixed; top:18px; right:18px; display:flex; flex-direction:column; gap:8px; z-index:300; max-width:360px }
-  .toast{ background: rgba(11,32,56,0.95); color:#fff; padding:12px 14px; border-radius:10px; box-shadow:0 10px 30px rgba(2,6,20,0.4); font-weight:800; opacity:0; transform:translateY(-8px); transition:opacity .28s, transform .28s }
-  .toast.show{ opacity:1; transform:translateY(0) }
-
-  footer.site-footer{ text-align:center; color:var(--muted); font-weight:800; padding:12px; margin-top:12px }
-
-  /* focus */
-  :focus{ outline: 3px solid rgba(220,174,58,0.18); outline-offset:3px; border-radius:8px }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Dream Big — Member Dashboard (Mobile)</title>
+  <meta name="theme-color" content="#071a2a" />
+  <style>
+    /* =========================
+       Visual / Layout (Mobile)
+       ========================= */
+    :root{
+      --bg:#061228;
+      --card:#0f2a44;
+      --muted:#9fb3c7;
+      --accent:#f6c44b;
+      --danger:#e14b4b;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --gap:12px;
+      --text:#eaf6ff;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#021226 0%, #071a2a 100%);color:var(--text);-webkit-tap-highlight-color:transparent}
+    .app{min-height:100vh;display:flex;flex-direction:column;padding:16px;gap:12px;transition:opacity .45s ease}
+    header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#042137;font-weight:800;font-size:16px}
+    .title{font-size:16px;font-weight:700}
+    .meta{font-size:12px;color:var(--muted)}
+    .nav-actions{display:flex;align-items:center;gap:8px}
+    button.icon-btn{background:var(--card);padding:8px;border-radius:10px;border:none;color:var(--muted);font-weight:600}
+    button.logout-btn{background:linear-gradient(180deg,var(--accent),#d9a83b);color:#042137;padding:8px 12px;border-radius:10px;border:none;font-weight:700}
+    .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;position:relative}
+    /* Profile menu */
+    .profile-menu{position:absolute;right:0;top:58px;background:var(--card);padding:8px;border-radius:10px;min-width:160px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:30}
+    .profile-menu button{display:block;width:100%;text-align:left;padding:8px;border-radius:8px;border:none;background:transparent;color:var(--text)}
+    main{flex:1;overflow:auto;padding-bottom:80px}
+    .welcome{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:16px}
+    .welcome h2{margin:0;font-size:15px}
+    .kpis{display:flex;gap:8px;margin-top:12px}
+    .kpi{flex:1;padding:10px;background:var(--card);border-radius:12px;text-align:left}
+    .kpi .num{font-size:18px;font-weight:800}
+    .card{background:var(--card);padding:14px;border-radius:16px;margin-top:14px}
+    .project-title{display:flex;justify-content:space-between;align-items:center}
+    .progress{height:10px;background:rgba(255,255,255,0.04);border-radius:10px;margin-top:10px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,#ff7a5a,#f6c44b);width:25%}
+    .form-row{display:flex;gap:8px;margin-top:12px}
+    .input,select{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
+    .submit{background:var(--accent);color:#042137;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
+    .tracker-title{font-weight:800}
+    /* Sticky referrals bottom */
+    .bottom-bar{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:20}
+    .ref-count{font-weight:800;font-size:16px}
+    .ref-note{font-size:12px;color:var(--muted)}
+    .btn{padding:10px 12px;border-radius:10px;border:none}
+    .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
+    .btn.warn{background:var(--danger);color:white}
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:60}
+    .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    .modal h3{margin:0 0 6px 0}
+    .modal p{color:var(--muted);margin:0 0 12px 0}
+    .modal .actions{display:flex;gap:8px;justify-content:flex-end}
+    /* Spinner overlay (segmented & animated) */
+    .spinner-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:70}
+    .spinner-panel{display:flex;flex-direction:column;align-items:center;gap:14px;background:rgba(2,18,30,0.92);padding:22px;border-radius:12px;backdrop-filter:blur(6px)}
+    .spinner{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;position:relative}
+    /* segmented spinner with conic-gradient and rotation */
+    .spinner:before{content:'';position:absolute;inset:0;border-radius:50%;background:
+      conic-gradient(
+        #cfd8dd 0deg 30deg,
+        rgba(255,255,255,0.06) 30deg 60deg,
+        #9aa6b2 60deg 90deg,
+        rgba(255,255,255,0.06) 90deg 120deg,
+        #6f7f8f 120deg 150deg,
+        rgba(255,255,255,0.03) 150deg 360deg
+      );
+      animation:spin 0.95s linear infinite
+    }
+    .spinner .hole{width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#061226,#0a2938);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:6px;line-height:1.1}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* small layout tuning */
+    @media(min-width:540px){.app{padding:20px}.card{padding:18px}.logo{width:48px;height:48px}}
+  </style>
 </head>
-<body class="dark">
-
-  <!-- overlay (in DOM) -->
-  <div id="overlay" class="overlay" aria-hidden="true"></div>
-
-  <!-- sidebar (off-canvas on small) -->
-  <aside id="sidebar" class="sidebar" role="navigation" aria-label="Primary navigation" aria-hidden="true">
-    <div class="brand">
-      <div class="mark" aria-hidden="true"></div>
-      <div>
-        <div class="title">Dream Big Project</div>
-        <div class="muted">Member Dashboard</div>
-      </div>
-    </div>
-
-    <div class="tiers" role="region" aria-label="Member tier summary">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+<body>
+  <div class="app" id="appRoot" aria-live="polite">
+    <!-- HEADER -->
+    <header>
+      <div class="brand" role="banner">
+        <div class="logo" aria-hidden="true">DB</div>
         <div>
-          <div class="muted">Your Tier</div>
-          <div style="font-weight:900">Pathfinder <span class="tier-badge">PRO</span></div>
-        </div>
-        <div style="text-align:right">
-          <div class="muted">Months</div>
-          <div style="font-weight:900">8 / 24</div>
+          <div class="title">Dashboard</div>
+          <div class="meta" id="metaDate">1/31/2026</div>
         </div>
       </div>
-      <div style="height:8px"></div>
-      <div class="progress"><i style="width:33%; background: linear-gradient(90deg,var(--gold),var(--gold-2))"></i></div>
-      <div style="height:8px"></div>
-      <button id="viewTiersBtn" class="btn">View Tier Details</button>
-    </div>
 
-    <nav class="main-nav" aria-label="Main">
-      <div class="nav-item active" data-target="dashboard" tabindex="0">🏠 <div>Dashboard</div></div>
-      <div class="nav-item" data-target="projects" tabindex="0">📁 <div>My Projects</div></div>
-      <div class="nav-item" data-target="tracker" tabindex="0">📊 <div>Project Tracker</div></div>
-      <div class="nav-item" data-target="referrals" tabindex="0">🔗 <div>Referrals & Rewards</div></div>
-      <div class="nav-item" data-target="wallet" tabindex="0">💼 <div>Wallet</div></div>
-      <div class="nav-item" data-target="docs" tabindex="0">📄 <div>Documents</div></div>
-      <div class="nav-item" data-target="settings" tabindex="0">⚙️ <div>Settings & Privacy</div></div>
-      <div class="nav-item" data-target="help" tabindex="0">❓ <div>Help & Support</div></div>
-    </nav>
+      <div class="nav-actions" aria-hidden="false">
+        <button class="icon-btn" id="addProjectBtn" aria-label="Add project">Add</button>
+        <button class="logout-btn" id="topLogoutBtn" aria-label="Logout">Logout</button>
 
-    <div class="sidebar-footer">
-      <button id="sidebarLogout" class="logout-btn">Logout</button>
-    </div>
-  </aside>
+        <!-- profile circle + dropdown -->
+        <div class="profile" id="profileCircle" aria-haspopup="true" aria-expanded="false" title="Profile">
+          PD
+          <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+            <button id="profileView">View Profile</button>
+            <button id="profileLogoutBtn">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
 
-  <div class="app" id="appRoot">
-    <main class="main" role="main">
-      <div class="topbar" role="banner">
-        <div class="left-controls">
-          <button id="menuBtn" class="menu-btn" aria-controls="sidebar" aria-expanded="false" title="Open menu">☰</button>
+    <!-- MAIN -->
+    <main>
+      <section class="welcome" aria-labelledby="welcomeTitle">
+        <h2 id="welcomeTitle">Welcome back, Member</h2>
+        <div class="kpis" role="region" aria-label="Key performance indicators">
+          <div class="kpi" title="Active projects">
+            <div class="num">1</div>
+            <div style="font-size:12px;color:var(--muted)">Active Projects</div>
+          </div>
+          <div class="kpi" title="Total contribution">
+            <div class="num">$250</div>
+            <div style="font-size:12px;color:var(--muted)">Total Contribution</div>
+          </div>
+          <div class="kpi" title="Referrals">
+            <div class="num" id="refersNum">20</div>
+            <div style="font-size:12px;color:var(--muted)">Referrals</div>
+          </div>
+        </div>
+      </section>
+
+      <article class="card" aria-labelledby="projectHead">
+        <div class="project-title" id="projectHead">
           <div>
-            <div class="page-title" id="pageTitle">Dashboard</div>
-            <div class="muted" id="todayLabel">—</div>
+            <div style="font-weight:800">Agro Processing</div>
+            <div style="font-size:12px;color:var(--muted)">Spark • $250</div>
           </div>
+          <div style="text-align:right;color:var(--muted)"><div style="font-weight:800">Matures in</div><div>18m</div></div>
         </div>
 
-        <div class="actions">
-          <button id="themeToggle" class="theme-btn" title="Toggle theme" aria-pressed="false">🌙</button>
-          <div style="position:relative">
-            <div id="avatarBtn" class="avatar" title="Profile">PD</div>
-            <div id="profileMenu" class="profile-menu" role="menu" aria-hidden="true">
-              <a id="editProfile" href="#">Edit Profile</a>
-              <a id="settingsLink" href="#">Settings & Privacy</a>
-              <a id="profileLogout" href="#">Logout</a>
-            </div>
-          </div>
+        <div class="progress" aria-hidden="true" style="margin-top:12px">
+          <i style="width:25%"></i>
         </div>
-      </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;color:var(--muted);font-size:13px">
+          <div>25%</div>
+          <div>Target: $1,000</div>
+        </div>
 
-      <div class="layout">
-        <section>
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <div style="font-weight:900">Welcome back, <span id="displayName">Member</span></div>
-                <div class="muted">Pathfinder • Active</div>
-              </div>
-              <div><button id="quickAdd" class="btn">Add Project</button></div>
-            </div>
+        <div class="form-row" style="margin-top:14px">
+          <input class="input" id="projName" placeholder="Project name" aria-label="Project name">
+          <input class="input" id="amount" placeholder="250" inputmode="numeric" aria-label="Amount">
+        </div>
+        <div class="form-row">
+          <select class="input" id="method" aria-label="Payment method"><option>Bank Deposit</option><option>Card</option><option>USSD</option></select>
+          <button class="submit" id="submitContrib">Submit</button>
+        </div>
+      </article>
 
-            <div style="height:12px"></div>
+      <section class="tracker card" aria-labelledby="trackerTitle">
+        <div id="trackerTitle" class="tracker-title">Project Tracker</div>
+        <div style="margin-top:8px;color:var(--muted);font-size:13px">Recent activity will appear here.</div>
+      </section>
 
-            <!-- TOP KPIs -->
-            <div class="kpi-top">
-              <div class="kpi"><div class="muted">Active Projects</div><div style="font-size:18px;font-weight:900" id="kActive">0</div></div>
-              <div class="kpi"><div class="muted">Total Contribution</div><div style="font-size:18px;font-weight:900" id="kTotal">$0</div></div>
-            </div>
-
-            <!-- SECONDARY KPIs BELOW -->
-            <div class="kpi-bottom">
-              <div class="kpi"><div class="muted">Referrals</div><div style="font-size:18px;font-weight:900" id="kRef">0</div></div>
-              <div class="kpi"><div class="muted">Wallet Balance</div><div style="font-size:18px;font-weight:900" id="kWallet">$0</div></div>
-            </div>
-
-            <div style="height:12px"></div>
-
-            <div class="projects" id="projectsList" aria-live="polite"></div>
-
-            <div style="height:12px"></div>
-
-            <div class="muted">Add Contribution / Project</div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-              <input id="projName" placeholder="Project name" inputmode="text" />
-              <input id="projAmt" type="number" placeholder="Amount USD" inputmode="numeric" value="250" />
-              <select id="projTier"><option>Seed</option><option>Spark</option><option>Builder</option><option>Creator</option><option>Visionary</option><option>Pathfinder</option></select>
-              <select id="projPay"><option>Bank Deposit</option><option>USDT</option></select>
-              <button id="projSubmit" class="btn">Submit</button>
-            </div>
-          </div>
-        </section>
-
-        <aside>
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><strong>Project Tracker</strong><div class="muted">24-month maturity</div></div>
-            </div>
-            <div id="trackerArea" style="margin-top:12px"></div>
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><strong>Referrals & Rewards</strong><div class="muted">Progress to 20 referrals</div></div>
-            </div>
-            <div style="height:8px"></div>
-            <div style="display:flex;gap:8px">
-              <input id="referralLink" value="https://dreambigpro.com/r/PRIN1234" />
-              <button id="copyBtn" class="btn">Copy</button>
-            </div>
-            <div style="height:10px"></div>
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div class="muted">Verified referrals</div>
-              <div style="font-weight:900" id="refCount">0 / 20</div>
-            </div>
-            <div style="height:8px"></div>
-            <div style="background:var(--glass);padding:10px;border-radius:8px;text-align:center">20 verified referrals unlock a one-time smartphone (tier-based)</div>
-          </div>
-        </aside>
-      </div>
-
-      <footer class="site-footer">© 2026 Dream Big Project. All rights reserved.</footer>
     </main>
+
+    <!-- REFERRAL BOTTOM BAR -->
+    <div class="bottom-bar" role="region" aria-label="referrals">
+      <div>
+        <div class="ref-count" id="refCount">Referrals: <strong>20</strong></div>
+        <div class="ref-note">Share your link. Earn rewards.</div>
+      </div>
+      <div>
+        <button class="btn ghost" id="shareBtn">Share</button>
+      </div>
+    </div>
+
+    <!-- CONFIRM LOGOUT MODAL -->
+    <div class="modal-backdrop" id="logoutModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document" aria-labelledby="logoutTitle">
+        <h3 id="logoutTitle">Confirm Logout</h3>
+        <p>Are you sure you want to log out?</p>
+        <div class="actions">
+          <button class="btn ghost" id="btnNo">No</button>
+          <button class="btn warn" id="btnYes">Yes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPINNER OVERLAY -->
+    <div class="spinner-overlay" id="spinnerOverlay" aria-hidden="true">
+      <div class="spinner-panel" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true">
+          <div class="hole" id="spinnerInnerText">Logging out...<br>See you soon.</div>
+        </div>
+        <div style="color:var(--muted);font-size:14px">Preparing to sign you out</div>
+      </div>
+    </div>
   </div>
 
-  <div class="toast-wrap" id="toasts" aria-live="polite" aria-atomic="true"></div>
+  <script>
+    /*******************************
+     * DOM elements
+     *******************************/
+    const topLogoutBtn = document.getElementById('topLogoutBtn');
+    const profileCircle = document.getElementById('profileCircle');
+    const profileMenu = document.getElementById('profileMenu');
+    const profileLogoutBtn = document.getElementById('profileLogoutBtn');
+    const logoutModal = document.getElementById('logoutModal');
+    const btnNo = document.getElementById('btnNo');
+    const btnYes = document.getElementById('btnYes');
+    const spinnerOverlay = document.getElementById('spinnerOverlay');
+    const appRoot = document.getElementById('appRoot');
+    const spinnerInnerText = document.getElementById('spinnerInnerText');
+    const shareBtn = document.getElementById('shareBtn');
+    const submitContrib = document.getElementById('submitContrib');
 
-<script>
-  // UI references
-  const overlay = document.getElementById('overlay');
-  const sidebar = document.getElementById('sidebar');
-  const menuBtn = document.getElementById('menuBtn');
-  const themeToggle = document.getElementById('themeToggle');
-  const avatarBtn = document.getElementById('avatarBtn');
-  const profileMenu = document.getElementById('profileMenu');
-  const projSubmit = document.getElementById('projSubmit');
-  const toasts = document.getElementById('toasts');
+    let logoutSource = null; // track who triggered logout (top or profile) - currently for debugging only
 
-  // small helper: show toast
-  function toast(msg, ms=2200){
-    const t = document.createElement('div'); t.className='toast'; t.textContent=msg; toasts.appendChild(t);
-    requestAnimationFrame(()=> t.classList.add('show'));
-    setTimeout(()=> { t.classList.remove('show'); setTimeout(()=> t.remove(),300); }, ms);
-  }
-
-  // theme (persist)
-  const initialTheme = localStorage.getItem('db-theme') || 'dark';
-  setTheme(initialTheme);
-  function setTheme(t){
-    document.body.classList.remove('dark','light'); document.body.classList.add(t);
-    localStorage.setItem('db-theme', t);
-    themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
-    themeToggle.setAttribute('aria-pressed', String(t==='light'));
-  }
-  themeToggle.addEventListener('click', ()=> setTheme(document.body.classList.contains('dark') ? 'light' : 'dark'));
-
-  // sidebar open/close for mobile
-  function openSidebar(){
-    sidebar.classList.add('open'); overlay.classList.add('show'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true');
-    // lock body scroll on mobile when sidebar open
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-  }
-  function closeSidebar(){
-    sidebar.classList.remove('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','true'); menuBtn.setAttribute('aria-expanded','false');
-    document.documentElement.style.overflow = ''; document.body.style.overflow = '';
-  }
-
-  // initialize sidebar state based on width
-  function initSidebar(){
-    if(window.innerWidth >= 980){
-      sidebar.classList.add('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true');
-      document.documentElement.style.overflow = ''; document.body.style.overflow = '';
-    } else {
-      closeSidebar();
+    /*******************************
+     * Utility functions
+     *******************************/
+    function openModal(){
+      logoutModal.style.display = 'flex';
+      logoutModal.setAttribute('aria-hidden','false');
+      // trap focus if necessary (simple approach)
+      btnYes.focus();
+      document.body.style.overflow = 'hidden';
     }
-  }
-  window.addEventListener('resize', initSidebar);
-  initSidebar();
-
-  menuBtn.addEventListener('click', ()=> {
-    if(window.innerWidth < 980){
-      if(sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
-    } else {
-      // on desktop, toggle a compact state (visual only)
-      sidebar.classList.toggle('collapsed');
-      if(sidebar.classList.contains('collapsed')) sidebar.style.width = '84px'; else sidebar.style.width = '';
+    function closeModal(){
+      logoutModal.style.display = 'none';
+      logoutModal.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
     }
-  });
 
-  overlay.addEventListener('click', closeSidebar);
+    function showSpinnerAndRedirect(redirectUrl = 'login.html'){
+      // set spinner text precisely as requested
+      spinnerInnerText.innerHTML = 'Logging out...<br>See you soon.';
+      spinnerOverlay.style.display = 'flex';
+      spinnerOverlay.setAttribute('aria-hidden','false');
 
-  // profile dropdown (tap)
-  avatarBtn.addEventListener('click', (e)=> {
-    e.stopPropagation();
-    const shown = profileMenu.style.display === 'block';
-    profileMenu.style.display = shown ? 'none' : 'block';
-    profileMenu.setAttribute('aria-hidden', String(!shown));
-  });
-  document.addEventListener('click', (e)=> {
-    if(!profileMenu.contains(e.target) && !avatarBtn.contains(e.target)){
+      // subtle fade of app for smooth transition
+      appRoot.style.transition = 'opacity 450ms ease';
+      appRoot.style.opacity = '0.25';
+
+      // After 4s show a quick fade to black then redirect
+      setTimeout(() => {
+        document.body.style.transition = 'background-color 350ms ease, opacity 350ms ease';
+        document.body.style.backgroundColor = '#000';
+        document.body.style.opacity = '0';
+        setTimeout(() => {
+          // redirect
+          window.location.href = redirectUrl;
+        }, 350);
+      }, 4000);
+    }
+
+    /*******************************
+     * Event wiring: Logout flows
+     *******************************/
+    // Top-right logout
+    topLogoutBtn.addEventListener('click', () => {
+      logoutSource = 'top';
+      openModal();
+    });
+
+    // Profile menu toggle
+    profileCircle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const visible = profileMenu.style.display === 'block';
+      profileMenu.style.display = visible ? 'none' : 'block';
+      profileCircle.setAttribute('aria-expanded', (!visible).toString());
+      profileMenu.setAttribute('aria-hidden', visible ? 'true' : 'false');
+    });
+
+    // clicking anywhere else closes profile menu
+    document.addEventListener('click', (e) => {
+      if(profileMenu.style.display === 'block' && !profileCircle.contains(e.target)) {
+        profileMenu.style.display = 'none';
+        profileCircle.setAttribute('aria-expanded','false');
+        profileMenu.setAttribute('aria-hidden','true');
+      }
+    });
+
+    // profile logout (uses same confirmation)
+    profileLogoutBtn.addEventListener('click', () => {
       profileMenu.style.display = 'none';
-      profileMenu.setAttribute('aria-hidden', 'true');
-    }
-  });
-
-  // nav item behavior (no alerts)
-  document.querySelectorAll('.nav-item').forEach(it=>{
-    it.addEventListener('click', ()=> {
-      document.querySelectorAll('.nav-item').forEach(i=> i.classList.remove('active'));
-      it.classList.add('active');
-      document.getElementById('pageTitle').textContent = it.textContent.trim();
-      if(window.innerWidth < 980) closeSidebar();
-    });
-  });
-
-  // data + project rendering (simple)
-  const projects = [];
-  function addMonths(d,m){ const dt=new Date(d); dt.setMonth(dt.getMonth()+m); return dt; }
-  function pct(s,e){ const start=new Date(s), end=new Date(e), now=new Date(); if(now<=start) return 0; if(now>=end) return 100; return Math.floor(((now - start)/(end - start))*100); }
-  function countdown(end){ const now=new Date(), e=new Date(end); if(now>=e) return 'Matured'; const days=Math.floor((e-now)/(1000*60*60*24)); return Math.floor(days/30) + 'm ' + (days%30) + 'd'; }
-  function colorBy(p){ if(p<=40) return '#D9534F'; if(p<=60) return '#F0AD4E'; return '#28A745'; }
-
-  function render(){
-    const list = document.getElementById('projectsList'), tracker = document.getElementById('trackerArea');
-    list.innerHTML = ''; tracker.innerHTML = '';
-    projects.forEach(p=>{
-      const per = pct(p.start, p.maturity);
-      const card = document.createElement('div'); card.className='project';
-      card.innerHTML = `<div class="meta"><div><strong>${p.name}</strong><div class="muted">${p.tier} • $${p.amount}</div></div><div style="text-align:right"><div class="muted">Matures in</div><strong>${countdown(p.maturity)}</strong></div></div><div class="progress"><i style="width:${per}%; background:${colorBy(per)}"></i></div><div style="display:flex;justify-content:space-between;margin-top:6px"><div class="muted">${per}%</div><div class="muted">Target: $${p.amount*10}</div></div>`;
-      list.appendChild(card);
-
-      const tr = document.createElement('div'); tr.className='card'; tr.style.marginBottom='10px';
-      tr.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${p.name}</strong><div class="muted">${p.tier}</div></div><div>${per}%</div></div><div style="height:8px"></div><div class="progress"><i style="width:${per}%; background:${colorBy(per)}"></i></div><div class="muted" style="margin-top:6px">${countdown(p.maturity)}</div>`;
-      tracker.appendChild(tr);
+      profileCircle.setAttribute('aria-expanded','false');
+      profileMenu.setAttribute('aria-hidden','true');
+      logoutSource = 'profile';
+      openModal();
     });
 
-    // update KPIs
-    document.getElementById('kActive').textContent = projects.length;
-    const total = projects.reduce((s,x)=> s + Number(x.amount), 0);
-    document.getElementById('kTotal').textContent = '$' + total.toLocaleString();
-  }
+    // Modal actions
+    btnNo.addEventListener('click', () => {
+      // don't log out, just close
+      closeModal();
+    });
 
-  // demo seed
-  (function seed(){
-    const now=new Date();
-    projects.push({ name:'Agro Processing Unit', amount:250, tier:'Spark', start:addMonths(now,-6).toISOString(), maturity:addMonths(now,18).toISOString() });
-    render();
-  })();
+    btnYes.addEventListener('click', () => {
+      closeModal();
+      // show spinner and redirect after 4 seconds
+      showSpinnerAndRedirect('login.html');
+    });
 
-  // add project (toast)
-  projSubmit.addEventListener('click', ()=>{
-    const name = document.getElementById('projName').value || 'Untitled';
-    const amt = Number(document.getElementById('projAmt').value) || 0;
-    if(amt <= 0){ toast('Enter a valid amount'); return; }
-    const tier = document.getElementById('projTier').value;
-    const start = new Date(), maturity = addMonths(start,24);
-    projects.unshift({ name, amount:amt, tier, start:start.toISOString(), maturity:maturity.toISOString() });
-    render();
-    toast('Contribution recorded — project added');
-    document.getElementById('projName').value = '';
-  });
+    // close modal when clicking outside modal content
+    logoutModal.addEventListener('click', (ev) => {
+      if(ev.target === logoutModal){
+        closeModal();
+      }
+    });
 
-  // copy referral
-  document.getElementById('copyBtn').addEventListener('click', ()=>{
-    const ref = document.getElementById('referralLink'); ref.select(); document.execCommand('copy');
-    toast('Referral link copied');
-  });
+    /*******************************
+     * Sharing and small interactions
+     *******************************/
+    shareBtn.addEventListener('click', async () => {
+      const url = location.href;
+      const shareObj = { title: 'Join me on Dream Big', text: 'Sign up and start building with Dream Big', url };
+      if(navigator.share){
+        try {
+          await navigator.share(shareObj);
+        } catch(e){
+          // user cancelled share or failed
+        }
+      } else {
+        // fallback - copy to clipboard if available
+        if(navigator.clipboard) {
+          navigator.clipboard.writeText(url).then(()=> alert('Referral link copied to clipboard.'));
+        } else {
+          alert('Copy and share your referral link: ' + url);
+        }
+      }
+    });
 
-  // toast helper
-  function toast(msg, ms=2200){
-    const t = document.createElement('div'); t.className='toast'; t.textContent=msg; toasts.appendChild(t);
-    requestAnimationFrame(()=> t.classList.add('show'));
-    setTimeout(()=> { t.classList.remove('show'); setTimeout(()=> t.remove(),300); }, ms);
-  }
+    // Simple contribution demo
+    submitContrib.addEventListener('click', (e) => {
+      e.preventDefault();
+      const amt = document.getElementById('amount').value.trim();
+      if(!amt || isNaN(amt)) {
+        alert('Please enter a valid amount.');
+        return;
+      }
+      // visual acknowledgement (demo)
+      alert('Contribution of $' + amt + ' submitted (demo)');
+      document.getElementById('amount').value = '';
+    });
 
-  // profile logout link
-  document.getElementById('profileLogout').addEventListener('click', (e)=> { e.preventDefault(); window.location.href='login.html'; });
+    /*******************************
+     * Accessibility / keyboard shortcuts
+     *******************************/
+    // Esc to close modal or profile
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') {
+        if(logoutModal.style.display === 'flex') closeModal();
+        if(profileMenu.style.display === 'block') {
+          profileMenu.style.display = 'none';
+          profileCircle.setAttribute('aria-expanded','false');
+        }
+      }
+    });
 
-  // ensure initial sidebar state
-  window.addEventListener('load', initSidebarState);
-  function initSidebarState(){
-    if(window.innerWidth >= 980){
-      sidebar.classList.add('open'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true');
-      overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
-    } else {
-      closeSidebar();
-    }
-  }
-  window.addEventListener('resize', initSidebarState);
-
-  // keyboard support for menu button
-  menuBtn.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); menuBtn.click(); } });
-
-</script>
+    /*******************************
+     * On load: set date and referral number
+     *******************************/
+    (function init(){
+      // keep the date anchored to the one you used (1/31/2026) but fallback to today's date if you want:
+      const meta = document.getElementById('metaDate');
+      if(!meta.innerText || meta.innerText.trim() === '') {
+        const d = new Date();
+        meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+      }
+      // referrals number (static 20 as requested)
+      document.getElementById('refersNum').innerText = '20';
+      document.getElementById('refCount').querySelector('strong').innerText = '20';
+    })();
+  </script>
 </body>
 </html>
