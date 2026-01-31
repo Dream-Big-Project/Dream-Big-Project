@@ -6,55 +6,78 @@
 <title>Dream Big — Dashboard</title>
 <meta name="theme-color" content="#071a2a"/>
 <style>
+  /* ---------- Theme variables (base are light/white-blue) ---------- */
   :root{
-    --bg:#061228; --card:#0f2a44; --muted:#9fb3c7; --accent:#f6c44b; --danger:#e14b4b; --text:#eaf6ff;
+    --bg:#f6f9fc;               /* light bg */
+    --card:#ffffff;             /* card */
+    --muted:#6b7d8c;            /* muted text */
+    --accent:#1ea7ff;           /* primary blue accent */
+    --accent-contrast:#042137;  /* text on accent */
+    --danger:#e14b4b;
+    --text:#042137;             /* primary text (dark) */
+    --brand-radius:12px;
     font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
   }
+
+  /* navy/gold theme values (applied when theme === navy) */
+  .theme-navy {
+    --bg: linear-gradient(180deg,#021226 0%, #071a2a 100%);
+    --card: linear-gradient(180deg,#072235,#0f2a44);
+    --muted: #9fb3c7;
+    --accent: #f6c44b;
+    --accent-contrast: #042137;
+    --danger: #e14b4b;
+    --text: #eaf6ff;
+  }
+
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#021226 0%, #071a2a 100%);color:var(--text)}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text)}
   .app{min-height:100vh;display:flex;flex-direction:column;padding:16px;gap:12px;transition:opacity .45s}
   header{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;z-index:50}
   .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#042137;font-weight:800;font-size:16px;overflow:hidden}
+  .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent-contrast);font-weight:800;font-size:16px;overflow:hidden}
   .logo img{width:100%;height:100%;object-fit:cover;border-radius:8px}
   .title{font-size:16px;font-weight:700}
   .meta{font-size:12px;color:var(--muted)}
   .menu-btn{width:46px;height:46px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;border:none;color:var(--muted);font-weight:800;font-size:20px}
   .overlay-dim{position:fixed;inset:0;background:rgba(0,0,0,0.45);opacity:0;pointer-events:none;transition:opacity 220ms ease;z-index:45}
   .overlay-dim.visible{opacity:1;pointer-events:auto}
-  .menu-panel{position:fixed;top:72px;right:12px;width:92%;max-width:360px;background:linear-gradient(180deg,#072235,#0f2a44);border-radius:14px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,0.6);transform-origin:top right;opacity:0;pointer-events:none;transform:translateY(-8px) scale(.98);transition:all 220ms cubic-bezier(.2,.9,.2,1);z-index:48}
+  .menu-panel{position:fixed;top:72px;right:12px;width:92%;max-width:360px;background:var(--card);border-radius:14px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,0.08);transform-origin:top right;opacity:0;pointer-events:none;transform:translateY(-8px) scale(.98);transition:all 220ms cubic-bezier(.2,.9,.2,1);z-index:48;color:var(--text)}
   .menu-panel.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
   .menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700;font-size:15px}
-  .menu-item:hover{background:rgba(255,255,255,0.02);color:var(--text)}
+  .menu-item:hover{background:rgba(0,0,0,0.02);color:var(--text)}
   .menu-item .hint{font-size:12px;color:var(--muted);font-weight:600}
-  .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#16394f,#0f2a44);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;overflow:hidden;position:relative}
+  .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#eaf6ff,#cfefff);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;overflow:hidden;position:relative}
   .profile img{width:100%;height:100%;object-fit:cover;border-radius:50%}
   .profile-initials{font-weight:800;color:var(--muted)}
   main{flex:1;overflow:auto;padding-bottom:110px}
-  .welcome{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:16px}
+  .welcome{background:var(--card);padding:14px;border-radius:16px;box-shadow:0 6px 18px rgba(2,6,20,0.04)}
   .kpis{display:flex;gap:8px;margin-top:12px}
-  .kpi{flex:1;padding:10px;background:var(--card);border-radius:12px;text-align:left}
+  .kpi{flex:1;padding:10px;background:rgba(0,0,0,0.02);border-radius:12px;text-align:left}
   .kpi .num{font-size:18px;font-weight:800}
   .card{background:var(--card);padding:14px;border-radius:16px;margin-top:14px}
   .form-row{display:flex;gap:8px;margin-top:12px}
-  .input,select{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
-  .submit{background:var(--accent);color:#042137;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
-  /* Footer: gold separator + simple copyright */
-  footer{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:12px;border-radius:12px;display:flex;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:40;border-top:4px solid var(--accent);justify-content:center}
+  .input,select{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);background:transparent;color:var(--text);font-size:14px}
+  .submit{background:var(--accent);color:var(--accent-contrast);padding:10px 14px;border-radius:10px;border:none;font-weight:700}
+  /* Footer: accent separator + simple copyright */
+  footer{position:fixed;left:12px;right:12px;bottom:12px;background:var(--card);padding:12px;border-radius:12px;display:flex;align-items:center;box-shadow:0 8px 30px rgba(2,6,20,0.06);z-index:40;border-top:4px solid var(--accent);justify-content:center;color:var(--muted)}
   .btn{padding:10px 12px;border-radius:10px;border:none}
-  .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.04)}
   .btn.warn{background:var(--danger);color:white}
   .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:46}
-  .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.6);position:relative}
-  .modal h3{margin:0 0 6px 0}
+  .modal{background:var(--card);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.08);position:relative;color:var(--text)}
+  .modal h3{margin:0 0 6px 0;color:var(--text)}
   .modal p{color:var(--muted);margin:0 0 12px 0}
   .modal .actions{display:flex;gap:8px;justify-content:flex-end}
   .close-x{position:absolute;right:12px;top:10px;background:transparent;border:none;color:var(--danger);font-weight:900;font-size:20px;border-radius:6px;padding:6px}
-  .proof-area{margin-top:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
-  .file-preview{margin-top:8px;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px}
-  .profile-menu{position:absolute;top:62px;right:12px;background:var(--card);padding:8px;border-radius:10px;min-width:160px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:50}
+  .proof-area{margin-top:12px;background:rgba(0,0,0,0.02);padding:12px;border-radius:10px}
+  .file-preview{margin-top:8px;background:rgba(0,0,0,0.02);padding:8px;border-radius:8px}
+  .profile-menu{position:absolute;top:62px;right:12px;background:var(--card);padding:8px;border-radius:10px;min-width:160px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.08);z-index:50}
   .profile-menu button{display:block;width:100%;text-align:left;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--text);font-weight:700}
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:rgba(0,0,0,0.75);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:80;font-weight:700}
+  .menu-header{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;margin-bottom:8px}
+  .menu-header .hdr-name{font-weight:800}
+  .small-pill{padding:6px 8px;border-radius:999px;background:rgba(0,0,0,0.02);font-weight:700;font-size:13px;color:var(--muted)}
   @media(min-width:540px){.app{padding:20px}}
 </style>
 </head>
@@ -68,7 +91,7 @@
           <!-- logo image inserted here if profile image saved -->
         </div>
         <div>
-          <div class="title">Dashboard</div>
+          <div class="title" id="dashboardTitle">Dashboard</div>
           <div class="meta" id="metaDate"></div>
         </div>
       </div>
@@ -84,7 +107,7 @@
           <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
             <button id="viewProfileBtn">View Profile</button>
             <button id="editProfileBtn">Edit Profile</button>
-            <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:8px 0">
+            <hr style="border:none;border-top:1px solid rgba(0,0,0,0.04);margin:8px 0">
             <button id="profileLogoutBtn" style="color:var(--danger)">Logout</button>
           </div>
         </div>
@@ -95,6 +118,22 @@
 
     <!-- MENU PANEL -->
     <div class="menu-panel" id="menuPanel" aria-hidden="true">
+      <!-- new header: small profile + name + view/hide -->
+      <div class="menu-header" id="menuHeader" style="background:transparent">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;background:var(--accent);display:grid;place-items:center" id="menuThumb">
+            <!-- small thumb inserted -->
+          </div>
+          <div>
+            <div class="hdr-name" id="menuName">Member Name</div>
+            <div style="font-size:12px;color:var(--muted)" id="menuRole">Member</div>
+          </div>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <button class="small-pill" id="menuViewToggle">Hide</button>
+        </div>
+      </div>
+
       <button class="menu-item" id="mTiers">Member Tiers<span class="hint">Upgrade</span></button>
       <button class="menu-item" id="mViewProjects">View Projects<span class="hint">Your projects</span></button>
       <button class="menu-item" id="mContribute"><span id="contribLabel">Contribution</span><span class="hint" id="contribHint">Contribution</span></button>
@@ -108,9 +147,9 @@
       <section class="welcome">
         <h2 id="welcomeTitle">Welcome, Member</h2>
         <div class="kpis">
-          <div class="kpi"><div class="num" id="activeProjectsCount">0</div><div style="font-size:12px;color:var(--muted)">Active Projects</div></div>
-          <div class="kpi"><div class="num" id="totalContribution">$0</div><div style="font-size:12px;color:var(--muted)">Total Contribution</div></div>
-          <div class="kpi"><div class="num" id="refersNum">0</div><div style="font-size:12px;color:var(--muted)">Referrals</div></div>
+          <div class="kpi"><div class="num" id="activeProjectsCount">0</div><div style="font-size:12px;color:var(--muted)" id="kpiActiveLabel">Active Projects</div></div>
+          <div class="kpi"><div class="num" id="totalContribution">$0</div><div style="font-size:12px;color:var(--muted)" id="kpiContributionLabel">Total Contribution</div></div>
+          <div class="kpi"><div class="num" id="refersNum">0</div><div style="font-size:12px;color:var(--muted)" id="kpiReferralsLabel">Referrals</div></div>
         </div>
       </section>
 
@@ -130,8 +169,8 @@
       </article>
 
       <section class="card">
-        <div style="font-weight:800">Referrals</div>
-        <div style="margin-top:8px;color:var(--muted);font-size:13px">Referrals are counted only after payments are approved by admin.</div>
+        <div style="font-weight:800" id="referralsTitle">Referrals</div>
+        <div style="margin-top:8px;color:var(--muted);font-size:13px" id="referralHint">Referrals are counted only after payments are approved by admin.</div>
         <div style="margin-top:10px"><button class="btn ghost" id="shareHere">Share Referral Link</button></div>
       </section>
 
@@ -143,9 +182,9 @@
 
     <div class="toast" id="toast">Copied!</div>
 
-    <!-- ========== MODALS ========== -->
+    <!-- ========== MODALS (unchanged and new) ========== -->
 
-    <!-- Contribution modal -->
+    <!-- Contribution modal (unchanged content) -->
     <div class="modal-backdrop" id="contributeModal">
       <div class="modal" role="document">
         <button class="close-x" id="contribCloseX" title="Close">✕</button>
@@ -224,18 +263,22 @@
       </div>
     </div>
 
-    <!-- Edit Profile modal -->
+    <!-- Edit Profile modal (extended: name + password + image) -->
     <div class="modal-backdrop" id="editProfileModal">
       <div class="modal">
         <button class="close-x" id="editCloseX">✕</button>
         <h3>Edit Profile</h3>
-        <p style="color:var(--muted)">Upload a facial image and change password (email not editable here).</p>
+        <p style="color:var(--muted)">Upload a facial image and change name or password. (Email is not editable here.)</p>
 
         <div style="margin-top:8px">
           <input type="file" id="profileImageFile" accept="image/*">
         </div>
         <div style="margin-top:10px">
-          <div id="profilePreview" style="width:120px;height:120px;border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.1);display:grid;place-items:center">No image</div>
+          <div id="profilePreview" style="width:120px;height:120px;border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.02);display:grid;place-items:center">No image</div>
+        </div>
+
+        <div style="margin-top:10px">
+          <input class="input" id="editName" placeholder="Full name" type="text">
         </div>
 
         <div style="margin-top:10px">
@@ -249,7 +292,72 @@
       </div>
     </div>
 
-    <!-- Payments modal (Unapproved / Approved list) -->
+    <!-- Settings modal (NEW) -->
+    <div class="modal-backdrop" id="settingsModal">
+      <div class="modal">
+        <button class="close-x" id="settingsCloseX">✕</button>
+        <h3>Settings</h3>
+        <p style="color:var(--muted)">Manage profile image, name, password, 2FA, language and theme.</p>
+
+        <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
+          <div style="width:80px;height:80px;border-radius:10px;overflow:hidden;background:rgba(0,0,0,0.02);display:grid;place-items:center" id="settingsPreview">No image</div>
+          <div style="flex:1">
+            <input class="input" id="settingsName" placeholder="Full name">
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <input class="input" id="settingsPassword" placeholder="New password" type="password">
+              <button class="btn ghost" id="settingsUploadBtn">Choose Image</button>
+            </div>
+            <input type="file" id="settingsImageFile" accept="image/*" style="display:none">
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <div style="flex:1">
+            <label style="font-weight:700;font-size:13px">Two-Factor Authentication</label>
+            <div style="font-size:13px;color:var(--muted)">Enable or disable 2FA for extra account security.</div>
+          </div>
+          <div>
+            <button class="btn ghost" id="toggle2faBtn">Connect 2FA</button>
+          </div>
+        </div>
+
+        <div id="twoFaArea" style="margin-top:8px;display:none">
+          <div style="font-size:13px;color:var(--muted)">Scan this code in your authenticator app (demo), or copy secret:</div>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+            <div id="twoFaQRCode" style="width:120px;height:120px;border-radius:8px;overflow:hidden;background:#fff;display:grid;place-items:center"></div>
+            <div>
+              <div id="twoFaSecret" style="font-weight:800"></div>
+              <div style="margin-top:8px"><button class="btn ghost" id="copy2faSecret">Copy</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <div style="flex:1">
+            <label style="font-weight:700;font-size:13px">Language</label>
+            <select class="input" id="langSelect" style="margin-top:6px">
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
+          </div>
+
+          <div style="flex:1">
+            <label style="font-weight:700;font-size:13px">Theme</label>
+            <select class="input" id="themeSelect" style="margin-top:6px">
+              <option value="light">Light (white & blue)</option>
+              <option value="navy">Navy & gold</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:14px">
+          <button class="btn ghost" id="settingsCancel">Cancel</button>
+          <button class="btn" id="settingsSave">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payments modal (unchanged) -->
     <div class="modal-backdrop" id="paymentsModal">
       <div class="modal">
         <button class="close-x" id="paymentsCloseX">✕</button>
@@ -259,7 +367,7 @@
       </div>
     </div>
 
-    <!-- Projects modal -->
+    <!-- Projects modal (unchanged) -->
     <div class="modal-backdrop" id="projectsModal">
       <div class="modal">
         <button class="close-x" id="projectsCloseX">✕</button>
@@ -269,7 +377,7 @@
       </div>
     </div>
 
-    <!-- Simple logout confirm modal -->
+    <!-- Simple logout confirm modal (unchanged) -->
     <div class="modal-backdrop" id="logoutModal">
       <div class="modal">
         <h3>Confirm Logout</h3>
@@ -281,7 +389,7 @@
       </div>
     </div>
 
-    <!-- QR modal -->
+    <!-- QR modal (unchanged) -->
     <div class="modal-backdrop" id="qrModal">
       <div class="modal" style="text-align:center">
         <button class="close-x" id="qrCloseX">✕</button>
@@ -345,10 +453,28 @@ const progressTarget = document.getElementById('progressTarget');
 const editProfileModal = document.getElementById('editProfileModal');
 const profileImageFile = document.getElementById('profileImageFile');
 const profilePreview = document.getElementById('profilePreview');
+const editName = document.getElementById('editName');
 const newPassword = document.getElementById('newPassword');
 const saveProfileBtn = document.getElementById('saveProfileBtn');
 const editCancel = document.getElementById('editCancel');
 const editCloseX = document.getElementById('editCloseX');
+
+const settingsModal = document.getElementById('settingsModal');
+const settingsCloseX = document.getElementById('settingsCloseX');
+const settingsName = document.getElementById('settingsName');
+const settingsPassword = document.getElementById('settingsPassword');
+const settingsUploadBtn = document.getElementById('settingsUploadBtn');
+const settingsImageFile = document.getElementById('settingsImageFile');
+const settingsPreview = document.getElementById('settingsPreview');
+const toggle2faBtn = document.getElementById('toggle2faBtn');
+const twoFaArea = document.getElementById('twoFaArea');
+const twoFaQRCode = document.getElementById('twoFaQRCode');
+const twoFaSecret = document.getElementById('twoFaSecret');
+const copy2faSecret = document.getElementById('copy2faSecret');
+const langSelect = document.getElementById('langSelect');
+const themeSelect = document.getElementById('themeSelect');
+const settingsCancel = document.getElementById('settingsCancel');
+const settingsSave = document.getElementById('settingsSave');
 
 const paymentsModal = document.getElementById('paymentsModal');
 const paymentsListArea = document.getElementById('paymentsListArea');
@@ -369,8 +495,46 @@ const toast = document.getElementById('toast');
 const copyButtons = document.querySelectorAll('.copy-btn');
 const shareHere = document.getElementById('shareHere');
 
+const menuHeader = document.getElementById('menuHeader');
+const menuThumb = document.getElementById('menuThumb');
+const menuName = document.getElementById('menuName');
+const menuViewToggle = document.getElementById('menuViewToggle');
+
+/* ---------- Local state ---------- */
 let payments = JSON.parse(localStorage.getItem('payments') || '[]');
 let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+
+/* ---------- Translations (small demo) ---------- */
+const translations = {
+  en: {
+    dashboard: 'Dashboard',
+    activeProjects: 'Active Projects',
+    totalContribution: 'Total Contribution',
+    referrals: 'Referrals',
+    referralsHint: 'Referrals are counted only after payments are approved by admin.',
+    contribution: 'Contribution',
+    welcome: 'Welcome, ',
+    shareText: 'Join me on Dream Big',
+    settings: 'Settings',
+    save: 'Save',
+    cancel: 'Cancel',
+    referralsTitle: 'Referrals'
+  },
+  fr: {
+    dashboard: 'Tableau de bord',
+    activeProjects: 'Projets actifs',
+    totalContribution: 'Contribution totale',
+    referrals: 'Parrainages',
+    referralsHint: 'Les parrainages sont comptés après approbation des paiements par l\'admin.',
+    contribution: 'Contribution',
+    welcome: 'Bienvenue, ',
+    shareText: 'Rejoignez-moi sur Dream Big',
+    settings: 'Paramètres',
+    save: 'Enregistrer',
+    cancel: 'Annuler',
+    referralsTitle: 'Parrainages'
+  }
+};
 
 /* ---------- Utilities ---------- */
 function showToast(msg){ toast.innerText = msg || 'Copied!'; toast.style.display='block'; toast.style.opacity='1'; setTimeout(()=>{ toast.style.transition='opacity 300ms ease'; toast.style.opacity='0'; setTimeout(()=>{ toast.style.display='none'; toast.style.transition=''; },300); },1400); }
@@ -403,13 +567,13 @@ profileLogoutBtn.addEventListener('click', ()=>{ profileMenu.style.display='none
 
 /* ---------- Init user & profile image ---------- */
 function safeSetProfileImage(dataUrl){
-  // set src on existing img element and show it; hide initials
   if(!dataUrl) return;
   profileImg.src = dataUrl;
   profileImg.style.display = 'block';
   profileInitials.style.display = 'none';
-  // set db logo
+  // set db logo and small menu thumb
   dbLogo.innerHTML = '<img src="'+dataUrl+'" alt="logo">';
+  menuThumb.innerHTML = '<img src="'+dataUrl+'" style="width:100%;height:100%;object-fit:cover">';
   localStorage.setItem('profileImage', dataUrl);
 }
 function setInitialsFromName(name){
@@ -417,9 +581,12 @@ function setInitialsFromName(name){
   let initials = 'PD';
   if(parts.length>0 && parts[0].length>0) initials = parts[0][0].toUpperCase() + (parts[1]? parts[1][0].toUpperCase() : '');
   profileInitials.innerText = initials;
+  // also set menu thumb fallback initials
+  if(!localStorage.getItem('profileImage')){
+    menuThumb.innerText = initials;
+  }
 }
-function initProfile(){
-  // load user or prompt (demo)
+function loadUser(){
   let user = JSON.parse(localStorage.getItem('user') || 'null');
   if(!user || !user.name){
     const name = prompt('Enter your name to continue (demo login):') || 'Member';
@@ -427,17 +594,21 @@ function initProfile(){
     user = { name, password };
     localStorage.setItem('user', JSON.stringify(user));
   }
-  document.getElementById('welcomeTitle').innerText = 'Welcome, ' + user.name;
+  document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
+  editName.value = user.name || '';
+  settingsName.value = user.name || '';
   setInitialsFromName(user.name);
   // load profile image if available
   const savedImg = localStorage.getItem('profileImage');
   if(savedImg){ safeSetProfileImage(savedImg); }
+  // set menu name
+  document.getElementById('menuName').innerText = user.name;
 }
-initProfile();
+loadUser();
 
-/* ---------- Contribution modal behavior ---------- */
+/* ---------- Contribution modal behavior (unchanged) ---------- */
 let preferredMethod = localStorage.getItem('preferredContribution') || 'bank';
-function showBank(){ bankBlock.style.display='block'; usdtBlock.style.display='none'; preferredMethod='bank'; localStorage.setItem('preferredContribution','bank'); document.getElementById('bankBlock').style.display='block'; document.getElementById('usdtBlock').style.display='none'; document.getElementById('contribHint').innerText='Bank Deposit'; }
+function showBank(){ bankBlock.style.display='block'; usdtBlock.style.display='none'; preferredMethod='bank'; localStorage.setItem('preferredContribution','bank'); document.getElementById('contribHint').innerText='Bank Deposit'; }
 function showUSDT(){ bankBlock.style.display='none'; usdtBlock.style.display='block'; preferredMethod='usdt'; localStorage.setItem('preferredContribution','usdt'); document.getElementById('contribHint').innerText='USDT (TRC20)'; }
 methodBankBtn.addEventListener('click', showBank);
 methodUSDTBtn.addEventListener('click', showUSDT);
@@ -541,7 +712,7 @@ function openPaymentsList(status){
   const list = payments.filter(p=>p.status===status);
   if(list.length===0){ paymentsListArea.innerHTML = '<div style="color:var(--muted)">No payments '+status+'</div>'; openModal(paymentsModal); return; }
   list.forEach(p=>{
-    const d = document.createElement('div'); d.style.padding='10px'; d.style.background='rgba(255,255,255,0.02)'; d.style.borderRadius='8px'; d.style.marginTop='8px';
+    const d = document.createElement('div'); d.style.padding='10px'; d.style.background='rgba(0,0,0,0.02)'; d.style.borderRadius='8px'; d.style.marginTop='8px';
     d.innerHTML = '<div style="font-weight:800">'+p.package.name+' • $'+p.package.price+'</div><div style="font-size:13px;color:var(--muted)">'+(p.method==='usdt'?'USDT':'Bank')+' • '+new Date(p.date).toLocaleString()+'</div>';
     if(p.status==='pending'){
       const stat = document.createElement('div'); stat.style.marginTop='8px'; stat.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--danger);margin-right:8px"></span><span>Yet to be approved</span>';
@@ -581,13 +752,13 @@ function renderProjects(){
   projectsList.innerHTML = '';
   if(!projects || projects.length===0){ projectsList.innerHTML = '<div style="color:var(--muted)">No projects yet.</div>'; document.getElementById('activeProjectsCount').innerText = 0; return; }
   projects.forEach(p=>{
-    const div = document.createElement('div'); div.className='project-item'; div.style.marginTop='8px'; div.style.padding='10px'; div.style.background='rgba(255,255,255,0.02)'; div.innerHTML = '<div style="font-weight:800">'+p.name+'</div><div style="font-size:13px;color:var(--muted)">ID: '+p.id+' • $'+p.amount+' • '+p.status+'</div>';
+    const div = document.createElement('div'); div.className='project-item'; div.style.marginTop='8px'; div.style.padding='10px'; div.style.background='rgba(0,0,0,0.02)'; div.innerHTML = '<div style="font-weight:800">'+p.name+'</div><div style="font-size:13px;color:var(--muted)">ID: '+p.id+' • $'+p.amount+' • '+p.status+'</div>';
     projectsList.appendChild(div);
   });
   document.getElementById('activeProjectsCount').innerText = projects.length;
 }
 
-/* ---------- Edit Profile upload ---------- */
+/* ---------- Edit Profile upload (extended) ---------- */
 let pendingImageData = null;
 profileImageFile.addEventListener('change', ()=>{
   const f = profileImageFile.files[0];
@@ -605,26 +776,120 @@ editCloseX.addEventListener('click', ()=> { closeModal(editProfileModal); pendin
 
 saveProfileBtn.addEventListener('click', ()=>{
   const pwd = newPassword.value.trim();
+  const nameVal = editName.value.trim();
   if(pendingImageData){
-    // update profile img element only (do not replace profileMenu)
     profileImg.src = pendingImageData;
     profileImg.style.display = 'block';
     profileInitials.style.display = 'none';
     dbLogo.innerHTML = '<img src="'+pendingImageData+'" alt="logo">';
+    menuThumb.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
     localStorage.setItem('profileImage', pendingImageData);
     pendingImageData = null;
     profileImageFile.value = '';
     profilePreview.innerHTML = 'No image';
   }
+  let user = JSON.parse(localStorage.getItem('user') || '{}');
+  if(nameVal){
+    user.name = nameVal;
+    document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
+    document.getElementById('menuName').innerText = user.name;
+    setInitialsFromName(user.name);
+  }
   if(pwd){
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
     user.password = pwd;
-    localStorage.setItem('user', JSON.stringify(user));
     newPassword.value = '';
     showToast('Password saved (demo)');
   }
+  localStorage.setItem('user', JSON.stringify(user));
   showToast('Profile updated');
   closeModal(editProfileModal);
+});
+
+/* ---------- Settings modal behavior (NEW) ---------- */
+settingsUploadBtn.addEventListener('click', ()=> settingsImageFile.click());
+settingsImageFile.addEventListener('change', ()=>{
+  const f = settingsImageFile.files[0];
+  if(!f) return showToast('Choose an image');
+  if(!f.type.startsWith('image/')) return showToast('Image required');
+  const r = new FileReader();
+  r.onload = e => {
+    settingsPreview.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover">';
+    pendingSettingsImage = e.target.result;
+  };
+  r.readAsDataURL(f);
+});
+let pendingSettingsImage = null;
+
+toggle2faBtn.addEventListener('click', ()=>{
+  const enabled = localStorage.getItem('2faEnabled') === 'true';
+  if(!enabled){
+    // connect flow demo: generate a random secret and show QR via google charts
+    const secret = 'DBP-' + Math.random().toString(36).slice(2,10).toUpperCase();
+    localStorage.setItem('2faEnabled','true');
+    localStorage.setItem('2faSecret', secret);
+    twoFaSecret.innerText = secret;
+    const qrSrc = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent('otpauth://totp/DreamBig?secret='+secret);
+    twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
+    twoFaArea.style.display = 'flex';
+    toggle2faBtn.innerText = 'Disconnect 2FA';
+    showToast('2FA connected (demo)');
+  } else {
+    localStorage.removeItem('2faEnabled');
+    localStorage.removeItem('2faSecret');
+    twoFaArea.style.display = 'none';
+    toggle2faBtn.innerText = 'Connect 2FA';
+    showToast('2FA disconnected (demo)');
+  }
+});
+
+copy2faSecret.addEventListener('click', ()=>{
+  const s = localStorage.getItem('2faSecret');
+  if(s) copyText(s);
+  else showToast('No secret');
+});
+
+settingsCancel.addEventListener('click', ()=> closeModal(settingsModal));
+settingsCloseX.addEventListener('click', ()=> closeModal(settingsModal));
+
+settingsSave.addEventListener('click', ()=>{
+  // apply settings: image, name, password, language, theme
+  const nameVal = settingsName.value.trim();
+  const pwdVal = settingsPassword.value.trim();
+  const lang = langSelect.value;
+  const theme = themeSelect.value;
+
+  // save image if pending
+  if(pendingSettingsImage){
+    safeSetProfileImage(pendingSettingsImage);
+    settingsPreview.innerHTML = 'No image';
+    pendingSettingsImage = null;
+    settingsImageFile.value = '';
+  }
+
+  // save user fields
+  let user = JSON.parse(localStorage.getItem('user') || '{}');
+  if(nameVal){
+    user.name = nameVal;
+    document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
+    document.getElementById('menuName').innerText = user.name;
+    setInitialsFromName(user.name);
+  }
+  if(pwdVal){
+    user.password = pwdVal;
+    showToast('Password saved (demo)');
+  }
+  localStorage.setItem('user', JSON.stringify(user));
+
+  // language
+  localStorage.setItem('lang', lang);
+  applyTranslations();
+
+  // theme
+  localStorage.setItem('theme', theme);
+  applyTheme();
+
+  showToast('Settings saved');
+  closeModal(settingsModal);
 });
 
 /* ---------- Copy buttons ---------- */
@@ -658,7 +923,6 @@ document.getElementById('projectsCloseX').addEventListener('click', ()=> closeMo
 btnNo.addEventListener('click', ()=> closeModal(logoutModal));
 btnYes.addEventListener('click', ()=> {
   closeModal(logoutModal);
-  // same logout animation behavior demo
   document.getElementById('appRoot').style.opacity = '0.25';
   setTimeout(()=> location.href = 'login.html', 900);
 });
@@ -667,11 +931,80 @@ document.getElementById('mLogout').addEventListener('click', ()=> { closeMenu();
 /* ---------- Sharing ---------- */
 [shareHere].forEach(el => el.addEventListener('click', async ()=>{
   const url = location.href;
-  const obj = { title:'Join me on Dream Big', text:'Sign up and start building with Dream Big', url };
+  const lang = getLang();
+  const obj = { title: translations[lang].shareText, text: translations[lang].shareText, url };
   if(navigator.share){ try{ await navigator.share(obj); } catch(e){} } else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); } else alert('Copy: '+url);
 }));
 
-/* ---------- Init state ---------- */
+/* ---------- Menu item actions ---------- */
+document.getElementById('mSettings').addEventListener('click', ()=> { closeMenu(); openSettings(); });
+document.getElementById('mViewProjects').addEventListener('click', ()=> { closeMenu(); renderProjects(); openModal(projectsModal); });
+document.getElementById('mTiers').addEventListener('click', ()=> { closeMenu(); alert('Member tiers (demo)'); });
+document.getElementById('mHelp').addEventListener('click', ()=> { closeMenu(); alert('Help & support (demo)'); });
+
+/* ---------- Settings open/close helper ---------- */
+function openSettings(){
+  // prefill current settings
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  settingsName.value = user.name || '';
+  settingsPassword.value = '';
+  const img = localStorage.getItem('profileImage');
+  if(img) settingsPreview.innerHTML = '<img src="'+img+'" style="width:100%;height:100%;object-fit:cover">';
+  else settingsPreview.innerHTML = 'No image';
+  const lang = localStorage.getItem('lang') || 'en';
+  langSelect.value = lang;
+  const theme = localStorage.getItem('theme') || 'light';
+  themeSelect.value = theme;
+  const twofa = localStorage.getItem('2faEnabled') === 'true';
+  toggle2faBtn.innerText = twofa ? 'Disconnect 2FA' : 'Connect 2FA';
+  if(twofa){
+    const secret = localStorage.getItem('2faSecret') || '';
+    twoFaSecret.innerText = secret;
+    const qrSrc = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent('otpauth://totp/DreamBig?secret='+secret);
+    twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
+    twoFaArea.style.display = 'flex';
+  } else {
+    twoFaArea.style.display = 'none';
+  }
+  openModal(settingsModal);
+}
+
+/* ---------- Translations and Theme ---------- */
+function getLang(){ return localStorage.getItem('lang') || 'en'; }
+function applyTranslations(){
+  const lang = getLang();
+  document.getElementById('dashboardTitle').innerText = translations[lang].dashboard;
+  document.getElementById('kpiActiveLabel').innerText = translations[lang].activeProjects;
+  document.getElementById('kpiContributionLabel').innerText = translations[lang].totalContribution;
+  document.getElementById('kpiReferralsLabel').innerText = translations[lang].referrals;
+  document.getElementById('referralHint').innerText = translations[lang].referralsHint;
+  document.getElementById('contribLabel').innerText = translations[lang].contribution;
+  document.getElementById('welcomeTitle').innerText = translations[lang].welcome + (JSON.parse(localStorage.getItem('user')||'{}').name || 'Member');
+  document.getElementById('referralsTitle').innerText = translations[lang].referralsTitle;
+}
+function applyTheme(){
+  const theme = localStorage.getItem('theme') || 'light';
+  const root = document.documentElement;
+  if(theme === 'navy'){
+    document.documentElement.classList.add('theme-navy');
+  } else {
+    document.documentElement.classList.remove('theme-navy');
+  }
+}
+
+/* ---------- Menu header view/hide ---------- */
+menuViewToggle.addEventListener('click', ()=>{
+  const hidden = menuName.style.visibility === 'hidden';
+  if(hidden){
+    menuName.style.visibility = 'visible';
+    menuViewToggle.innerText = 'Hide';
+  } else {
+    menuName.style.visibility = 'hidden';
+    menuViewToggle.innerText = 'View';
+  }
+});
+
+/* ---------- Init UI state ---------- */
 function updateReferralsUI(){
   const refs = parseInt(localStorage.getItem('referrals')||'0',10);
   document.getElementById('refersNum').innerText = refs;
@@ -679,18 +1012,61 @@ function updateReferralsUI(){
 function init(){
   const meta = document.getElementById('metaDate');
   if(!meta.innerText) { const d=new Date(); meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear(); }
-  // load saved profile image
+
+  // load saved profile image & menu thumb / welcome
   const savedImg = localStorage.getItem('profileImage');
-  if(savedImg){ profileImg.src = savedImg; profileImg.style.display='block'; profileInitials.style.display='none'; dbLogo.innerHTML = '<img src="'+savedImg+'">'; }
+  if(savedImg){ profileImg.src = savedImg; profileImg.style.display='block'; profileInitials.style.display='none'; dbLogo.innerHTML = '<img src="'+savedImg+'">'; menuThumb.innerHTML = '<img src="'+savedImg+'" style="width:100%;height:100%;object-fit:cover">'; }
+
   // load selected package
   const pkg = JSON.parse(localStorage.getItem('selectedPackage') || 'null');
   if(pkg){ projectName.innerText = pkg.name + ' Package'; projectMeta.innerText = pkg.name + ' • Package selected'; packageAmount.innerText = '($' + pkg.price + ' Package)'; progressTarget.innerText = 'Target: $' + pkg.price; }
-  // init payments nav
+
+  // init payments nav + projects + refs
   refreshPaymentsNav();
   renderProjects();
   updateReferralsUI();
+
+  // apply translations & theme
+  applyTranslations();
+  applyTheme();
 }
 init();
+
+/* ---------- extra small handlers ---------- */
+document.getElementById('contribClose')?.addEventListener('click', ()=> closeModal(contributeModal));
+
+/* ---------- copy actions (example) ---------- */
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', e=>{
+    const key = btn.getAttribute('data-copy');
+    if(key === 'bankAcct') copyText(document.getElementById('bankAcct').innerText.trim());
+    if(key === 'walletAddr') copyText(document.getElementById('walletAddr').innerText.trim());
+  });
+});
+
+/* ---------- simple profile save from settings (supports choosing file) ---------- */
+settingsImageFile.addEventListener('change', (ev)=>{
+  const f = ev.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    pendingSettingsImage = e.target.result;
+    settingsPreview.innerHTML = '<img src="'+pendingSettingsImage+'" style="width:100%;height:100%;object-fit:cover">';
+  };
+  r.readAsDataURL(f);
+});
+
+/* ---------- payments nav init ---------- */
+refreshPaymentsNav();
+
+/* ---------- menu close on ESC ---------- */
+document.addEventListener('keyup', (e)=> { if(e.key === 'Escape') { closeMenu(); closeModal(settingsModal); closeModal(editProfileModal); closeModal(contributeModal); } });
+
+/* ---------- profile menu quick bindings ---------- */
+document.getElementById('profileLogoutBtn').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
+
+/* ---------- final notes: expose openSettings for debug/demo ---------- */
+window.openSettings = openSettings;
 
 </script>
 </body>
