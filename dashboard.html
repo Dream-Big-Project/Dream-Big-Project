@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dream Big — Member Dashboard (Polished)</title>
+<title>Dream Big — Dashboard (Updated scrolling, clicks, theme)</title>
 <style>
   :root{
     --navy:#071735;
@@ -12,216 +12,177 @@
     --gold-2:#F0C75E;
     --muted:#9fb0c7;
     --card-radius:12px;
-    --stage-w:995px;  /* user requested width */
-    --stage-h:985px;  /* user requested height */
     --sidebar-w:300px;
-    --focus: 0 10px 30px rgba(2,6,20,0.35);
-    --glass-dark: rgba(255,255,255,0.03);
-    --glass-light: rgba(7,23,53,0.04);
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --max-w:1200px;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   }
 
   /* THEMES */
   body.dark{
     --bg: linear-gradient(180deg,var(--navy),var(--navy-2));
     --surface: rgba(255,255,255,0.03);
-    --text:#fff;
-    --muted:#9fb0c7;
-    --glass: var(--glass-dark);
+    --text:#ffffff;
+    --glass: rgba(255,255,255,0.03);
+    --muted: #9fb0c7;
   }
   body.light{
     --bg: linear-gradient(180deg,#f6f8fb,#eef3fb);
     --surface: #ffffff;
     --text:#071735;
-    --muted:#6b7280;
-    --glass: var(--glass-light);
+    --glass: rgba(7,23,53,0.04);
+    --muted: #6b7280;
   }
 
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden}
-  /* Stage container fixed-ish but responsive */
-  .stage{
-    width: var(--stage-w);
-    height: var(--stage-h);
-    max-width: calc(100% - 32px);
-    max-height: calc(100% - 32px);
-    margin: 16px auto;
-    border-radius: 12px;
-    display:grid;
-    grid-template-columns: 1fr;
-    background: transparent;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased; overflow:hidden;}
+  .app{max-width:var(--max-w);margin:20px auto;height:calc(100vh - 40px);display:grid;grid-template-columns:1fr;gap:18px;padding:0 12px;box-sizing:border-box}
 
-  @media(min-width:980px){
-    .stage{ grid-template-columns: var(--sidebar-w) 1fr; gap:18px; padding:18px; }
-  }
-  @media(max-width:1000px){ .stage{ width: calc(100% - 24px); height: auto; } }
+  @media(min-width:980px){ .app{ grid-template-columns: var(--sidebar-w) 1fr; } }
 
-  /* Overlay for mobile slide-in sidebar */
-  .overlay { position:fixed; inset:0; background:rgba(2,6,20,0.45); opacity:0; pointer-events:none; transition:opacity .32s ease; z-index:60; }
-  .overlay.show { opacity:1; pointer-events:auto; }
-
-  /* Sidebar */
+  /* SIDEBAR - scrollable independently */
   .sidebar {
     background:var(--surface);
     border-radius:12px;
-    box-shadow: var(--focus);
     padding:16px;
-    transform: translateX(-22px);
-    opacity:0;
-    transition: transform .34s cubic-bezier(.2,.9,.2,1), opacity .34s ease;
-    z-index:70;
-    position:fixed;
-    left:16px; top:16px; bottom:16px; width:var(--sidebar-w);
-    display:flex; flex-direction:column; gap:12px; overflow:auto;
+    box-shadow:0 12px 40px rgba(2,6,20,0.35);
+    overflow:auto;
+    height:100%;
+    box-sizing:border-box;
+    transform: translateX(0);
   }
-  .sidebar.open{ transform: translateX(0); opacity:1; }
-  /* On desktop show sidebar inline */
-  @media(min-width:980px){
-    .sidebar{ position:relative; transform:none; opacity:1; left:auto; top:auto; bottom:auto; }
-    .overlay{ display:none; }
-  }
+  .sidebar.hidden { display:none; } /* used on small screens when closed */
 
   .brand{display:flex;gap:12px;align-items:center}
   .mark{width:56px;height:56px;border-radius:12px;background:linear-gradient(90deg,var(--gold),var(--gold-2));flex-shrink:0}
-  .brand .label{font-weight:900;font-size:18px}
+  .title{font-weight:900}
   .muted{color:var(--muted);font-weight:800;font-size:13px}
 
-  .tiers{margin-top:10px;padding:12px;border-radius:10px;background: linear-gradient(90deg, rgba(220,174,58,0.06), rgba(255,255,255,0.01));}
+  .tiers{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(220,174,58,0.06), rgba(255,255,255,0.01));}
   .tier-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:var(--navy);font-weight:900}
 
-  nav.main-nav{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-  .nav-item{
-    display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;font-weight:900;cursor:pointer;transition:background .18s,transform .12s;
-  }
-  .nav-item:hover{ background:var(--glass); transform: translateY(-1px) }
+  nav.main-nav{ margin-top:16px; display:flex; flex-direction:column; gap:8px }
+  .nav-item{ display:flex; align-items:center; gap:10px; padding:10px; border-radius:10px; cursor:pointer; font-weight:900; }
+  .nav-item:hover{ background:var(--glass); }
   .nav-item.active{ background: linear-gradient(90deg, rgba(220,174,58,0.12), rgba(240,199,94,0.04)); color:var(--navy) }
 
   .sidebar-footer{ margin-top:auto; }
-  .logout { width:100%; padding:10px; border-radius:10px; font-weight:900; cursor:pointer; background:transparent; border:1px solid rgba(255,255,255,0.06) }
+  .logout-btn{ width:100%; padding:10px; border-radius:10px; font-weight:900; cursor:pointer; background:transparent; border:1px solid rgba(255,255,255,0.06) }
 
-  /* Main area */
-  .main { padding:18px; overflow:auto; box-sizing:border-box; min-height: calc(var(--stage-h) - 36px); }
-  .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
-  .left-controls{ display:flex; gap:12px; align-items:center }
-  .menu-btn{ background:transparent;border:0;padding:8px 12px;border-radius:8px;font-weight:900; cursor:pointer }
-  .title{ font-weight:900; font-size:20px }
-  .right-controls{ display:flex; gap:12px; align-items:center }
+  /* MAIN - scroll independently */
+  .main { background:transparent; padding:18px; overflow:auto; height:100%; box-sizing:border-box; }
+  .topbar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+  .left-controls{ display:flex; align-items:center; gap:12px; }
+  .menu-btn{ background:transparent; border:0; color:var(--text); font-weight:900; padding:8px 12px; border-radius:8px; cursor:pointer; }
+  .page-title{ font-weight:900; font-size:20px; }
+  .actions{ display:flex; gap:10px; align-items:center; }
 
-  .theme-btn{ padding:8px;border-radius:8px; border:0;background:var(--glass); cursor:pointer; font-weight:900; }
+  .theme-btn{ padding:8px; border-radius:8px; background:var(--glass); border:0; cursor:pointer; font-weight:900 }
   .avatar{ width:44px; height:44px; border-radius:50%; background:linear-gradient(180deg,#0c3a6b,#0b2340); display:flex; align-items:center; justify-content:center; font-weight:900; cursor:pointer }
 
-  .profile-menu{ position:absolute; right:28px; top:70px; background:var(--surface); padding:8px; border-radius:10px; box-shadow:var(--focus); display:none; min-width:190px; z-index:100; }
-  .profile-menu a{ display:block; padding:8px; border-radius:8px; text-decoration:none; color:var(--text); font-weight:800 }
-  .profile-menu a:hover{ background:var(--glass) }
+  .profile-menu{ position:absolute; right:22px; top:64px; background:var(--surface); padding:8px; border-radius:10px; box-shadow:0 12px 40px rgba(2,6,20,0.25); display:none; min-width:180px; z-index:120; }
+  .profile-menu a { display:block; padding:8px; border-radius:8px; color:var(--text); text-decoration:none; font-weight:800; }
+  .profile-menu a:hover{ background:var(--glass); }
 
-  .layout{ display:grid; gap:12px; grid-template-columns:1fr; }
-  @media(min-width:980px){ .layout{ grid-template-columns: 1fr 360px } }
+  .layout { display:grid; gap:12px; grid-template-columns:1fr; }
+  @media(min-width:980px){ .layout{ grid-template-columns:1fr 360px } }
 
-  .card{ background:var(--surface); padding:12px; border-radius:12px; box-shadow: 0 12px 40px rgba(2,6,20,0.12); }
-  .kpi-row{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px }
-  .kpi{ min-width:160px; padding:12px; border-radius:10px; background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent); font-weight:900 }
+  .card{ background:var(--surface); padding:12px; border-radius:12px; box-shadow:0 12px 40px rgba(2,6,20,0.12); }
+  .kpi-row{ display:flex; gap:12px; flex-wrap:wrap }
+  .kpi{ min-width:140px; padding:12px; border-radius:10px; background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent); font-weight:900 }
 
-  /* user asked: top row only Active Projects & Total Contribution; referrals & wallet below */
-  .kpi-top{ display:flex; gap:12px; margin-bottom:12px }
-  .kpi-bottom{ display:flex; gap:12px; margin-bottom:12px }
+  .kpi-top, .kpi-bottom { display:flex; gap:12px; margin-bottom:12px; }
+  .projects { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+  .project { background: rgba(255,255,255,0.02); padding:12px; border-radius:10px }
 
-  .projects{ display:flex; flex-direction:column; gap:12px; margin-top:8px }
-  .project{ background: rgba(255,255,255,0.02); padding:12px; border-radius:10px }
-  .project .meta{ display:flex; justify-content:space-between; align-items:center }
   .progress{ height:12px; background: rgba(255,255,255,0.03); border-radius:999px; overflow:hidden; margin-top:8px }
-  .progress i{ display:block; height:100%; width:0%; transition:width .9s cubic-bezier(.2,.9,.2,1) }
-
-  .muted-sm{ color:var(--muted); font-weight:800; font-size:13px }
+  .progress i{ display:block; height:100%; width:0%; transition: width .8s cubic-bezier(.2,.9,.2,1) }
 
   input, select { padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text) }
 
   .btn { background:linear-gradient(90deg,var(--gold),var(--gold-2)); color:var(--navy); padding:10px 12px; border-radius:10px; border:0; font-weight:900; cursor:pointer; box-shadow:0 8px 24px rgba(2,6,20,0.12) }
-  .btn:hover{ transform:translateY(-2px) }
 
-  /* toast */
-  .toast-wrap{ position: fixed; top:18px; right:18px; display:flex; flex-direction:column; gap:8px; z-index:200; max-width:360px }
-  .toast{ background: #0b2038; color: #fff; padding:12px 14px; border-radius:10px; box-shadow:var(--focus); font-weight:800; opacity:0; transform:translateY(-8px); transition:opacity .28s, transform .28s }
+  /* Toasts */
+  .toast-wrap{ position: fixed; top:18px; right:18px; display:flex; flex-direction:column; gap:8px; z-index:220; max-width:360px }
+  .toast{ background: rgba(11,32,56,0.9); color:#fff; padding:12px 14px; border-radius:10px; box-shadow:0 10px 30px rgba(2,6,20,0.4); font-weight:800; opacity:0; transform:translateY(-8px); transition:opacity .28s, transform .28s }
   .toast.show{ opacity:1; transform:translateY(0) }
-  .toast.success{ background: linear-gradient(90deg,#1b5e20,#2e7d32) }
-  .toast.info{ background: linear-gradient(90deg,#1f4f86,#2f66a6) }
 
-  footer.site-footer{ text-align:center; color:var(--muted); font-weight:800; padding:12px; margin-top:12px }
+  footer.site-footer{ text-align:center; color:var(--muted); font-weight:800; padding:10px; margin-top:10px }
 
-  /* Focus outlines */
+  /* small screens: hide sidebar by default (will be toggled) */
+  @media(max-width:979px){
+    .sidebar{ position:fixed; left:12px; top:12px; bottom:12px; width:320px; z-index:100; display:block; transform:translateX(-24px); opacity:0 }
+    .sidebar.open{ transform:translateX(0); opacity:1; }
+  }
+
+  /* focus */
   :focus{ outline: 3px solid rgba(220,174,58,0.18); outline-offset:3px; border-radius:8px }
-
 </style>
 </head>
 <body class="dark">
 
-  <!-- overlay (mobile) -->
-  <div id="overlay" class="overlay" aria-hidden="true"></div>
+  <div class="app" id="appRoot">
 
-  <!-- Sidebar -->
-  <aside id="sidebar" class="sidebar" aria-hidden="true" role="navigation" aria-label="Primary">
-    <div class="brand" style="gap:12px">
-      <div class="mark" aria-hidden="true"></div>
-      <div>
-        <div class="label">Dream Big Project</div>
-        <div class="muted">Member Dashboard</div>
-      </div>
-    </div>
-
-    <div class="tiers" role="region" aria-label="Member tier">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar open" aria-label="Main navigation" role="navigation">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
         <div>
-          <div class="muted">Your tier</div>
-          <div style="font-weight:900">Pathfinder <span class="tier-badge">PRO</span></div>
-        </div>
-        <div style="text-align:right">
-          <div class="muted">Months</div>
-          <div style="font-weight:900">8 / 24</div>
+          <div class="title">Dream Big Project</div>
+          <div class="muted">Member Dashboard</div>
         </div>
       </div>
-      <div style="height:8px"></div>
-      <div class="progress"><i style="width:33%; background: linear-gradient(90deg,var(--gold),var(--gold-2))"></i></div>
-      <div style="height:8px"></div>
-      <button id="viewTiersBtn" class="btn" aria-expanded="false">View Tier Details</button>
-    </div>
 
-    <nav class="main-nav" role="navigation" aria-label="Main navigation">
-      <div class="nav-item active" data-target="dashboard" tabindex="0">🏠 <div>Dashboard</div></div>
-      <div class="nav-item" data-target="projects" tabindex="0">📁 <div>My Projects</div></div>
-      <div class="nav-item" data-target="tracker" tabindex="0">📊 <div>Project Tracker</div></div>
-      <div class="nav-item" data-target="referrals" tabindex="0">🔗 <div>Referrals & Rewards</div></div>
-      <div class="nav-item" data-target="wallet" tabindex="0">💼 <div>Wallet</div></div>
-      <div class="nav-item" data-target="docs" tabindex="0">📄 <div>Documents</div></div>
-      <div class="nav-item" data-target="settings" tabindex="0">⚙️ <div>Settings & Privacy</div></div>
-      <div class="nav-item" data-target="help" tabindex="0">❓ <div>Help & Support</div></div>
-    </nav>
-
-    <div class="sidebar-footer">
-      <button id="sidebarLogout" class="logout">Logout</button>
-    </div>
-  </aside>
-
-  <!-- Stage & main -->
-  <div class="stage">
-    <main class="main" role="main">
-      <div class="topbar" role="banner">
-        <div class="left-controls">
-          <button id="menuBtn" class="menu-btn" aria-controls="sidebar" aria-expanded="false" title="Open menu">☰</button>
+      <div class="tiers" role="region" aria-label="Member tier summary">
+        <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
-            <div class="title" id="pageTitle">Dashboard</div>
-            <div class="muted-sm" id="todayLabel">—</div>
+            <div class="muted">Your Tier</div>
+            <div style="font-weight:900">Pathfinder <span class="tier-badge">PRO</span></div>
+          </div>
+          <div style="text-align:right">
+            <div class="muted">Months</div>
+            <div style="font-weight:900">8 / 24</div>
+          </div>
+        </div>
+        <div style="height:8px"></div>
+        <div class="progress"><i style="width:33%; background: linear-gradient(90deg,var(--gold),var(--gold-2))"></i></div>
+        <div style="height:8px"></div>
+        <button id="viewTiersBtn" class="btn">View Tier Details</button>
+      </div>
+
+      <nav class="main-nav" aria-label="Primary">
+        <div class="nav-item active" data-target="dashboard" tabindex="0">🏠 <div>Dashboard</div></div>
+        <div class="nav-item" data-target="projects" tabindex="0">📁 <div>My Projects</div></div>
+        <div class="nav-item" data-target="tracker" tabindex="0">📊 <div>Project Tracker</div></div>
+        <div class="nav-item" data-target="referrals" tabindex="0">🔗 <div>Referrals & Rewards</div></div>
+        <div class="nav-item" data-target="wallet" tabindex="0">💼 <div>Wallet</div></div>
+        <div class="nav-item" data-target="docs" tabindex="0">📄 <div>Documents</div></div>
+        <div class="nav-item" data-target="settings" tabindex="0">⚙️ <div>Settings & Privacy</div></div>
+        <div class="nav-item" data-target="help" tabindex="0">❓ <div>Help & Support</div></div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="sidebarLogout" class="logout-btn">Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main" id="mainContent">
+      <div class="topbar">
+        <div class="left-controls">
+          <button id="menuBtn" class="menu-btn" aria-controls="sidebar" aria-expanded="true">☰</button>
+          <div>
+            <div class="page-title" id="pageTitle">Dashboard</div>
+            <div class="muted" id="todayLabel"></div>
           </div>
         </div>
 
-        <div class="right-controls">
+        <div class="actions">
           <button id="themeToggle" class="theme-btn" title="Toggle theme">🌙</button>
           <div style="position:relative">
             <div id="avatarBtn" class="avatar" title="Profile">PD</div>
             <div id="profileMenu" class="profile-menu" role="menu" aria-hidden="true">
-              <a id="editProfile" href="#">Edit Profile</a>
-              <a id="settingsLink" href="#">Settings & Privacy</a>
-              <a id="profileLogout" href="#">Logout</a>
+              <a href="#" id="editProfile">Edit Profile</a>
+              <a href="#" id="settingsLink">Settings & Privacy</a>
+              <a href="#" id="profileLogout">Logout</a>
             </div>
           </div>
         </div>
@@ -229,39 +190,41 @@
 
       <div class="layout">
         <section>
-          <div class="card" aria-labelledby="overviewTitle">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
               <div>
                 <div style="font-weight:900">Welcome back, <span id="displayName">Member</span></div>
-                <div class="muted-sm">Pathfinder • Active</div>
+                <div class="muted">Pathfinder • Active</div>
               </div>
               <div><button id="quickAdd" class="btn">Add Project</button></div>
             </div>
 
             <div style="height:12px"></div>
 
-            <!-- Top KPIs -->
+            <!-- TOP KPIs: Active Projects + Total Contribution -->
             <div class="kpi-top">
-              <div class="kpi"><div class="muted-sm">Active Projects</div><div style="font-size:18px;font-weight:900" id="kActive">0</div></div>
-              <div class="kpi"><div class="muted-sm">Total Contribution</div><div style="font-size:18px;font-weight:900" id="kTotal">$0</div></div>
+              <div class="kpi"><div class="muted">Active Projects</div><div style="font-size:18px;font-weight:900" id="kActive">0</div></div>
+              <div class="kpi"><div class="muted">Total Contribution</div><div style="font-size:18px;font-weight:900" id="kTotal">$0</div></div>
             </div>
 
-            <!-- Secondary KPIs below -->
+            <!-- SECONDARY KPIs: Referrals + Wallet (moved below) -->
             <div class="kpi-bottom">
-              <div class="kpi"><div class="muted-sm">Referrals</div><div style="font-size:18px;font-weight:900" id="kRef">0</div></div>
-              <div class="kpi"><div class="muted-sm">Wallet Balance</div><div style="font-size:18px;font-weight:900" id="kWallet">$0</div></div>
+              <div class="kpi"><div class="muted">Referrals</div><div style="font-size:18px;font-weight:900" id="kRef">0</div></div>
+              <div class="kpi"><div class="muted">Wallet Balance</div><div style="font-size:18px;font-weight:900" id="kWallet">$0</div></div>
             </div>
+
+            <div style="height:12px"></div>
 
             <div class="projects" id="projectsList" aria-live="polite"></div>
 
             <div style="height:12px"></div>
 
-            <div class="muted-sm">Add Contribution / Project</div>
+            <div class="muted">Add Contribution / Project</div>
             <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-              <input id="projName" placeholder="Project name" aria-label="Project name" />
-              <input id="projAmt" type="number" placeholder="Amount USD" aria-label="Amount in USD" value="250" />
-              <select id="projTier" aria-label="Project tier"><option>Seed</option><option>Spark</option><option>Builder</option><option>Creator</option><option>Visionary</option><option>Pathfinder</option></select>
-              <select id="projPay" aria-label="Payment method"><option>Bank Deposit</option><option>USDT</option></select>
+              <input id="projName" placeholder="Project name" />
+              <input id="projAmt" type="number" placeholder="Amount USD" value="250" />
+              <select id="projTier"><option>Seed</option><option>Spark</option><option>Builder</option><option>Creator</option><option>Visionary</option><option>Pathfinder</option></select>
+              <select id="projPay"><option>Bank Deposit</option><option>USDT</option></select>
               <button id="projSubmit" class="btn">Submit</button>
             </div>
           </div>
@@ -270,7 +233,7 @@
         <aside>
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><strong>Project Tracker</strong><div class="muted-sm">24-month maturity</div></div>
+              <div><strong>Project Tracker</strong><div class="muted">24-month maturity</div></div>
             </div>
             <div id="trackerArea" style="margin-top:12px"></div>
           </div>
@@ -279,16 +242,16 @@
 
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><strong>Referrals & Rewards</strong><div class="muted-sm">Progress to 20 referrals</div></div>
+              <div><strong>Referrals & Rewards</strong><div class="muted">Progress to 20 referrals</div></div>
             </div>
             <div style="height:8px"></div>
             <div style="display:flex;gap:8px">
-              <input id="referralLink" value="https://dreambigpro.com/r/PRIN1234" aria-label="Referral link"/>
+              <input id="referralLink" value="https://dreambigpro.com/r/PRIN1234" />
               <button id="copyBtn" class="btn">Copy</button>
             </div>
             <div style="height:10px"></div>
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <div class="muted-sm">Verified referrals</div>
+              <div class="muted">Verified referrals</div>
               <div style="font-weight:900" id="refCount">0 / 20</div>
             </div>
             <div style="height:8px"></div>
@@ -297,179 +260,228 @@
         </aside>
       </div>
 
-      <footer class="site-footer" role="contentinfo">© 2026 Dream Big Project. All rights reserved.</footer>
+      <footer class="site-footer">© 2026 Dream Big Project. All rights reserved.</footer>
     </main>
   </div>
 
-  <!-- Toast container -->
-  <div class="toast-wrap" id="toasts" aria-live="polite" aria-atomic="true"></div>
+  <!-- Toasts -->
+  <div class="toast-wrap" id="toasts"></div>
 
 <script>
-  /* ============ Utility & UI helpers ============ */
-  const overlay = document.getElementById('overlay');
+  // ---- Elements ----
   const sidebar = document.getElementById('sidebar');
   const menuBtn = document.getElementById('menuBtn');
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.background = 'rgba(2,6,20,0.45)';
+  overlay.style.opacity = '0';
+  overlay.style.pointerEvents = 'none';
+  overlay.style.transition = 'opacity .28s';
+  overlay.style.zIndex = '50';
+  document.body.appendChild(overlay);
+
   const themeToggle = document.getElementById('themeToggle');
   const profileBtn = document.getElementById('avatarBtn');
   const profileMenu = document.getElementById('profileMenu');
   const projSubmit = document.getElementById('projSubmit');
-  const trackerArea = document.getElementById('trackerArea');
   const toasts = document.getElementById('toasts');
 
-  // small helpers
-  function toast(message, type='info', timeout=2800){
-    const t = document.createElement('div'); t.className = 'toast ' + (type==='success' ? 'success' : 'info'); t.textContent = message;
+  // Toast helper
+  function toast(msg, timeout=2400){
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
     toasts.appendChild(t);
-    // show
     requestAnimationFrame(()=> t.classList.add('show'));
-    setTimeout(()=> { t.classList.remove('show'); setTimeout(()=> t.remove(), 320); }, timeout);
+    setTimeout(()=> { t.classList.remove('show'); setTimeout(()=> t.remove(), 300); }, timeout);
   }
 
-  function addMonths(d, m){ const dt=new Date(d); dt.setMonth(dt.getMonth()+m); return dt; }
-  function pct(start, end){ const s=new Date(start), e=new Date(end), n=new Date(); if(n<=s) return 0; if(n>=e) return 100; return Math.floor(((n-s)/(e-s))*100) }
-  function countdownText(end){ const n=new Date(), e=new Date(end); if(n>=e) return 'Matured'; const diff = e - n; const days = Math.floor(diff / (1000*60*60*24)); return Math.floor(days/30) + 'm ' + (days%30) + 'd' }
-  function progressColor(p){ if(p<=40) return '#D9534F'; if(p<=60) return '#F0AD4E'; return '#28A745' }
+  // Small helpers
+  function addMonths(date, months){ const d = new Date(date); d.setMonth(d.getMonth()+months); return d; }
+  function pct(start, end){ const s=new Date(start), e=new Date(end), n=new Date(); if(n<=s) return 0; if(n>=e) return 100; return Math.floor(((n-s)/(e-s))*100); }
+  function countdown(end){ const n=new Date(), e=new Date(end); if(n>=e) return 'Matured'; const diff = e - n; const days = Math.floor(diff/(1000*60*60*24)); return Math.floor(days/30) + 'm ' + (days%30) + 'd'; }
+  function progressColor(p){ if(p<=40) return '#D9534F'; if(p<=60) return '#F0AD4E'; return '#28A745'; }
 
-  /* ===== Theme persisted ===== */
-  const initialTheme = localStorage.getItem('db-theme') || 'dark';
-  setTheme(initialTheme);
-  function setTheme(theme){
+  // Theme restore
+  const saved = localStorage.getItem('db-theme') || 'dark';
+  setTheme(saved);
+  function setTheme(t){
     document.body.classList.remove('dark','light');
-    document.body.classList.add(theme);
-    localStorage.setItem('db-theme', theme);
-    themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+    document.body.classList.add(t);
+    localStorage.setItem('db-theme', t);
+    themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
   }
   themeToggle.addEventListener('click', ()=> setTheme(document.body.classList.contains('dark') ? 'light' : 'dark'));
 
-  /* ===== Sidebar open/close behavior (mobile & desktop safe) ===== */
+  // Sidebar toggle for small screens:
   function openSidebar(){
-    sidebar.classList.add('open'); overlay.classList.add('show'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true');
+    sidebar.classList.add('open');
+    sidebar.style.transform = 'translateX(0)';
+    overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto';
   }
   function closeSidebar(){
-    sidebar.classList.remove('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','true'); menuBtn.setAttribute('aria-expanded','false');
+    sidebar.classList.remove('open');
+    sidebar.style.transform = ''; // let CSS handle default
+    overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
   }
-  menuBtn.addEventListener('click', ()=> { if(sidebar.classList.contains('open')) closeSidebar(); else openSidebar(); });
+
+  menuBtn.addEventListener('click', ()=>{
+    // on small screens toggle overlay & sidebar; on desktop, sidebar is always visible
+    if(window.innerWidth < 980){
+      if(sidebar.classList.contains('open')){
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    } else {
+      // on desktop, toggle a 'collapsed' visual without removing it from flow
+      sidebar.classList.toggle('collapsed');
+      sidebar.style.width = sidebar.classList.contains('collapsed') ? '84px' : '';
+    }
+  });
+
   overlay.addEventListener('click', closeSidebar);
+  window.addEventListener('resize', ()=> {
+    if(window.innerWidth >= 980){
+      // ensure overlay hidden and sidebar visible
+      overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
+      sidebar.classList.remove('open'); sidebar.classList.remove('hidden');
+      sidebar.style.transform = '';
+    } else {
+      // on mobile start closed
+      sidebar.classList.remove('open');
+      overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
+    }
+  });
 
-  // On larger screens keep sidebar visible (static)
-  function adjustSidebarForScreen(){ if(window.innerWidth >= 980){ sidebar.classList.add('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true'); } else { closeSidebar(); } }
-  window.addEventListener('resize', adjustSidebarForScreen);
-  adjustSidebarForScreen();
-
-  /* ===== Profile dropdown ===== */
-  profileBtn.addEventListener('click', (e)=> { e.stopPropagation(); profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block'; profileMenu.setAttribute('aria-hidden', profileMenu.style.display === 'block' ? 'false' : 'true'); });
-  document.addEventListener('click', (e)=> { if(!profileMenu.contains(e.target) && !profileBtn.contains(e.target)){ profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true'); } });
+  // Profile dropdown
+  profileBtn.addEventListener('click', (e)=> {
+    e.stopPropagation();
+    const vis = profileMenu.style.display === 'block';
+    profileMenu.style.display = vis ? 'none' : 'block';
+    profileMenu.setAttribute('aria-hidden', String(vis));
+  });
+  document.addEventListener('click', (e)=>{
+    if(!profileMenu.contains(e.target) && !profileBtn.contains(e.target)){
+      profileMenu.style.display = 'none';
+      profileMenu.setAttribute('aria-hidden','true');
+    }
+  });
 
   document.getElementById('profileLogout').addEventListener('click', (e)=> { e.preventDefault(); window.location.href = 'login.html'; });
 
-  /* ===== Polished nav behavior ===== */
+  // Nav items - highlight and update title (no alerts)
   document.querySelectorAll('.nav-item').forEach(item=>{
-    item.addEventListener('click', ()=> {
-      // set active
-      document.querySelectorAll('.nav-item').forEach(n=> n.classList.remove('active'));
+    item.addEventListener('click', ()=>{
+      document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
       item.classList.add('active');
-      // update central title
       const label = item.textContent.trim();
       document.getElementById('pageTitle').textContent = label;
-      // close sidebar on mobile
+      // close overlay on small screens
       if(window.innerWidth < 980) closeSidebar();
     });
-    item.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); } });
+    item.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); } });
   });
 
-  /* ===== Data + Rendering ===== */
+  // Data + rendering
   const projects = [];
-  let referrals = 14, walletBalance = 0;
+  let referrals = 14, wallet = 0;
   function renderOverview(){
     document.getElementById('kActive').textContent = projects.length;
     const total = projects.reduce((s,p)=> s + Number(p.amount), 0);
     document.getElementById('kTotal').textContent = '$' + total.toLocaleString();
     document.getElementById('kRef').textContent = referrals;
-    document.getElementById('kWallet').textContent = '$' + walletBalance.toLocaleString();
+    document.getElementById('kWallet').textContent = '$' + wallet.toLocaleString();
     document.getElementById('refCount').textContent = referrals + ' / 20';
   }
-
   function renderProjects(){
-    const list = document.getElementById('projectsList'); list.innerHTML = '';
-    const track = document.getElementById('trackerArea'); track.innerHTML = '';
-    projects.forEach((p)=>{
+    const list = document.getElementById('projectsList'), track = document.getElementById('trackerArea');
+    list.innerHTML = ''; track.innerHTML = '';
+    projects.forEach(p=>{
       const per = pct(p.start,p.maturity);
-      // project card
       const card = document.createElement('div'); card.className = 'project';
-      card.innerHTML = `
-        <div class="meta">
-          <div><strong>${p.name}</strong><div class="muted-sm">${p.tier} • $${p.amount}</div></div>
-          <div style="text-align:right"><div class="muted-sm">Matures in</div><strong>${countdownText(p.maturity)}</strong></div>
-        </div>
-        <div class="progress"><i style="width:${per}%; background:${progressColor(per)}"></i></div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px"><div class="muted-sm">${per}%</div><div class="muted-sm">Target: $${p.amount*10}</div></div>
-      `;
+      card.innerHTML = `<div class="meta"><div><strong>${p.name}</strong><div class="muted">${p.tier} • $${p.amount}</div></div><div style="text-align:right"><div class="muted">Matures in</div><strong>${countdown(p.maturity)}</strong></div></div><div class="progress"><i style="width:${per}%; background:${progressColor(per)}"></i></div><div style="display:flex;justify-content:space-between;margin-top:6px"><div class="muted">${per}%</div><div class="muted">Target: $${p.amount*10}</div></div>`;
       list.appendChild(card);
 
-      // tracker card (single panel with one card per project)
+      // tracker single panel can show multiple project entries (each a card)
       const tr = document.createElement('div'); tr.className = 'card'; tr.style.marginBottom='10px';
-      tr.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${p.name}</strong><div class="muted-sm">${p.tier}</div></div><div><span style="padding:6px 10px;border-radius:999px;background:${per>=61? '#e8f7ea': per>=41? '#fffaf0':'#fdecea'};color:${per>=61? '#19692f':per>=41? '#b36a00':'#9b2b2b'};font-weight:900">${per<=40?'EARLY':per<=60?'MID':'MATURE'}</span></div></div><div style="height:8px"></div><div class="progress"><i style="width:${per}%; background:${progressColor(per)}"></i></div><div class="muted-sm" style="margin-top:6px">${countdownText(p.maturity)}</div>`;
+      tr.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${p.name}</strong><div class="muted">${p.tier}</div></div><div>${per}%</div></div><div style="height:8px"></div><div class="progress"><i style="width:${per}%; background:${progressColor(per)}"></i></div><div class="muted" style="margin-top:6px">${countdown(p.maturity)}</div>`;
       track.appendChild(tr);
     });
     renderOverview();
   }
 
-  // seed sample project
+  // seed
   (function seed(){
     const now = new Date();
-    projects.push({ name:'Agro Processing Unit', amount:250, tier:'Spark', start:addMonths(now,-6).toISOString(), maturity:addMonths(now,18).toISOString() });
+    projects.push({ name:'Agro Processing', amount:250, tier:'Spark', start:addMonths(now,-6).toISOString(), maturity:addMonths(now,18).toISOString() });
     renderProjects();
   })();
 
-  /* ===== Add project (with toast) ===== */
-  document.getElementById('projSubmit').addEventListener('click', ()=>{
+  // Submit contribution -> toast (no alert)
+  projSubmit.addEventListener('click', ()=>{
     const name = document.getElementById('projName').value || 'Untitled';
     const amt = Number(document.getElementById('projAmt').value) || 0;
-    if(amt <= 0){ toast('Enter a valid contribution amount', 'info'); return; }
+    if(amt <= 0){ toast('Enter a valid amount'); return; }
     const tier = document.getElementById('projTier').value;
-    const start = new Date(), maturity = addMonths(start,24);
+    const start = new Date(); const maturity = addMonths(start,24);
     projects.unshift({ name, amount:amt, tier, start:start.toISOString(), maturity:maturity.toISOString() });
     renderProjects();
-    toast('Contribution recorded — project added to your dashboard', 'success');
+    toast('Contribution recorded — project added to your dashboard');
     document.getElementById('projName').value = '';
   });
 
-  // copy referral
-  document.getElementById('copyBtn').addEventListener('click', ()=> {
-    const el = document.getElementById('referralLink'); el.select(); document.execCommand('copy');
-    toast('Referral link copied', 'success');
+  // copy referral link -> toast
+  document.getElementById('copyBtn').addEventListener('click', ()=>{
+    const ref = document.getElementById('referralLink'); ref.select(); document.execCommand('copy');
+    toast('Referral link copied');
   });
 
-  // view tiers action
-  document.getElementById('viewTiersBtn').addEventListener('click', ()=> {
-    toast('Opening Tier Details (UI only)', 'info', 2000);
-  });
+  // toast function
+  function toast(msg){
+    const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+    toasts.appendChild(t);
+    requestAnimationFrame(()=> t.classList.add('show'));
+    setTimeout(()=> { t.classList.remove('show'); setTimeout(()=> t.remove(), 320); }, 2200);
+  }
 
-  // sidebar logout
-  document.getElementById('sidebarLogout').addEventListener('click', ()=> { window.location.href = 'login.html'; });
+  // helper functions used earlier
+  function addMonths(date, months){ const d=new Date(date); d.setMonth(d.getMonth()+months); return d; }
+  function pct(start, end){ const s=new Date(start), e=new Date(end), n=new Date(); if(n<=s) return 0; if(n>=e) return 100; return Math.floor(((n-s)/(e-s))*100); }
+  function countdown(end){ const n=new Date(), e=new Date(end); if(n>=e) return 'Matured'; const diff = e - n; const days = Math.floor(diff/(1000*60*60*24)); return Math.floor(days/30) + 'm ' + (days%30) + 'd'; }
+  function progressColor(p){ if(p<=40) return '#D9534F'; if(p<=60) return '#F0AD4E'; return '#28A745'; }
 
-  // helper to set today
+  // init: set today label and ensure sidebar state
   document.getElementById('todayLabel').textContent = new Date().toLocaleDateString();
-
-  // ensure sidebar state on load/resize
-  function readySidebar(){
-    if(window.innerWidth >= 980){
-      sidebar.classList.add('open');
-      overlay.classList.remove('show');
-      sidebar.setAttribute('aria-hidden','false');
-      menuBtn.setAttribute('aria-expanded','true');
-    } else {
+  function initSidebar(){
+    if(window.innerWidth < 980){
       sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-      sidebar.setAttribute('aria-hidden','true');
+      sidebar.style.transform = 'translateX(-24px)';
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
       menuBtn.setAttribute('aria-expanded','false');
+    } else {
+      sidebar.classList.add('open');
+      sidebar.style.transform = '';
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+      menuBtn.setAttribute('aria-expanded','true');
     }
   }
-  window.addEventListener('resize', readySidebar);
-  readySidebar();
+  window.addEventListener('resize', initSidebar);
+  initSidebar();
 
-  // small keyboard nav support for menu button
-  menuBtn.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); menuBtn.click(); } });
+  // restore theme
+  const stored = localStorage.getItem('db-theme') || 'dark';
+  setTheme(stored);
+  function setTheme(t){
+    document.body.classList.remove('dark','light');
+    document.body.classList.add(t);
+    localStorage.setItem('db-theme', t);
+    themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
+  }
+  themeToggle.addEventListener('click', ()=> setTheme(document.body.classList.contains('dark') ? 'light' : 'dark'));
 
 </script>
 </body>
