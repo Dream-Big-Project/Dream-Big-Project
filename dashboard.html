@@ -39,7 +39,8 @@
   .form-row{display:flex;gap:8px;margin-top:12px}
   .input,select{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
   .submit{background:var(--accent);color:#042137;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
-  footer{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:10px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:40}
+  /* Footer: gold separator + simple copyright */
+  footer{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:12px;border-radius:12px;display:flex;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:40;border-top:4px solid var(--accent);justify-content:center}
   .btn{padding:10px 12px;border-radius:10px;border:none}
   .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
   .btn.warn{background:var(--danger);color:white}
@@ -138,7 +139,6 @@
 
     <footer>
       <div style="font-size:13px">© 2026 Dream Big Project — All rights reserved.</div>
-      <div><button class="btn ghost" id="footerShare">Share</button></div>
     </footer>
 
     <div class="toast" id="toast">Copied!</div>
@@ -367,7 +367,7 @@ const qrModal = document.getElementById('qrModal'), qrImage = document.getElemen
 const dbLogo = document.getElementById('dbLogo');
 const toast = document.getElementById('toast');
 const copyButtons = document.querySelectorAll('.copy-btn');
-const shareHere = document.getElementById('shareHere'), footerShare = document.getElementById('footerShare');
+const shareHere = document.getElementById('shareHere');
 
 let payments = JSON.parse(localStorage.getItem('payments') || '[]');
 let projects = JSON.parse(localStorage.getItem('projects') || '[]');
@@ -519,7 +519,7 @@ submitProof.addEventListener('click', ()=>{
   refreshPaymentsNav();
 });
 
-/* refresh payments nav */
+/* refresh payments nav: creates Unapproved/Approved items and ensures menu closes when they are clicked */
 function refreshPaymentsNav(){
   payments = JSON.parse(localStorage.getItem('payments') || '[]');
   paymentsNavPlace.innerHTML = '';
@@ -527,9 +527,9 @@ function refreshPaymentsNav(){
     const unCount = payments.filter(p=>p.status==='pending').length;
     const apCount = payments.filter(p=>p.status==='approved').length;
     const btnUn = document.createElement('button'); btnUn.className='menu-item'; btnUn.innerHTML='<span>Unapproved Payments</span><span class="hint">'+unCount+'</span>';
-    btnUn.addEventListener('click', ()=> openPaymentsList('pending'));
+    btnUn.addEventListener('click', ()=> { closeMenu(); openPaymentsList('pending'); });
     const btnAp = document.createElement('button'); btnAp.className='menu-item'; btnAp.innerHTML='<span>Approved Payments</span><span class="hint">'+apCount+'</span>';
-    btnAp.addEventListener('click', ()=> openPaymentsList('approved'));
+    btnAp.addEventListener('click', ()=> { closeMenu(); openPaymentsList('approved'); });
     paymentsNavPlace.appendChild(btnUn); paymentsNavPlace.appendChild(btnAp);
   }
 }
@@ -665,7 +665,7 @@ btnYes.addEventListener('click', ()=> {
 document.getElementById('mLogout').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
 
 /* ---------- Sharing ---------- */
-[shareHere, footerShare].forEach(el => el.addEventListener('click', async ()=>{
+[shareHere].forEach(el => el.addEventListener('click', async ()=>{
   const url = location.href;
   const obj = { title:'Join me on Dream Big', text:'Sign up and start building with Dream Big', url };
   if(navigator.share){ try{ await navigator.share(obj); } catch(e){} } else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); } else alert('Copy: '+url);
