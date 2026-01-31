@@ -3,352 +3,397 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dream Big — Vertical Nav Interface</title>
+<title>Dream Big — Member Dashboard (Prototype)</title>
 <style>
   :root{
-    --navy:#071735;
-    --navy-2:#0e274f;
-    --gold:#DCAE3A;
-    --muted:#8c98ad;
+    --navy: #071735;
+    --navy-2: #0e274f;
+    --gold: #DCAE3A;
+    --gold-2: #F0C75E;
+    --muted: #98a6bb;
     --card-radius:14px;
+    --max-w:1200px;
     --gap:14px;
-    --sidebar-w:260px;
-    --sidebar-collapsed-w:72px;
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --sidebar-w:300px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   }
 
-  /* THEME: dark by default */
-  body{margin:0;height:100%;color:#fff;background:linear-gradient(180deg,var(--navy),var(--navy-2));-webkit-font-smoothing:antialiased}
-  a{color:inherit;text-decoration:none}
+  /* THEMES */
+  body.dark {
+    --bg: linear-gradient(180deg,var(--navy),var(--navy-2));
+    --surface: rgba(255,255,255,0.03);
+    --text: #ffffff;
+    --muted: #9fb0c7;
+    --glass: rgba(255,255,255,0.03);
+  }
+  body.light {
+    --bg: linear-gradient(180deg,#f6f8fb,#eef3fb);
+    --surface: #ffffff;
+    --text: #071735;
+    --muted: #6b7280;
+    --glass: rgba(7,23,53,0.04);
+  }
 
-  /* layout */
-  .app{max-width:1200px;margin:18px auto;padding:12px;display:grid;grid-template-columns:var(--sidebar-w) 1fr;gap:18px}
-  .sidebar{background:rgba(255,255,255,0.03);border-radius:var(--card-radius);padding:12px;display:flex;flex-direction:column;height:calc(100vh - 36px);box-shadow:0 14px 50px rgba(2,6,20,0.45);position:sticky;top:18px;transition:width .28s ease,transform .28s ease;overflow:hidden}
-  .sidebar.collapsed{width:var(--sidebar-collapsed-w)}
-  .sidebar .brand{display:flex;gap:10px;align-items:center;padding:6px 8px}
-  .brand .mark{width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,var(--gold),#F0C75E)}
-  .brand .title{font-weight:900;font-size:16px}
-  .nav{margin-top:18px;display:flex;flex-direction:column;gap:6px;flex:1}
-  .nav .item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;cursor:pointer;font-weight:800;white-space:nowrap}
-  .nav .item:hover{background:rgba(255,255,255,0.02)}
-  .nav .icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:transparent}
-  .nav .label{flex:1;opacity:1;transition:opacity .18s linear}
-  .sidebar.collapsed .label{opacity:0}
-  .tiers-box{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(220,174,58,0.06), rgba(255,255,255,0.01));font-weight:700}
-  .tiers-box .count{font-size:20px;font-weight:900;margin-top:6px}
-  .sidebar-footer{padding:12px 6px}
-  .logout{width:100%;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);font-weight:900;cursor:pointer}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+  .stage{max-width:var(--max-w);margin:20px auto;padding:16px;display:grid;grid-template-columns:1fr;gap:18px}
 
-  /* main content */
-  .main{display:flex;flex-direction:column;gap:12px}
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .menu-toggle{background:transparent;border:0;color:inherit;font-weight:900;padding:8px 12px;border-radius:10px;cursor:pointer}
-  .user-area{display:flex;align-items:center;gap:12px}
-  .theme-btn{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;border:0;cursor:pointer}
-  .avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(180deg,#0c3a6b,#0b2340);display:flex;align-items:center;justify-content:center;font-weight:900}
+  @media(min-width:980px){
+    .stage{grid-template-columns:var(--sidebar-w) 1fr}
+  }
 
-  .grid{display:grid;grid-template-columns:1fr 360px;gap:12px}
-  @media(max-width:980px){ .app{grid-template-columns:auto 1fr;padding:6px} .sidebar{position:fixed;left:8px;top:8px;bottom:8px;z-index:50} .grid{grid-template-columns:1fr} }
+  /* SIDEBAR (hidden overlay by default) */
+  .sidebar-wrap {position:fixed;left:0;top:0;bottom:0;width:100%;pointer-events:none}
+  .sidebar {
+    width:var(--sidebar-w);
+    height:100%;
+    background:var(--surface);
+    box-shadow: 8px 0 40px rgba(2,6,20,0.5);
+    padding:18px;transform:translateX(-20px);opacity:0;border-radius:0 0 12px 0;
+    transition: transform .34s cubic-bezier(.2,.9,.2,1), opacity .34s ease; pointer-events:auto;
+    position:relative;
+  }
+  .sidebar.open { transform:translateX(0); opacity:1; }
+  .overlay { position:fixed; inset:0; background:rgba(2,6,20,0.45); opacity:0; transition:opacity .34s ease; pointer-events:none; }
+  .overlay.show { opacity:1; pointer-events:auto; }
 
-  .card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;box-shadow:0 14px 40px rgba(2,6,20,0.2)}
-  .kpis{display:flex;gap:12px;overflow:auto;padding-bottom:6px}
-  .kpi{min-width:150px;padding:10px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent);font-weight:900}
+  .brand { display:flex; gap:12px; align-items:center; font-weight:900; }
+  .brand .mark { width:56px; height:56px; border-radius:12px; background:linear-gradient(90deg,var(--gold),var(--gold-2)); }
+  .brand .label { font-size:18px; font-weight:900; }
 
-  .projects{display:flex;flex-direction:column;gap:10px}
-  .project{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px}
-  .progress{height:10px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden;margin-top:8px}
-  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#F0C75E);width:0%;transition:width .8s cubic-bezier(.2,.9,.2,1)}
+  .muted { color:var(--muted); font-weight:800; font-size:13px; }
 
-  /* mobile: vertical icon rail look (like your image) */
-  .icon-rail{display:none}
+  nav.main-nav { margin-top:18px; display:flex; flex-direction:column; gap:8px }
+  .nav-item { display:flex; align-items:center; gap:12px; padding:10px; border-radius:10px; cursor:pointer; font-weight:800; }
+  .nav-item:hover { background:var(--glass); }
+
+  /* Member tiers box */
+  .tiers { margin-top:12px; padding:12px; border-radius:10px; background:linear-gradient(90deg, rgba(220,174,58,0.06), rgba(255,255,255,0.01)); }
+  .tiers .tier-badge { display:inline-block; padding:6px 10px; background:linear-gradient(90deg,var(--gold),var(--gold-2)); color:var(--navy); font-weight:900; border-radius:999px; }
+
+  /* logout footer */
+  .sidebar-footer { position:absolute; left:18px; right:18px; bottom:18px; }
+  .logout-btn { width:100%; padding:10px; border-radius:10px; background:transparent; border:1px solid rgba(255,255,255,0.06); font-weight:900; cursor:pointer; }
+
+  /* MAIN UI */
+  .main { padding:12px; min-height:100vh; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+  .left-controls { display:flex; gap:12px; align-items:center; }
+  .menu-btn { background:transparent; border:0; color:var(--text); font-weight:900; font-size:16px; padding:8px 10px; cursor:pointer; border-radius:8px; }
+  .title { font-size:20px; font-weight:900; }
+  .right-controls { display:flex; gap:12px; align-items:center; }
+
+  .theme-btn { padding:8px; border-radius:8px; border:0; background:var(--glass); cursor:pointer; font-weight:900; }
+  .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(180deg,#0c3a6b,#0b2340); display:flex; align-items:center; justify-content:center; font-weight:900; cursor:pointer; }
+
+  /* Profile dropdown */
+  .profile-menu { position:absolute; right:18px; top:64px; background:var(--surface); padding:12px; border-radius:10px; box-shadow:0 12px 40px rgba(2,6,20,0.3); display:none; min-width:190px; }
+  .profile-menu a{ display:block; padding:8px; border-radius:8px; font-weight:800; color:var(--text); text-decoration:none }
+  .profile-menu a:hover{ background:var(--glass) }
+
+  /* layout grid */
+  .layout-grid { display:grid; gap:12px; grid-template-columns:1fr; }
+  @media(min-width:980px){ .layout-grid { grid-template-columns: 1fr 360px; } }
+
+  .card { background:var(--surface); padding:14px; border-radius:12px; box-shadow:0 14px 40px rgba(2,6,20,0.12); }
+  .kpi-row { display:flex; gap:12px; flex-wrap:nowrap; overflow:auto; padding-bottom:6px }
+  .kpi { min-width:160px; padding:12px; border-radius:10px; background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent); font-weight:900 }
+
+  .projects { display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+  .project { background:rgba(255,255,255,0.02); padding:12px; border-radius:10px; }
+  .project .meta { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .progress { height:12px; background:rgba(255,255,255,0.03); border-radius:999px; overflow:hidden; margin-top:8px; }
+  .progress i { display:block; height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-2)); width:0%; transition:width .9s cubic-bezier(.2,.9,.2,1) }
+
+  /* small screens */
   @media(max-width:980px){
-    .icon-rail{display:flex;flex-direction:column;gap:8px;position:fixed;left:8px;top:60px;z-index:60;background:transparent;padding:6px}
-    .sidebar{left:8px;top:8px;width:var(--sidebar-collapsed-w);padding:8px}
-    .sidebar.expanded{width:var(--sidebar-w)}
-    .brand .title{display:none}
+    .stage { padding:0; }
+    .sidebar { width:84%; max-width:360px; border-radius:0 12px 12px 0; }
+    .main { padding:12px 10px; }
+    .profile-menu { right:10px }
   }
 
-  /* small utilities */
-  .muted{color:var(--muted);font-weight:800}
-  .btn{background:linear-gradient(90deg,var(--gold),#F0C75E);color:var(--navy);padding:8px 12px;border-radius:10px;border:0;font-weight:900;cursor:pointer}
-  input,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+  input, select { padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--text); }
+  .btn { background:linear-gradient(90deg,var(--gold),var(--gold-2)); color:var(--navy); padding:10px 12px; border-radius:10px; border:0; font-weight:900; cursor:pointer; }
+
+  .muted-sm { color:var(--muted); font-weight:800; font-size:13px; }
 </style>
 </head>
-<body>
+<body class="dark">
 
-  <div class="app" id="appRoot">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-      <div class="brand" id="brandBtn" style="cursor:pointer">
-        <div class="mark"></div>
+  <!-- Sidebar overlay + panel -->
+  <div class="sidebar-wrap" aria-hidden="true">
+    <div id="overlay" class="overlay" tabindex="-1"></div>
+    <aside id="sidebar" class="sidebar" aria-label="Navigation panel" aria-hidden="true">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
         <div>
-          <div class="title">Dream Big Project</div>
-          <div class="muted" style="font-size:12px">Secret • Structure • Strategy</div>
+          <div class="label">Dream Big Project</div>
+          <div class="muted-sm">Member Dashboard</div>
         </div>
       </div>
 
-      <nav class="nav" role="navigation" aria-label="Primary">
-        <div class="item" data-target="overview"><div class="icon">🏠</div><div class="label">Dashboard</div></div>
-        <div class="item" data-target="projects"><div class="icon">📁</div><div class="label">My Projects</div></div>
-        <div class="item" data-target="tracker"><div class="icon">📊</div><div class="label">Funding Tracker</div></div>
-
-        <div class="tiers-box" id="tiersBox">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div style="font-size:13px;font-weight:900">Member Tiers</div>
-              <div class="muted" style="font-size:12px">Overview of tiers & thresholds</div>
-            </div>
-            <div style="text-align:right">
-              <div class="count" id="tiersCount">6</div>
-              <div style="font-size:12px" class="muted">levels</div>
-            </div>
+      <div class="tiers" role="region" aria-label="Member tier summary">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="muted-sm">Your Tier</div>
+            <div style="font-weight:900">Pathfinder <span style="margin-left:8px" class="tier-badge">PRO</span></div>
           </div>
-          <div style="height:8px"></div>
-          <button class="btn" id="viewTiers">View tiers</button>
+          <div style="text-align:right">
+            <div class="muted-sm">Months</div>
+            <div style="font-weight:900">8 / 24</div>
+          </div>
         </div>
+        <div style="height:10px"></div>
+        <div class="progress" style="height:10px"><i style="width:33%"></i></div>
+        <div style="height:8px"></div>
+        <button class="btn" id="viewTiersBtn">View Tier Details</button>
+      </div>
 
-        <div class="item" data-target="settings"><div class="icon">⚙️</div><div class="label">Settings & Privacy</div></div>
-        <div class="item" data-target="help"><div class="icon">❓</div><div class="label">Help & Support</div></div>
+      <nav class="main-nav" role="navigation" aria-label="Main">
+        <div class="nav-item" data-target="dashboard">🏠 <div class="label">Dashboard</div></div>
+        <div class="nav-item" data-target="projects">📁 <div class="label">My Projects</div></div>
+        <div class="nav-item" data-target="tracker">📊 <div class="label">Project Tracker</div></div>
+        <div class="nav-item" data-target="referrals">🔗 <div class="label">Referrals & Rewards</div></div>
+        <div class="nav-item" data-target="wallet">💼 <div class="label">Wallet</div></div>
+        <div class="nav-item" data-target="docs">📄 <div class="label">Documents</div></div>
+        <div class="nav-item" data-target="settings">⚙️ <div class="label">Settings & Privacy</div></div>
+        <div class="nav-item" data-target="help">❓ <div class="label">Help & Support</div></div>
       </nav>
 
       <div class="sidebar-footer">
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="flex:1">
-            <div style="font-weight:900">You're Member</div>
-            <div class="muted" style="font-size:12px">Pathfinder • Active</div>
-          </div>
-          <button class="logout" id="logoutBtn">Logout</button>
-        </div>
+        <button class="logout-btn" id="sidebarLogout">Logout</button>
       </div>
     </aside>
+  </div>
 
-    <!-- MAIN -->
-    <main class="main">
+  <!-- Main stage -->
+  <div class="stage" id="stage">
+    <main class="main" role="main">
       <div class="topbar">
-        <div style="display:flex;gap:12px;align-items:center">
-          <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="left-controls">
+          <button id="menuBtn" class="menu-btn" aria-controls="sidebar" aria-expanded="false">☰</button>
           <div>
-            <div style="font-weight:900">Dashboard</div>
-            <div class="muted" id="todayLabel"></div>
+            <div class="title">Dashboard</div>
+            <div class="muted-sm" id="todayLabel">—</div>
           </div>
         </div>
 
-        <div class="user-area">
-          <button class="theme-btn" id="themeBtn" title="Toggle theme">🌙</button>
+        <div class="right-controls">
+          <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
           <div style="position:relative">
-            <div class="avatar" id="avatarBtn">PD</div>
-            <div id="profileMenu" class="card" style="position:absolute;right:0;top:54px;min-width:160px;display:none">
-              <a href="#" id="editProfile">Edit profile</a><div style="height:8px"></div>
-              <a href="#" id="menuLogout">Logout</a>
+            <div class="avatar" id="avatarBtn" title="Profile">PD</div>
+            <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+              <a href="#" id="editProfile">Edit Profile</a>
+              <a href="#" id="settingsLink">Settings & Privacy</a>
+              <a href="#" id="profileLogout">Logout</a>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="grid">
-        <!-- Left column: projects -->
-        <section>
+      <section class="layout-grid">
+        <!-- Left column -->
+        <div>
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center">
               <div>
-                <div style="font-weight:900">Welcome back, <span id="userName">Member</span></div>
-                <div class="muted">Pathfinder • Active</div>
+                <div style="font-weight:900">Welcome back, <span id="displayName">Member</span></div>
+                <div class="muted-sm">Pathfinder • Active</div>
               </div>
-              <div><button class="btn" id="quickAdd">Add Project</button></div>
+              <div><button id="quickAdd" class="btn">Add Project</button></div>
             </div>
 
             <div style="height:12px"></div>
 
-            <div class="kpis">
-              <div class="kpi"><div class="muted">Active Projects</div><div style="font-size:18px;font-weight:900" id="kProjects">0</div></div>
-              <div class="kpi"><div class="muted">Total Contribution</div><div style="font-size:18px;font-weight:900" id="kContrib">$0</div></div>
-              <div class="kpi"><div class="muted">Referrals</div><div style="font-size:18px;font-weight:900" id="kRef">0</div></div>
+            <div class="kpi-row" role="region" aria-label="Overview metrics">
+              <div class="kpi"><div class="muted-sm">Active Projects</div><div style="font-size:18px;font-weight:900" id="kActive">2</div></div>
+              <div class="kpi"><div class="muted-sm">Total Contribution</div><div style="font-size:18px;font-weight:900" id="kTotal">$1,250</div></div>
+              <div class="kpi"><div class="muted-sm">Referrals</div><div style="font-size:18px;font-weight:900" id="kRef">14</div></div>
+              <div class="kpi"><div class="muted-sm">Wallet Balance</div><div style="font-size:18px;font-weight:900" id="kWallet">$0</div></div>
             </div>
+
+            <div class="projects" id="projectsList" aria-live="polite"></div>
 
             <div style="height:12px"></div>
 
-            <div class="projects" id="projectsList"></div>
-
-            <div style="height:10px"></div>
-            <div class="muted">Add Contribution</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-              <input id="iName" placeholder="Project name" />
-              <input id="iAmt" type="number" placeholder="Amount USD" value="250" />
-              <select id="iTier">
+            <div class="muted-sm">Add Contribution / Project</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+              <input id="projName" placeholder="Project name" />
+              <input id="projAmt" type="number" placeholder="Amount USD" value="250" />
+              <select id="projTier">
                 <option>Seed</option><option>Spark</option><option>Builder</option><option>Creator</option><option>Visionary</option><option>Pathfinder</option>
               </select>
-              <select id="iMethod"><option>Bank Deposit</option><option>USDT</option></select>
-              <button class="btn" id="addProjectBtn">Submit</button>
+              <select id="projPay"><option>Bank Deposit</option><option>USDT (TRC20)</option></select>
+              <button id="projSubmit" class="btn">Submit</button>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- Right column: tracker & referrals -->
+        <!-- Right column -->
         <aside>
-          <div class="card">
+          <div class="card" aria-live="polite">
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><strong>Funding Tracker</strong><div class="muted" style="font-size:13px">24-month maturity</div></div>
+              <div><strong>Project Tracker</strong><div class="muted-sm">24-month maturity</div></div>
             </div>
-            <div style="height:10px"></div>
-            <div id="trackerList"></div>
+            <div id="trackerArea" style="margin-top:12px"></div>
           </div>
 
           <div style="height:12px"></div>
 
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><strong>Referrals</strong><div class="muted" style="font-size:13px">Progress to reward</div></div>
+              <div><strong>Referrals & Rewards</strong><div class="muted-sm">Progress to 20 referrals</div></div>
             </div>
+
             <div style="height:8px"></div>
             <div style="display:flex;gap:8px">
-              <input id="refInput" value="https://dreambigpro.com/r/PRIN1234" />
-              <button class="btn" id="copyBtn">Copy</button>
+              <input id="referralLink" value="https://dreambigpro.com/r/PRIN1234" />
+              <button id="copyBtn" class="btn">Copy</button>
             </div>
+            <div style="height:10px"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="muted-sm">Verified referrals</div>
+              <div style="font-weight:900" id="refCount">14 / 20</div>
+            </div>
+
             <div style="height:8px"></div>
-            <div style="display:flex;justify-content:space-between"><div class="muted">Verified referrals</div><div id="rProgress" style="font-weight:900">14 / 20</div></div>
-            <div style="height:8px"></div>
-            <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;text-align:center">Smartphone reward unlocks at 20 verified referrals</div>
+            <div style="background:var(--glass);padding:10px;border-radius:8px;text-align:center" id="rewardNote">20 verified referrals unlock a one-time smartphone (tier-based)</div>
           </div>
         </aside>
-      </div>
+      </section>
     </main>
   </div>
 
-  <!-- icon rail for phone (vertical) -->
-  <div class="icon-rail" id="iconRail" aria-hidden="true" style="display:none">
-    <div style="width:56px;height:56px;border-radius:10px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;cursor:pointer" id="railBrand">💡</div>
-    <div style="width:56px;height:56px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;cursor:pointer" data-target="overview">🏠</div>
-    <div style="width:56px;height:56px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;cursor:pointer" data-target="projects">📁</div>
-    <div style="width:56px;height:56px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;cursor:pointer" data-target="tracker">📊</div>
-    <div style="width:56px;height:56px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;cursor:pointer" id="railProfile">👤</div>
-  </div>
-
 <script>
-  // initial data + helpers
+  // --- UI state & utilities ---
+  const body = document.body;
+  const overlay = document.getElementById('overlay');
+  const sidebar = document.getElementById('sidebar');
+  const menuBtn = document.getElementById('menuBtn');
+  const profileBtn = document.getElementById('avatarBtn');
+  const profileMenu = document.getElementById('profileMenu');
+  const themeToggle = document.getElementById('themeToggle');
+  const todayLabel = document.getElementById('todayLabel');
+
+  // set today
+  todayLabel.textContent = new Date().toLocaleDateString();
+
+  // theme: restore or default dark
+  const savedTheme = localStorage.getItem('db-theme') || 'dark';
+  setTheme(savedTheme);
+  function setTheme(t){
+    body.classList.remove('dark','light');
+    body.classList.add(t);
+    localStorage.setItem('db-theme', t);
+    themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
+  }
+  themeToggle.addEventListener('click', ()=> setTheme(body.classList.contains('dark') ? 'light' : 'dark'));
+
+  // sidebar open/close (fade + slide)
+  function openSidebar(){
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+    sidebar.setAttribute('aria-hidden','false');
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeSidebar(){
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+    sidebar.setAttribute('aria-hidden','true');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click', ()=> {
+    if(sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
+  });
+  overlay.addEventListener('click', closeSidebar);
+
+  // profile menu toggle
+  profileBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const visible = profileMenu.style.display === 'block';
+    profileMenu.style.display = visible ? 'none' : 'block';
+    profileMenu.setAttribute('aria-hidden', String(!visible));
+  });
+  document.addEventListener('click', (e)=>{
+    if(!profileMenu.contains(e.target) && !profileBtn.contains(e.target)){ profileMenu.style.display = 'none'; profileMenu.setAttribute('aria-hidden','true'); }
+  });
+
+  // logout handlers
+  document.getElementById('sidebarLogout').addEventListener('click', ()=> window.location.href='login.html');
+  document.getElementById('profileLogout').addEventListener('click', (e)=> { e.preventDefault(); window.location.href='login.html' });
+
+  // basic data & rendering
   const projects = [];
-  let refs = 14;
+  let referrals = 14;
 
-  function addMonths(dt, n){ const d=new Date(dt); d.setMonth(d.getMonth()+n); return d; }
-  function pct(start, end){ const s=new Date(start), e=new Date(end), n=new Date(); if(n<=s) return 0; if(n>=e) return 100; return Math.floor(((n-s)/(e-s))*100); }
-  function countdown(end){ const n=new Date(), e=new Date(end); if(n>=e) return 'Matured'; const diff = e - n; const days = Math.floor(diff/(1000*60*60*24)); const months = Math.floor(days/30); return months + 'm ' + (days%30) + 'd'; }
-
-  // DOM refs
-  const projectsList = document.getElementById('projectsList');
-  const trackerList = document.getElementById('trackerList');
-  const kProjects = document.getElementById('kProjects');
-  const kContrib = document.getElementById('kContrib');
-  const kRef = document.getElementById('kRef');
-  const rProgress = document.getElementById('rProgress');
+  function addMonths(date, months){ const d = new Date(date); d.setMonth(d.getMonth()+months); return d; }
+  function pct(start, end){ const s=new Date(start), e=new Date(end), n=new Date(); if(n<=s)return 0; if(n>=e)return 100; return Math.floor(((n-s)/(e-s))*100); }
+  function countdown(end){ const n=new Date(), e=new Date(end); if(n>=e) return 'Matured'; const diff = e - n; const days = Math.floor(diff/(1000*60*60*24)); return Math.floor(days/30) + 'm ' + (days%30) + 'd'; }
 
   function render(){
     // projects list
-    projectsList.innerHTML = '';
-    trackerList.innerHTML = '';
+    const pl = document.getElementById('projectsList'); pl.innerHTML = '';
+    const ta = document.getElementById('trackerArea'); ta.innerHTML = '';
     projects.forEach(p=>{
-      const pr = document.createElement('div'); pr.className='project';
-      const percent = pct(p.start,p.maturity);
-      pr.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${p.name}</strong><div class="muted">${p.tier} • $${p.amount}</div></div><div style="text-align:right"><div class="muted">Matures in</div><strong>${countdown(p.maturity)}</strong></div></div><div class="progress"><i style="width:${percent}%"></i></div><div style="display:flex;justify-content:space-between;margin-top:6px"><div class="muted">${percent}%</div><div class="muted">Target: $${p.amount*10}</div></div>`;
-      projectsList.appendChild(pr);
+      const per = pct(p.start,p.maturity);
+      const div = document.createElement('div'); div.className='project';
+      div.innerHTML = `<div class="meta"><div><strong>${p.name}</strong><div class="muted-sm">${p.tier} • $${p.amount}</div></div><div style="text-align:right"><div class="muted-sm">Matures in</div><strong>${countdown(p.maturity)}</strong></div></div><div class="progress"><i style="width:${per}%"></i></div><div style="display:flex;justify-content:space-between;margin-top:6px"><div class="muted-sm">${per}%</div><div class="muted-sm">Target: $${p.amount*10}</div></div>`;
+      pl.appendChild(div);
 
-      // tracker
-      const tr = document.createElement('div'); tr.className='card'; tr.style.marginBottom='8px';
-      tr.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${p.name}</strong><div class="muted">${p.tier}</div></div><div>${percent}%</div></div><div style="height:8px"></div><div class="progress"><i style="width:${percent}%"></i></div><div class="muted" style="margin-top:6px">${countdown(p.maturity)}</div>`;
-      trackerList.appendChild(tr);
+      // tracker small
+      const tr = document.createElement('div'); tr.className='card'; tr.style.marginBottom='10px';
+      tr.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${p.name}</strong><div class="muted-sm">${p.tier}</div></div><div>${per}%</div></div><div style="height:8px"></div><div class="progress"><i style="width:${per}%"></i></div><div class="muted-sm" style="margin-top:6px">${countdown(p.maturity)}</div>`;
+      ta.appendChild(tr);
     });
 
-    kProjects.textContent = projects.length;
-    const total = projects.reduce((s,p)=>s + Number(p.amount), 0);
-    kContrib.textContent = '$' + total.toLocaleString();
-    kRef.textContent = refs;
-    rProgress.textContent = refs + ' / 20';
+    document.getElementById('kActive').textContent = projects.length;
+    const total = projects.reduce((s,x)=>s + Number(x.amount), 0);
+    document.getElementById('kTotal').textContent = '$' + total.toLocaleString();
+    document.getElementById('kRef').textContent = referrals;
+    document.getElementById('kWallet').textContent = '$0';
+    document.getElementById('refCount').textContent = referrals + ' / 20';
   }
 
-  // seed
-  (function seed(){
-    const now=new Date();
-    projects.push({name:'Agro Processing',amount:250,tier:'Spark',start:addMonths(now,-6).toISOString(),maturity:addMonths(now,18).toISOString()});
-    projects.push({name:'Fashion Microbrand',amount:1000,tier:'Pathfinder',start:addMonths(now,-2).toISOString(),maturity:addMonths(now,22).toISOString()});
-    render();
-  })();
+  // seed demo projects
+  (function seed(){ const now=new Date(); projects.push({name:'Agro Processing', amount:250, tier:'Spark', start:addMonths(now,-6).toISOString(), maturity:addMonths(now,18).toISOString()}); projects.push({name:'Fashion Microbrand', amount:1000, tier:'Pathfinder', start:addMonths(now,-2).toISOString(), maturity:addMonths(now,22).toISOString()}); render(); })();
 
-  // add project handler
-  document.getElementById('addProjectBtn').addEventListener('click', ()=>{
-    const name = document.getElementById('iName').value || 'Untitled';
-    const amount = Number(document.getElementById('iAmt').value) || 0;
-    if(amount <= 0){ alert('Enter a valid amount'); return; }
-    const tier = document.getElementById('iTier').value;
-    const start = new Date();
-    const maturity = addMonths(start,24);
-    projects.unshift({name,amount,tier,start:start.toISOString(),maturity:maturity.toISOString()});
-    alert('Contribution recorded and project added (simulation).');
-    document.getElementById('iName').value = '';
+  // add project handler (UI only)
+  document.getElementById('projSubmit').addEventListener('click', ()=>{
+    const n = document.getElementById('projName').value || 'Untitled';
+    const amt = Number(document.getElementById('projAmt').value) || 0;
+    if(amt <= 0){ alert('Enter a valid amount'); return; }
+    const tier = document.getElementById('projTier').value;
+    const start = new Date(), maturity = addMonths(start,24);
+    projects.unshift({name:n, amount:amt, tier, start:start.toISOString(), maturity:maturity.toISOString()});
+    alert('Contribution recorded — project added to your dashboard (simulation).');
+    document.getElementById('projName').value = '';
     render();
   });
 
-  // sidebar collapse / expand
-  const sidebar = document.getElementById('sidebar');
-  const menuToggle = document.getElementById('menuToggle');
-  const brandBtn = document.getElementById('brandBtn');
-  function toggleSidebar(){
-    const isCollapsed = sidebar.classList.toggle('collapsed');
-    // on small screens, toggle expanded class instead to show full sidebar
-    if(window.innerWidth <= 980){
-      if(sidebar.classList.contains('collapsed')) sidebar.classList.remove('expanded');
-      sidebar.classList.add('expanded');
-    }
-  }
-  menuToggle.addEventListener('click', ()=>{
-    // on desktop toggle collapsed
-    if(window.innerWidth > 980){
-      sidebar.classList.toggle('collapsed');
-    } else {
-      // mobile: expand full
-      sidebar.classList.toggle('expanded');
-    }
-  });
-  // clicking brand toggles collapse on desktop
-  brandBtn.addEventListener('click', ()=> { if(window.innerWidth > 980) sidebar.classList.toggle('collapsed'); else sidebar.classList.toggle('expanded'); });
-
-  // profile menu
-  const avatarBtn = document.getElementById('avatarBtn');
-  const profileMenu = document.getElementById('profileMenu');
-  avatarBtn.addEventListener('click', ()=> profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block');
-  document.addEventListener('click', (e)=> { if(!avatarBtn.contains(e.target) && !profileMenu.contains(e.target)) profileMenu.style.display='none'; });
-
-  // logout actions
-  document.getElementById('logoutBtn').addEventListener('click', ()=> window.location.href='login.html');
-  document.getElementById('menuLogout').addEventListener('click', (e)=>{ e.preventDefault(); window.location.href='login.html'; });
-
-  // copy referral
-  document.getElementById('copyBtn').addEventListener('click', ()=>{
-    const el = document.getElementById('refInput'); el.select(); document.execCommand('copy');
-    document.getElementById('copyBtn').textContent = 'Copied';
-    setTimeout(()=>document.getElementById('copyBtn').textContent='Copy',1200);
+  // referral copy
+  document.getElementById('copyBtn').addEventListener('click', ()=> {
+    const el = document.getElementById('referralLink'); el.select(); document.execCommand('copy');
+    const btn = document.getElementById('copyBtn'); btn.textContent='Copied'; setTimeout(()=>btn.textContent='Copy',1200);
   });
 
-  // view tiers click (small modal)
-  document.getElementById('viewTiers').addEventListener('click', ()=>{
-    alert('Tiers modal — Seed, Spark, Builder, Creator, Visionary, Pathfinder.\nYou can edit descriptions & thresholds here.');
+  // view tiers
+  document.getElementById('viewTiersBtn').addEventListener('click', ()=> {
+    alert('Tier details modal (UI only). Seed → Pathfinder with thresholds and referral %.');
   });
 
-  // today label
-  document.getElementById('todayLabel').textContent = new Date().toLocaleDateString();
-
-  // responsive: show icon rail on small screens to mimic image
-  function adjustIconRail(){
-    const rail = document.getElementById('iconRail');
-    if(!rail) return;
-    if(window.innerWidth <= 980){ rail.style.display = 'flex'; } else { rail.style.display = 'none'; }
-  }
-  window.addEventListener('resize', adjustIconRail);
-  adjustIconRail();
-
-  // nav item clicks
-  document.querySelectorAll('.nav .item').forEach(it=> it.addEventListener('click', ()=> {
+  // nav item clicks close sidebar on mobile
+  document.querySelectorAll('.nav-item').forEach(it => it.addEventListener('click', ()=>{
+    if(window.innerWidth < 980) closeSidebar();
     alert('Open: ' + it.dataset.target);
-    if(window.innerWidth <= 980) sidebar.classList.remove('expanded');
   }));
+
+  // open/close helpers accessible in console
+  function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); sidebar.setAttribute('aria-hidden','true'); menuBtn.setAttribute('aria-expanded','false'); }
+  function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); sidebar.setAttribute('aria-hidden','false'); menuBtn.setAttribute('aria-expanded','true'); }
+
+  // expose small API for debugging
+  window.openSidebar = openSidebar;
+  window.closeSidebar = closeSidebar;
 
 </script>
 </body>
