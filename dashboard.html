@@ -184,7 +184,7 @@
 
     <!-- ========== MODALS (unchanged and new) ========== -->
 
-    <!-- Contribution modal (unchanged content) -->
+    <!-- Contribution modal (updated options) -->
     <div class="modal-backdrop" id="contributeModal">
       <div class="modal" role="document">
         <button class="close-x" id="contribCloseX" title="Close">✕</button>
@@ -194,9 +194,23 @@
         <div style="margin-top:10px">
           <select class="input" id="packageSelect">
             <option value="">-- Select Package --</option>
-            <option value='{"name":"Starter","price":25}'>Starter ($25)</option>
-            <option value='{"name":"Spark","price":100}'>Spark ($100)</option>
-            <option value='{"name":"Growth","price":250}'>Growth ($250)</option>
+            <option value="25">$25</option>
+            <option value="50">$50</option>
+            <option value="75">$75</option>
+            <option value="100">$100</option>
+            <option value="125">$125</option>
+            <option value="150">$150</option>
+            <option value="175">$175</option>
+            <option value="200">$200</option>
+            <option value="250">$250</option>
+            <option value="300">$300</option>
+            <option value="400">$400</option>
+            <option value="500">$500</option>
+            <option value="1000">$1000</option>
+            <option value="5000">$5000</option>
+            <option value="10000">$10000</option>
+            <option value="50000">$50000</option>
+            <option value="100000">$100000</option>
           </select>
         </div>
 
@@ -402,6 +416,12 @@
   </div>
 
 <script>
+/* ---------- Utilities ---------- */
+function numberWithCommas(x){
+  if(x === undefined || x === null) return '';
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 /* ---------- Refs ---------- */
 const menuBtn = document.getElementById('menuBtn');
 const menuPanel = document.getElementById('menuPanel');
@@ -606,7 +626,7 @@ function loadUser(){
 }
 loadUser();
 
-/* ---------- Contribution modal behavior (unchanged) ---------- */
+/* ---------- Contribution modal behavior (updated) ---------- */
 let preferredMethod = localStorage.getItem('preferredContribution') || 'bank';
 function showBank(){ bankBlock.style.display='block'; usdtBlock.style.display='none'; preferredMethod='bank'; localStorage.setItem('preferredContribution','bank'); document.getElementById('contribHint').innerText='Bank Deposit'; }
 function showUSDT(){ bankBlock.style.display='none'; usdtBlock.style.display='block'; preferredMethod='usdt'; localStorage.setItem('preferredContribution','usdt'); document.getElementById('contribHint').innerText='USDT (TRC20)'; }
@@ -618,16 +638,28 @@ mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeMod
 contribClose.addEventListener('click', ()=> closeModal(contributeModal));
 contribCloseX.addEventListener('click', ()=> closeModal(contributeModal));
 
-/* package selection */
+/* package selection: now values are numeric prices; funding = price * 100 */
 packageSelect.addEventListener('change', ()=>{
   const val = packageSelect.value;
-  if(!val){ packageAmount.innerText=''; projectName.innerText='No project selected'; projectMeta.innerText='Choose a package from Contribution'; localStorage.removeItem('selectedPackage'); return; }
-  const pkg = JSON.parse(val);
+  if(!val){
+    packageAmount.innerText='';
+    projectName.innerText='No project selected';
+    projectMeta.innerText='Choose a package from Contribution';
+    localStorage.removeItem('selectedPackage');
+    progressTarget.innerText = 'Target: $0';
+    return;
+  }
+  const price = Number(val);
+  const pkg = {
+    name: '$' + price,
+    price: price,
+    funding: price * 100   // mapping from your image: contribution * 100 => project funding
+  };
   localStorage.setItem('selectedPackage', JSON.stringify(pkg));
   projectName.innerText = pkg.name + ' Package';
   projectMeta.innerText = pkg.name + ' • Package selected';
-  packageAmount.innerText = '($' + pkg.price + ' Package)';
-  progressTarget.innerText = 'Target: $' + pkg.price;
+  packageAmount.innerText = '(' + pkg.name + ' Contribution)';
+  progressTarget.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding) + ' • Contribution: $' + numberWithCommas(pkg.price);
 });
 
 /* I have paid flow */
@@ -713,18 +745,18 @@ function openPaymentsList(status){
   if(list.length===0){ paymentsListArea.innerHTML = '<div style="color:var(--muted)">No payments '+status+'</div>'; openModal(paymentsModal); return; }
   list.forEach(p=>{
     const d = document.createElement('div'); d.style.padding='10px'; d.style.background='rgba(0,0,0,0.02)'; d.style.borderRadius='8px'; d.style.marginTop='8px';
-    d.innerHTML = '<div style="font-weight:800">'+p.package.name+' • $'+p.package.price+'</div><div style="font-size:13px;color:var(--muted)">'+(p.method==='usdt'?'USDT':'Bank')+' • '+new Date(p.date).toLocaleString()+'</div>';
+    d.innerHTML = '<div style="font-weight:800">'+p.package.name+' • $'+p.package.price+'</div><div style="font-size:13px;color:var(--muted)">' + 'Dream Funding: $' + numberWithCommas(p.package.funding) + ' • ' + (p.method==='usdt'?'USDT':'Bank')+' • '+new Date(p.date).toLocaleString() + '</div>';
     if(p.status==='pending'){
       const stat = document.createElement('div'); stat.style.marginTop='8px'; stat.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--danger);margin-right:8px"></span><span>Yet to be approved</span>';
       d.appendChild(stat);
       const simWrap = document.createElement('div'); simWrap.style.marginTop='8px';
       const approveBtn = document.createElement('button'); approveBtn.className='btn'; approveBtn.innerText='Simulate Approve (Demo)';
       approveBtn.addEventListener('click', ()=>{
-        // mark approved and move to projects
+        // mark approved and move to projects (now include funding)
         p.status='approved';
         payments = payments.map(x=> x.id===p.id? p : x);
         localStorage.setItem('payments', JSON.stringify(payments));
-        projects.push({ id:'PRJ-'+Date.now(), name:p.package.name, amount:p.package.price, status:'Active' });
+        projects.push({ id:'PRJ-'+Date.now(), name:p.package.name, amount:p.package.price, funding: p.package.funding, status:'Active' });
         localStorage.setItem('projects', JSON.stringify(projects));
         // update referral demo
         const refs = parseInt(localStorage.getItem('referrals')||'0',10) + 1;
@@ -752,7 +784,12 @@ function renderProjects(){
   projectsList.innerHTML = '';
   if(!projects || projects.length===0){ projectsList.innerHTML = '<div style="color:var(--muted)">No projects yet.</div>'; document.getElementById('activeProjectsCount').innerText = 0; return; }
   projects.forEach(p=>{
-    const div = document.createElement('div'); div.className='project-item'; div.style.marginTop='8px'; div.style.padding='10px'; div.style.background='rgba(0,0,0,0.02)'; div.innerHTML = '<div style="font-weight:800">'+p.name+'</div><div style="font-size:13px;color:var(--muted)">ID: '+p.id+' • $'+p.amount+' • '+p.status+'</div>';
+    const div = document.createElement('div');
+    div.className='project-item';
+    div.style.marginTop='8px';
+    div.style.padding='10px';
+    div.style.background='rgba(0,0,0,0.02)';
+    div.innerHTML = '<div style="font-weight:800">'+p.name+'</div><div style="font-size:13px;color:var(--muted)">ID: '+p.id+' • Contribution: $'+ numberWithCommas(p.amount) +' • Dream Funding: $'+ numberWithCommas(p.funding) +' • '+p.status+'</div>';
     projectsList.appendChild(div);
   });
   document.getElementById('activeProjectsCount').innerText = projects.length;
@@ -1017,9 +1054,14 @@ function init(){
   const savedImg = localStorage.getItem('profileImage');
   if(savedImg){ profileImg.src = savedImg; profileImg.style.display='block'; profileInitials.style.display='none'; dbLogo.innerHTML = '<img src="'+savedImg+'">'; menuThumb.innerHTML = '<img src="'+savedImg+'" style="width:100%;height:100%;object-fit:cover">'; }
 
-  // load selected package
+  // load selected package if previously chosen (and update UI)
   const pkg = JSON.parse(localStorage.getItem('selectedPackage') || 'null');
-  if(pkg){ projectName.innerText = pkg.name + ' Package'; projectMeta.innerText = pkg.name + ' • Package selected'; packageAmount.innerText = '($' + pkg.price + ' Package)'; progressTarget.innerText = 'Target: $' + pkg.price; }
+  if(pkg){
+    projectName.innerText = pkg.name + ' Package';
+    projectMeta.innerText = pkg.name + ' • Package selected';
+    packageAmount.innerText = '(' + pkg.name + ' Contribution)';
+    progressTarget.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding) + ' • Contribution: $' + numberWithCommas(pkg.price);
+  }
 
   // init payments nav + projects + refs
   refreshPaymentsNav();
