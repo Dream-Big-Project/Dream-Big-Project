@@ -39,21 +39,45 @@
   .form-row{display:flex;gap:8px;margin-top:12px}
   .input,select{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
   .submit{background:var(--accent);color:#042137;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
-  footer{position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg,#071a2a,#072434);padding:10px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:40}
-  .btn{padding:10px 12px;border-radius:10px;border:none}
-  .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
-  .btn.warn{background:var(--danger);color:white}
-  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:46}
-  .modal{background:linear-gradient(180deg,#072235,#0f2a44);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.6);position:relative}
-  .modal h3{margin:0 0 6px 0}
-  .modal p{color:var(--muted);margin:0 0 12px 0}
-  .modal .actions{display:flex;gap:8px;justify-content:flex-end}
-  .close-x{position:absolute;right:12px;top:10px;background:transparent;border:none;color:var(--danger);font-weight:900;font-size:20px;border-radius:6px;padding:6px}
   .proof-area{margin-top:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
   .file-preview{margin-top:8px;background:rgba(0,0,0,0.2);padding:8px;border-radius:8px}
   .profile-menu{position:absolute;top:62px;right:12px;background:var(--card);padding:8px;border-radius:10px;min-width:160px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:50}
   .profile-menu button{display:block;width:100%;text-align:left;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--text);font-weight:700}
+  .close-x{position:absolute;right:12px;top:10px;background:transparent;border:none;color:var(--danger);font-weight:900;font-size:20px;border-radius:6px;padding:6px}
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:rgba(0,0,0,0.75);color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:80;font-weight:700}
+  footer{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:12px;
+    background:linear-gradient(90deg,#071a2a,#072434);
+    padding:12px 16px;
+    border-radius:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    box-shadow:0 8px 30px rgba(0,0,0,0.4);
+    z-index:40;
+    border-top:4px solid rgba(246,196,75,0.0); /* below we draw gold separator inner */
+  }
+  /* Gold top separator line (thin) inside footer container */
+  footer::before{
+    content:'';
+    position:absolute;
+    top:-4px;
+    left:12px;
+    right:12px;
+    height:4px;
+    background:linear-gradient(90deg,#f6c44b,#d9a823);
+    border-top-left-radius:8px;
+    border-top-right-radius:8px;
+  }
+  footer .footer-text{
+    color:var(--muted);
+    font-weight:700;
+    text-align:center;
+    width:100%;
+  }
   @media(min-width:540px){.app{padding:20px}}
 </style>
 </head>
@@ -63,9 +87,7 @@
     <!-- HEADER -->
     <header>
       <div class="brand">
-        <div class="logo" id="dbLogo">
-          <!-- logo image inserted here if profile image saved -->
-        </div>
+        <div class="logo" id="dbLogo"></div>
         <div>
           <div class="title">Dashboard</div>
           <div class="meta" id="metaDate"></div>
@@ -75,7 +97,7 @@
       <div style="display:flex;align-items:center;gap:10px">
         <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
 
-        <!-- profile circle with img element (keeps handlers safe) -->
+        <!-- profile circle -->
         <div class="profile" id="profileCircle" title="Profile">
           <img id="profileImg" alt="Profile" style="display:none">
           <span id="profileInitials" class="profile-initials">PD</span>
@@ -94,13 +116,13 @@
 
     <!-- MENU PANEL -->
     <div class="menu-panel" id="menuPanel" aria-hidden="true">
-      <button class="menu-item" id="mTiers">Member Tiers<span class="hint">Upgrade</span></button>
-      <button class="menu-item" id="mViewProjects">View Projects<span class="hint">Your projects</span></button>
+      <button class="menu-item" id="mTiers">Member Tiers <span class="hint">Upgrade</span></button>
+      <button class="menu-item" id="mViewProjects">View Projects <span class="hint">Your projects</span></button>
       <button class="menu-item" id="mContribute"><span id="contribLabel">Contribution</span><span class="hint" id="contribHint">Contribution</span></button>
-      <button class="menu-item" id="mHelp">Help & Support<span class="hint">Contact</span></button>
+      <button class="menu-item" id="mHelp">Help & Support <span class="hint">Contact</span></button>
       <div id="paymentsNavPlace"></div>
-      <button class="menu-item" id="mSettings">Settings<span class="hint">Preferences</span></button>
-      <button class="menu-item" id="mLogout">Logout<span class="hint">Sign out</span></button>
+      <button class="menu-item" id="mSettings">Settings <span class="hint">Preferences</span></button>
+      <button class="menu-item" id="mLogout">Logout <span class="hint">Sign out</span></button>
     </div>
 
     <main>
@@ -137,15 +159,12 @@
     </main>
 
     <footer>
-      <div style="font-size:13px">© 2026 Dream Big Project — All rights reserved.</div>
-      <div><button class="btn ghost" id="footerShare">Share</button></div>
+      <div class="footer-text">© 2026 Dream Big Project — All rights reserved.</div>
     </footer>
 
     <div class="toast" id="toast">Copied!</div>
 
-    <!-- ========== MODALS ========== -->
-
-    <!-- Contribution modal -->
+    <!-- CONTRIBUTION MODAL -->
     <div class="modal-backdrop" id="contributeModal">
       <div class="modal" role="document">
         <button class="close-x" id="contribCloseX" title="Close">✕</button>
@@ -190,7 +209,6 @@
           <button class="btn" id="iPaidBtn">I have paid</button>
         </div>
 
-        <!-- Proof area (shows after I have paid) -->
         <div class="proof-area" id="proofArea" style="display:none">
           <button class="close-x" id="proofCloseX" title="Close">✕</button>
           <div style="font-weight:800" id="proofTitle">Upload proof or paste TX hash</div>
@@ -224,6 +242,26 @@
       </div>
     </div>
 
+    <!-- Payments modal -->
+    <div class="modal-backdrop" id="paymentsModal">
+      <div class="modal">
+        <button class="close-x" id="paymentsCloseX">✕</button>
+        <h3 id="paymentsTitle">Payments</h3>
+        <div id="paymentsListArea" style="margin-top:10px"></div>
+        <div class="actions" style="margin-top:12px"><button class="btn ghost" id="paymentsClose">Close</button></div>
+      </div>
+    </div>
+
+    <!-- Projects modal -->
+    <div class="modal-backdrop" id="projectsModal">
+      <div class="modal">
+        <button class="close-x" id="projectsCloseX">✕</button>
+        <h3>Your Projects</h3>
+        <div class="projects-list" id="projectsList" style="margin-top:10px"></div>
+        <div class="actions" style="margin-top:12px"><button class="btn ghost" id="projectsClose">Close</button></div>
+      </div>
+    </div>
+
     <!-- Edit Profile modal -->
     <div class="modal-backdrop" id="editProfileModal">
       <div class="modal">
@@ -249,27 +287,7 @@
       </div>
     </div>
 
-    <!-- Payments modal (Unapproved / Approved list) -->
-    <div class="modal-backdrop" id="paymentsModal">
-      <div class="modal">
-        <button class="close-x" id="paymentsCloseX">✕</button>
-        <h3 id="paymentsTitle">Payments</h3>
-        <div id="paymentsListArea" style="margin-top:10px"></div>
-        <div class="actions" style="margin-top:12px"><button class="btn ghost" id="paymentsClose">Close</button></div>
-      </div>
-    </div>
-
-    <!-- Projects modal -->
-    <div class="modal-backdrop" id="projectsModal">
-      <div class="modal">
-        <button class="close-x" id="projectsCloseX">✕</button>
-        <h3>Your Projects</h3>
-        <div class="projects-list" id="projectsList" style="margin-top:10px"></div>
-        <div class="actions" style="margin-top:12px"><button class="btn ghost" id="projectsClose">Close</button></div>
-      </div>
-    </div>
-
-    <!-- Simple logout confirm modal -->
+    <!-- Logout confirm -->
     <div class="modal-backdrop" id="logoutModal">
       <div class="modal">
         <h3>Confirm Logout</h3>
@@ -367,7 +385,7 @@ const qrModal = document.getElementById('qrModal'), qrImage = document.getElemen
 const dbLogo = document.getElementById('dbLogo');
 const toast = document.getElementById('toast');
 const copyButtons = document.querySelectorAll('.copy-btn');
-const shareHere = document.getElementById('shareHere'), footerShare = document.getElementById('footerShare');
+const shareHereBtn = document.getElementById('shareHere');
 
 let payments = JSON.parse(localStorage.getItem('payments') || '[]');
 let projects = JSON.parse(localStorage.getItem('projects') || '[]');
@@ -403,12 +421,8 @@ profileLogoutBtn.addEventListener('click', ()=>{ profileMenu.style.display='none
 
 /* ---------- Init user & profile image ---------- */
 function safeSetProfileImage(dataUrl){
-  // set src on existing img element and show it; hide initials
   if(!dataUrl) return;
-  profileImg.src = dataUrl;
-  profileImg.style.display = 'block';
-  profileInitials.style.display = 'none';
-  // set db logo
+  profileImg.src = dataUrl; profileImg.style.display = 'block'; profileInitials.style.display = 'none';
   dbLogo.innerHTML = '<img src="'+dataUrl+'" alt="logo">';
   localStorage.setItem('profileImage', dataUrl);
 }
@@ -419,7 +433,6 @@ function setInitialsFromName(name){
   profileInitials.innerText = initials;
 }
 function initProfile(){
-  // load user or prompt (demo)
   let user = JSON.parse(localStorage.getItem('user') || 'null');
   if(!user || !user.name){
     const name = prompt('Enter your name to continue (demo login):') || 'Member';
@@ -429,15 +442,14 @@ function initProfile(){
   }
   document.getElementById('welcomeTitle').innerText = 'Welcome, ' + user.name;
   setInitialsFromName(user.name);
-  // load profile image if available
   const savedImg = localStorage.getItem('profileImage');
-  if(savedImg){ safeSetProfileImage(savedImg); }
+  if(savedImg) safeSetProfileImage(savedImg);
 }
 initProfile();
 
 /* ---------- Contribution modal behavior ---------- */
 let preferredMethod = localStorage.getItem('preferredContribution') || 'bank';
-function showBank(){ bankBlock.style.display='block'; usdtBlock.style.display='none'; preferredMethod='bank'; localStorage.setItem('preferredContribution','bank'); document.getElementById('bankBlock').style.display='block'; document.getElementById('usdtBlock').style.display='none'; document.getElementById('contribHint').innerText='Bank Deposit'; }
+function showBank(){ bankBlock.style.display='block'; usdtBlock.style.display='none'; preferredMethod='bank'; localStorage.setItem('preferredContribution','bank'); document.getElementById('contribHint').innerText='Bank Deposit'; }
 function showUSDT(){ bankBlock.style.display='none'; usdtBlock.style.display='block'; preferredMethod='usdt'; localStorage.setItem('preferredContribution','usdt'); document.getElementById('contribHint').innerText='USDT (TRC20)'; }
 methodBankBtn.addEventListener('click', showBank);
 methodUSDTBtn.addEventListener('click', showUSDT);
@@ -447,7 +459,6 @@ mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeMod
 contribClose.addEventListener('click', ()=> closeModal(contributeModal));
 contribCloseX.addEventListener('click', ()=> closeModal(contributeModal));
 
-/* package selection */
 packageSelect.addEventListener('change', ()=>{
   const val = packageSelect.value;
   if(!val){ packageAmount.innerText=''; projectName.innerText='No project selected'; projectMeta.innerText='Choose a package from Contribution'; localStorage.removeItem('selectedPackage'); return; }
@@ -497,20 +508,17 @@ submitProof.addEventListener('click', ()=>{
   } else {
     const f = proofFile.files[0];
     if(!f) return showToast('Upload proof file first');
-    record.proofFilename = f.name; // demo only
+    record.proofFilename = f.name;
   }
   payments.push(record);
   localStorage.setItem('payments', JSON.stringify(payments));
-  // show confirmation message inside modal
+  // show confirmation inside modal (simple)
   const modal = contributeModal.querySelector('.modal');
   modal.innerHTML = '<button class="close-x" id="contribCloseConfirm">✕</button><h3>Congratulations (Pending Approval)</h3><p style="color:var(--muted)">Please be patient while we review your payment within 48 hours.</p><div style="margin-top:12px"><button class="btn" id="backToDashboard">Back to dashboard</button></div>';
   setTimeout(()=>{
-    document.getElementById('backToDashboard').addEventListener('click', ()=>{
-      location.reload(); // simple restore of UI state for demo
-    });
+    document.getElementById('backToDashboard').addEventListener('click', ()=> location.reload());
     document.getElementById('contribCloseConfirm').addEventListener('click', ()=> location.reload());
   },80);
-  // cleanup
   proofArea.style.display='none';
   filePreview.style.display='none';
   filePreviewInner.innerHTML='';
@@ -519,7 +527,7 @@ submitProof.addEventListener('click', ()=>{
   refreshPaymentsNav();
 });
 
-/* refresh payments nav */
+/* refresh payments nav - FIX: close menu and open payments modal properly */
 function refreshPaymentsNav(){
   payments = JSON.parse(localStorage.getItem('payments') || '[]');
   paymentsNavPlace.innerHTML = '';
@@ -527,9 +535,9 @@ function refreshPaymentsNav(){
     const unCount = payments.filter(p=>p.status==='pending').length;
     const apCount = payments.filter(p=>p.status==='approved').length;
     const btnUn = document.createElement('button'); btnUn.className='menu-item'; btnUn.innerHTML='<span>Unapproved Payments</span><span class="hint">'+unCount+'</span>';
-    btnUn.addEventListener('click', ()=> openPaymentsList('pending'));
+    btnUn.addEventListener('click', ()=>{ closeMenu(); openPaymentsList('pending'); });
     const btnAp = document.createElement('button'); btnAp.className='menu-item'; btnAp.innerHTML='<span>Approved Payments</span><span class="hint">'+apCount+'</span>';
-    btnAp.addEventListener('click', ()=> openPaymentsList('approved'));
+    btnAp.addEventListener('click', ()=>{ closeMenu(); openPaymentsList('approved'); });
     paymentsNavPlace.appendChild(btnUn); paymentsNavPlace.appendChild(btnAp);
   }
 }
@@ -549,13 +557,11 @@ function openPaymentsList(status){
       const simWrap = document.createElement('div'); simWrap.style.marginTop='8px';
       const approveBtn = document.createElement('button'); approveBtn.className='btn'; approveBtn.innerText='Simulate Approve (Demo)';
       approveBtn.addEventListener('click', ()=>{
-        // mark approved and move to projects
         p.status='approved';
         payments = payments.map(x=> x.id===p.id? p : x);
         localStorage.setItem('payments', JSON.stringify(payments));
         projects.push({ id:'PRJ-'+Date.now(), name:p.package.name, amount:p.package.price, status:'Active' });
         localStorage.setItem('projects', JSON.stringify(projects));
-        // update referral demo
         const refs = parseInt(localStorage.getItem('referrals')||'0',10) + 1;
         localStorage.setItem('referrals', refs.toString());
         refreshPaymentsNav(); renderProjects(); updateReferralsUI();
@@ -575,7 +581,7 @@ function openPaymentsList(status){
   openModal(paymentsModal);
 }
 
-/* ---------- Projects ---------- */
+/* Projects */
 function renderProjects(){
   projects = JSON.parse(localStorage.getItem('projects') || '[]');
   projectsList.innerHTML = '';
@@ -587,17 +593,14 @@ function renderProjects(){
   document.getElementById('activeProjectsCount').innerText = projects.length;
 }
 
-/* ---------- Edit Profile upload ---------- */
+/* Edit profile upload */
 let pendingImageData = null;
 profileImageFile.addEventListener('change', ()=>{
   const f = profileImageFile.files[0];
   if(!f) return showToast('Choose an image');
   if(!f.type.startsWith('image/')) return showToast('Image required');
   const r = new FileReader();
-  r.onload = e => {
-    pendingImageData = e.target.result;
-    profilePreview.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
-  };
+  r.onload = e => { pendingImageData = e.target.result; profilePreview.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">'; };
   r.readAsDataURL(f);
 });
 editCancel.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; profileImageFile.value=''; profilePreview.innerHTML='No image'; });
@@ -606,35 +609,30 @@ editCloseX.addEventListener('click', ()=> { closeModal(editProfileModal); pendin
 saveProfileBtn.addEventListener('click', ()=>{
   const pwd = newPassword.value.trim();
   if(pendingImageData){
-    // update profile img element only (do not replace profileMenu)
-    profileImg.src = pendingImageData;
-    profileImg.style.display = 'block';
-    profileInitials.style.display = 'none';
+    profileImg.src = pendingImageData; profileImg.style.display='block'; profileInitials.style.display='none';
     dbLogo.innerHTML = '<img src="'+pendingImageData+'" alt="logo">';
     localStorage.setItem('profileImage', pendingImageData);
-    pendingImageData = null;
-    profileImageFile.value = '';
-    profilePreview.innerHTML = 'No image';
+    pendingImageData = null; profileImageFile.value=''; profilePreview.innerHTML='No image';
   }
   if(pwd){
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     user.password = pwd;
     localStorage.setItem('user', JSON.stringify(user));
-    newPassword.value = '';
+    newPassword.value='';
     showToast('Password saved (demo)');
   }
   showToast('Profile updated');
   closeModal(editProfileModal);
 });
 
-/* ---------- Copy buttons ---------- */
+/* Copy handlers */
 copyButtons.forEach(btn => btn.addEventListener('click', (e)=> {
   const key = e.currentTarget.getAttribute('data-copy');
   if(key === 'bankAcct') copyText(document.getElementById('bankAcct').innerText.trim());
   if(key === 'walletAddr') copyText(document.getElementById('walletAddr').innerText.trim());
 }));
 
-/* ---------- QR ---------- */
+/* QR */
 if(document.getElementById('showQR')){
   document.getElementById('showQR').addEventListener('click', ()=>{
     const addr = document.getElementById('walletAddr').innerText.trim();
@@ -646,32 +644,27 @@ if(document.getElementById('showQR')){
 qrClose.addEventListener('click', ()=> closeModal(qrModal));
 qrCloseX.addEventListener('click', ()=> closeModal(qrModal));
 
-/* ---------- Payments modal controls ---------- */
+/* Payments modal controls */
 paymentsClose.addEventListener('click', ()=> closeModal(paymentsModal));
 paymentsCloseX.addEventListener('click', ()=> closeModal(paymentsModal));
 
-/* ---------- Projects modal controls ---------- */
+/* Projects modal */
 projectsClose.addEventListener('click', ()=> closeModal(projectsModal));
 document.getElementById('projectsCloseX').addEventListener('click', ()=> closeModal(projectsModal));
 
-/* ---------- Logout ---------- */
+/* Logout */
 btnNo.addEventListener('click', ()=> closeModal(logoutModal));
-btnYes.addEventListener('click', ()=> {
-  closeModal(logoutModal);
-  // same logout animation behavior demo
-  document.getElementById('appRoot').style.opacity = '0.25';
-  setTimeout(()=> location.href = 'login.html', 900);
-});
+btnYes.addEventListener('click', ()=> { closeModal(logoutModal); document.getElementById('appRoot').style.opacity='0.25'; setTimeout(()=> location.href='login.html',900); });
 document.getElementById('mLogout').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
 
-/* ---------- Sharing ---------- */
-[shareHere, footerShare].forEach(el => el.addEventListener('click', async ()=>{
+/* Share */
+shareHereBtn.addEventListener('click', async ()=>{
   const url = location.href;
   const obj = { title:'Join me on Dream Big', text:'Sign up and start building with Dream Big', url };
   if(navigator.share){ try{ await navigator.share(obj); } catch(e){} } else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); } else alert('Copy: '+url);
-}));
+});
 
-/* ---------- Init state ---------- */
+/* Init */
 function updateReferralsUI(){
   const refs = parseInt(localStorage.getItem('referrals')||'0',10);
   document.getElementById('refersNum').innerText = refs;
@@ -679,19 +672,21 @@ function updateReferralsUI(){
 function init(){
   const meta = document.getElementById('metaDate');
   if(!meta.innerText) { const d=new Date(); meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear(); }
-  // load saved profile image
-  const savedImg = localStorage.getItem('profileImage');
-  if(savedImg){ profileImg.src = savedImg; profileImg.style.display='block'; profileInitials.style.display='none'; dbLogo.innerHTML = '<img src="'+savedImg+'">'; }
-  // load selected package
+  const savedImg = localStorage.getItem('profileImage'); if(savedImg){ profileImg.src = savedImg; profileImg.style.display='block'; profileInitials.style.display='none'; dbLogo.innerHTML = '<img src="'+savedImg+'">'; }
   const pkg = JSON.parse(localStorage.getItem('selectedPackage') || 'null');
   if(pkg){ projectName.innerText = pkg.name + ' Package'; projectMeta.innerText = pkg.name + ' • Package selected'; packageAmount.innerText = '($' + pkg.price + ' Package)'; progressTarget.innerText = 'Target: $' + pkg.price; }
-  // init payments nav
-  refreshPaymentsNav();
-  renderProjects();
-  updateReferralsUI();
+  refreshPaymentsNav(); renderProjects(); updateReferralsUI();
 }
 init();
 
+/* Accessibility: Esc closes */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    if(menuPanel.classList.contains('open')) closeMenu();
+    [contributeModal, paymentsModal, projectsModal, editProfileModal, logoutModal, qrModal].forEach(m=>{ if(m && m.style.display === 'flex') closeModal(m); });
+    if(profileMenu.style.display === 'block'){ profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true'); }
+  }
+});
 </script>
 </body>
 </html>
