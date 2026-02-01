@@ -272,8 +272,8 @@
   function getBalance(){
     const raw = localStorage.getItem(balanceKey);
     if(raw === null || raw === undefined) {
-      localStorage.setItem(balanceKey, '2400'); // demo default balance
-      return 2400;
+      localStorage.setItem(balanceKey, '25000'); // demo default balance
+      return 25000;
     }
     const n = parseFloat(raw);
     return isNaN(n) ? 0 : n;
@@ -598,3 +598,4 @@
 </script>
 </body>
 </html>
+
