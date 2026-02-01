@@ -39,6 +39,29 @@
   .muted-box{ background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; color:var(--muted); font-size:14px; }
   .center{ text-align:center; }
 
+  /* confirmation modal overlay */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 220;
+    background: rgba(2,6,20,0.6);
+  }
+  .modal-card {
+    width: 92%;
+    max-width: 520px;
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    color: #eaf6ff;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  }
+  .modal-card h3 { margin:0 0 8px 0; color:var(--accent); font-size:18px; }
+  .modal-row { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+  .modal-note { color:var(--muted); font-size:14px; margin-top:8px; }
+
   /* non-blocking submission modal (small card) */
   .submission-toast {
     position: fixed;
@@ -50,10 +73,7 @@
     display:none;
     pointer-events:auto;
   }
-  .submission-toast .card {
-    padding:12px;
-    border-radius:10px;
-  }
+  .submission-toast .card { padding:12px; border-radius:10px; }
 
   /* toast for messages */
   .toast {
@@ -61,7 +81,7 @@
     left: 50%;
     transform: translateX(-50%) translateY(12px);
     bottom: 22px;
-    z-index:160;
+    z-index:260;
     padding: 10px 14px;
     border-radius: 10px;
     font-weight:800;
@@ -94,7 +114,11 @@
   <div class="wrap">
     <!-- LEFT: withdraw request -->
     <div class="card left-block" id="leftCard" aria-live="polite">
-      <h1>Request a withdrawal</h1>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h1>Request a withdrawal</h1>
+        <button id="backBtn" class="btn ghost" title="Back to dashboard">Back</button>
+      </div>
+
       <p class="muted">Enter an amount to withdraw or request your full available balance. Requests are processed by admin and typically take up to 72 hours.</p>
 
       <div class="muted-box">
@@ -168,6 +192,25 @@
     </div>
   </div>
 
+  <!-- confirmation modal -->
+  <div class="modal-overlay" id="confirmModal" role="dialog" aria-hidden="true" aria-labelledby="confirmTitle">
+    <div class="modal-card" role="document">
+      <h3 id="confirmTitle">Please take note</h3>
+      <div class="modal-note">A <strong>10% withdrawal processing fee</strong> is applicable to all withdrawals. Below are the details for this request:</div>
+
+      <div style="margin-top:12px;">
+        <div class="modal-row"><div>Requested amount</div><div id="confAmount" style="font-weight:800"></div></div>
+        <div class="modal-row" style="margin-top:8px"><div>Processing fee (10%)</div><div id="confFee" style="font-weight:800"></div></div>
+        <div class="modal-row" style="margin-top:8px"><div>Net amount</div><div id="confNet" style="font-weight:900;color:var(--accent)"></div></div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+        <button class="btn ghost" id="confirmBackBtn">Back</button>
+        <button class="btn primary" id="confirmContinueBtn">Continue</button>
+      </div>
+    </div>
+  </div>
+
   <!-- non-blocking submission toast (small confirmation card) -->
   <div class="submission-toast" id="submissionToast" aria-hidden="true">
     <div class="card" id="submissionCard" style="background:var(--card); color:var(--muted);">
@@ -215,6 +258,15 @@
   const pendingPreviewId = 'pendingPreview';
   const simulateApprove = document.getElementById('simulateApprove');
   const simulateReceive = document.getElementById('simulateReceive');
+  const backBtn = document.getElementById('backBtn');
+
+  // confirmation modal elements
+  const confirmModal = document.getElementById('confirmModal');
+  const confAmount = document.getElementById('confAmount');
+  const confFee = document.getElementById('confFee');
+  const confNet = document.getElementById('confNet');
+  const confirmContinueBtn = document.getElementById('confirmContinueBtn');
+  const confirmBackBtn = document.getElementById('confirmBackBtn');
 
   /* ====== Helpers: localStorage management ====== */
   function getBalance(){
@@ -405,6 +457,7 @@
     amountInput.value = Number(b).toFixed(2);
   });
 
+  // When request button clicked, show confirmation modal first (if validations pass)
   requestBtn.addEventListener('click', (e)=>{
     e.preventDefault();
 
@@ -420,31 +473,80 @@
 
     const balance = getBalance();
     if(amount > balance){
-      // SPECIFIC: insufficient balance - red fade in (bottom->up), stays 3.7s then fade out
+      // insufficient
       showError('Insufficient balance');
       return;
     }
 
+    // prepare modal values: show amount, fee (10%), net
+    const fee = Math.round((amount * 0.10 + Number.EPSILON) * 100) / 100;
+    const net = Math.round((amount - fee + Number.EPSILON) * 100) / 100;
+
+    confAmount.innerText = '$' + amount.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    confFee.innerText = '$' + fee.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    confNet.innerText = '$' + net.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+
+    // store these temporarily on the confirmContinueBtn dataset so Continue can access them
+    confirmContinueBtn.dataset.amount = String(amount);
+    confirmContinueBtn.dataset.fee = String(fee);
+    confirmContinueBtn.dataset.net = String(net);
+
+    // show modal
+    openConfirmModal();
+  });
+
+  // Confirm modal actions
+  function openConfirmModal(){
+    confirmModal.style.display = 'flex';
+    confirmModal.setAttribute('aria-hidden','false');
+  }
+  function closeConfirmModal(){
+    confirmModal.style.display = 'none';
+    confirmModal.setAttribute('aria-hidden','true');
+    // clear dataset (defensive)
+    confirmContinueBtn.dataset.amount = '';
+    confirmContinueBtn.dataset.fee = '';
+    confirmContinueBtn.dataset.net = '';
+  }
+
+  confirmBackBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    // close modal and do nothing (balance untouched)
+    closeConfirmModal();
+  });
+
+  // When user confirms, complete the withdrawal creation (same logic as previously)
+  confirmContinueBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const amt = parseFloat(confirmContinueBtn.dataset.amount);
+    if(isNaN(amt) || amt <= 0){ showError('Invalid amount.'); closeConfirmModal(); return; }
+
+    // hide modal before proceeding
+    closeConfirmModal();
+
     // account presence check (non-blocking)
     const acc = getAccount();
     if(!acc) {
-      // allow continue but warn
       if(!confirm('No account saved. Admin may not know where to send funds. Continue anyway?')) return;
     }
+
+    const balance = getBalance();
+    // final re-check balance just before committing (defensive)
+    if(amt > balance){ showError('Insufficient balance'); return; }
 
     // create request and save
     const req = {
       id: 'WD-' + Date.now(),
-      amount: Number(amount),
+      amount: Number(amt),
       date: new Date().toISOString(),
       status: 'processing',
       account: acc || null,
-      note: 'User requested withdrawal'
+      note: 'User requested withdrawal (10% fee will apply)'
     };
 
     // subtract balance immediately (pending)
     saveRequest(req);
-    setBalance(Math.max(0, (balance - amount)));
+    setBalance(Math.max(0, (balance - amt)));
 
     // show a quick non-blocking message + persistent pending preview
     showInfo('Withdrawal submitted. Processing by admin...');
@@ -468,11 +570,15 @@
     // mark as received/completed and clear request (for demo)
     req.status = 'received';
     req.receivedAt = new Date().toISOString();
-    // Here you might perform finalization: funds moved, record kept, etc.
     // We'll remove the request and show final success message.
     clearRequest();
     showInfo('Withdrawal received. You can make a new request.');
-    // in a real system you might also persist history instead of just clearing
+  });
+
+  // Back button wiring: navigate to dashboard.html
+  backBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'dashboard.html';
   });
 
   // initial render
