@@ -168,7 +168,6 @@
 
         <!-- NEW: Typed banner placed directly under welcome -->
         <div id="typedBanner" class="typed-banner" aria-live="polite" aria-atomic="true">
-          <span class="small-word" id="typedSmall" aria-hidden="true"></span>
           <span class="main-line" id="typedMain" aria-hidden="true"></span>
           <span class="banner-caret" id="bannerCaret" aria-hidden="true" style="display:none"></span>
         </div>
@@ -1200,11 +1199,10 @@ function initTypedBanner(){
 
   if(!typedSmall || !typedMain) return;
 
-  const smallText = 'TYPE';
   const mainText = 'MAKE IT HAPPEN . SHOCK THE WORLD';
   const typeSpeed = 60;        // ms per char
   const deleteSpeed = 36;      // ms per char
-  const holdMs = 4000;         // 4 seconds hold
+  const holdMs = 5000;         // 5 seconds hold
   const betweenMs = 600;       // pause between cycles
 
   // Ensure colors follow theme through CSS vars (no extra work required)
@@ -1269,3 +1267,4 @@ function initTypedBanner(){
 </script>
 </body>
 </html>
+
