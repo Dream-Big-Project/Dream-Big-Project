@@ -37,37 +37,25 @@
   .brand{display:flex;align-items:center;gap:12px}
   .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent-contrast);font-weight:800;font-size:16px;overflow:hidden}
   .logo img{width:100%;height:100%;object-fit:cover;border-radius:8px}
-
-  /* --- slightly smaller title so header is tighter --- */
-  .title{font-size:15px;font-weight:700}
+  .title{font-size:16px;font-weight:700}
   .meta{font-size:12px;color:var(--muted)}
-
   .menu-btn{width:46px;height:46px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;border:none;color:var(--muted);font-weight:800;font-size:20px}
-
   .overlay-dim{position:fixed;inset:0;background:rgba(0,0,0,0.45);opacity:0;pointer-events:none;transition:opacity 220ms ease;z-index:45}
   .overlay-dim.visible{opacity:1;pointer-events:auto}
   .menu-panel{position:fixed;top:72px;right:12px;width:92%;max-width:360px;background:var(--card);border-radius:14px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,0.08);transform-origin:top right;opacity:0;pointer-events:none;transform:translateY(-8px) scale(.98);transition:all 220ms cubic-bezier(.2,.9,.2,1);z-index:48;color:var(--text)}
   .menu-panel.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
-  .menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700;font-size:14px}
+  .menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700;font-size:15px}
   .menu-item:hover{background:rgba(0,0,0,0.02);color:var(--text)}
   .menu-item .hint{font-size:12px;color:var(--muted);font-weight:600}
-
-  /* Keep profile DOM present for JS but remove circular styling so it visually disappears.
-     The hamburger will sit where the circle used to be. */
-  .profile{ /* make it neutral so it doesn't look like a circle */ 
-    width:auto;height:auto;border-radius:0;background:transparent;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;overflow:visible;position:relative;padding:0;margin:0;
-  }
+  /* profile circle removed visually - kept in DOM for backward compat but hidden */
+  .profile{display:none}
   .profile img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-  .profile-initials{font-weight:800;color:var(--muted);display:none} /* hide initials visually */
-
+  .profile-initials{font-weight:800;color:var(--muted)}
   main{flex:1;overflow:auto;padding-bottom:110px}
-  .welcome{background:var(--card);padding:12px;border-radius:16px;box-shadow:0 6px 18px rgba(2,6,20,0.04)}
-  /* slightly smaller welcome H2 so it doesn't push content down */
-  .welcome h2 { font-size:18px; margin:0; font-weight:800; }
-  .kpis{display:flex;gap:8px;margin-top:10px}
+  .welcome{background:var(--card);padding:14px;border-radius:16px;box-shadow:0 6px 18px rgba(2,6,20,0.04)}
+  .kpis{display:flex;gap:8px;margin-top:12px}
   .kpi{flex:1;padding:10px;background:rgba(0,0,0,0.02);border-radius:12px;text-align:left}
-  /* make KPI numbers a bit smaller */
-  .kpi .num{font-size:16px;font-weight:800}
+  .kpi .num{font-size:18px;font-weight:800}
   .card{background:var(--card);padding:14px;border-radius:16px;margin-top:14px}
   .form-row{display:flex;gap:8px;margin-top:12px}
   .input,select{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);background:transparent;color:var(--text);font-size:14px}
@@ -97,6 +85,19 @@
   .small-pill{padding:6px 8px;border-radius:999px;background:rgba(0,0,0,0.02);font-weight:700;font-size:13px;color:var(--muted)}
   @media(min-width:540px){.app{padding:20px}}
 
+  /* ---------- Typed banner styles (new) ---------- */
+  .typed-banner { margin-top:10px; text-align:center; user-select:none; }
+  .typed-banner .small-word { display:block; font-weight:900; font-size:12px; opacity:0.46; letter-spacing:1.4px; margin-bottom:6px; text-transform:uppercase; }
+  .typed-banner .main-line { display:block; font-weight:900; font-size:20px; text-transform:uppercase; letter-spacing:0.8px; min-height:1.2em; }
+  .typed-banner .banner-caret { display:inline-block; width:10px; height:1.05em; vertical-align:middle; background:var(--accent); margin-left:8px; border-radius:2px; animation: tb-blink 900ms steps(2,start) infinite; }
+  @keyframes tb-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  @media(min-width:900px){ .typed-banner .main-line { font-size:24px; } }
+  @media(max-width:520px){ .typed-banner .main-line { font-size:16px; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .typed-banner .banner-caret { display:none !important; }
+  }
+
 </style>
 </head>
 <body>
@@ -114,19 +115,16 @@
         </div>
       </div>
 
-      <!-- Right side: hamburger moved into where the profile circle used to be.
-           NOTE: I kept the profile DOM items (hidden) so your existing JS that
-           references them won't break. Visually the circle is removed. -->
       <div style="display:flex;align-items:center;gap:10px">
-        <div class="profile" id="profileCircle" title="Menu" style="width:auto;height:auto;border-radius:0;background:transparent;padding:0;margin:0;">
-          <!-- hamburger button sits where the circle used to be -->
-          <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+        <!-- Hamburger moved to the top-right (profile circle hidden visually via CSS) -->
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
 
-          <!-- leave profile image & initials in DOM but hidden (so JS stays safe) -->
+        <!-- profile circle kept in DOM for backwards compatibility but hidden -->
+        <div class="profile" id="profileCircle" title="Profile">
           <img id="profileImg" alt="Profile" style="display:none">
-          <span id="profileInitials" class="profile-initials" style="display:none">PD</span>
+          <span id="profileInitials" class="profile-initials">PD</span>
 
-          <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true" style="display:none">
+          <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
             <button id="viewProfileBtn">View Profile</button>
             <button id="editProfileBtn">Edit Profile</button>
             <hr style="border:none;border-top:1px solid rgba(0,0,0,0.04);margin:8px 0">
@@ -170,7 +168,13 @@
       <section class="welcome">
         <h2 id="welcomeTitle">Welcome, Member</h2>
 
-        <!-- typed banner removed as requested -->
+        <!-- NEW: Typed banner placed directly under welcome,
+             will start typing once (after 3s) -->
+        <div id="typedBanner" class="typed-banner" aria-live="polite" aria-atomic="true">
+          <span class="small-word" id="typedSmall" aria-hidden="true"></span>
+          <span class="main-line" id="typedMain" aria-hidden="true"></span>
+          <span class="banner-caret" id="bannerCaret" aria-hidden="true" style="display:none"></span>
+        </div>
 
         <div class="kpis">
           <div class="kpi"><div class="num" id="activeProjectsCount">0</div><div style="font-size:12px;color:var(--muted)" id="kpiActiveLabel">Active Projects</div></div>
@@ -220,14 +224,14 @@
     <div class="toast" id="toast">Copied!</div>
 
     <!-- ========== MODALS (unchanged and new) ========== -->
+    <!-- ... keep all modal markup as in your original file (omitted here for brevity) ... -->
 
-    <!-- Contribution modal (updated options) -->
+    <!-- Contribution modal -->
     <div class="modal-backdrop" id="contributeModal">
       <div class="modal" role="document">
         <button class="close-x" id="contribCloseX" title="Close">✕</button>
         <h3>Contribute</h3>
         <p>Choose a package, then select payment method (Bank or USDT TRC20). After payment, submit proof or paste TX hash.</p>
-
         <div style="margin-top:10px">
           <select class="input" id="packageSelect">
             <option value="">-- Select Package --</option>
@@ -250,12 +254,10 @@
             <option value="100000">$100000</option>
           </select>
         </div>
-
         <div style="margin-top:10px">
           <button class="btn ghost" id="methodBank">Bank Deposit</button>
           <button class="btn ghost" id="methodUSDT">USDT (TRC20)</button>
         </div>
-
         <div id="bankBlock" style="margin-top:12px;display:none">
           <div class="copy"><span class="label">Bank: FIRST NATIONAL BANK</span>
             <div>Account Name: DREAM BIG PROJECT</div>
@@ -265,7 +267,6 @@
             <button class="btn ghost copy-btn" data-copy="bankAcct">Copy Account</button>
           </div>
         </div>
-
         <div id="usdtBlock" style="margin-top:12px;display:none">
           <div class="copy"><span class="label">TRC20 Wallet (USDT)</span>
             <div id="walletAddr" style="word-break:break-all"><strong>TXxExampleWalletAddress1234567890abcdef</strong></div>
@@ -275,17 +276,13 @@
             <button class="btn ghost" id="showQR">Show QR</button>
           </div>
         </div>
-
         <div style="margin-top:12px">
           <button class="btn" id="iPaidBtn">I have paid</button>
         </div>
-
-        <!-- Proof area (shows after I have paid) -->
         <div class="proof-area" id="proofArea" style="display:none">
           <button class="close-x" id="proofCloseX" title="Close">✕</button>
           <div style="font-weight:800" id="proofTitle">Upload proof or paste TX hash</div>
           <div style="font-size:13px;color:var(--muted);margin-top:6px" id="proofHint">Bank: upload image/PDF. USDT: paste transaction hash.</div>
-
           <div id="bankProofInputs" style="margin-top:8px;display:none">
             <div style="display:flex;gap:8px;align-items:center">
               <input type="file" id="proofFile" accept="image/*,.pdf">
@@ -296,46 +293,39 @@
               <div id="filePreviewInner"></div>
             </div>
           </div>
-
           <div id="usdtHashInput" style="margin-top:8px;display:none">
             <input class="input" id="txHash" placeholder="Paste transaction hash here">
             <div style="margin-top:8px;font-size:12px;color:var(--muted)">Be sure the TX is confirmed on TRON network.</div>
           </div>
-
           <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end">
             <button class="btn ghost" id="cancelProof">Cancel</button>
             <button class="btn" id="submitProof">Submit</button>
           </div>
         </div>
-
         <div class="actions" style="margin-top:14px">
           <button class="btn ghost" id="contribClose">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- Edit Profile modal (unchanged in DOM; kept so JS and settings still work) -->
+    <!-- Edit Profile modal (kept but profile circle hidden) -->
     <div class="modal-backdrop" id="editProfileModal">
       <div class="modal">
         <button class="close-x" id="editCloseX">✕</button>
         <h3>Edit Profile</h3>
         <p style="color:var(--muted)">Upload a facial image and change name or password. (Email is not editable here.)</p>
-
         <div style="margin-top:8px">
           <input type="file" id="profileImageFile" accept="image/*">
         </div>
         <div style="margin-top:10px">
           <div id="profilePreview" style="width:120px;height:120px;border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.02);display:grid;place-items:center">No image</div>
         </div>
-
         <div style="margin-top:10px">
           <input class="input" id="editName" placeholder="Full name" type="text">
         </div>
-
         <div style="margin-top:10px">
           <input class="input" id="newPassword" placeholder="New password" type="password">
         </div>
-
         <div class="actions" style="margin-top:12px">
           <button class="btn ghost" id="editCancel">Cancel</button>
           <button class="btn" id="saveProfileBtn">Save</button>
@@ -349,7 +339,6 @@
         <button class="close-x" id="settingsCloseX">✕</button>
         <h3>Settings</h3>
         <p style="color:var(--muted)">Manage profile image, name, password, 2FA, language and theme.</p>
-
         <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
           <div style="width:80px;height:80px;border-radius:10px;overflow:hidden;background:rgba(0,0,0,0.02);display:grid;place-items:center" id="settingsPreview">No image</div>
           <div style="flex:1">
@@ -361,7 +350,6 @@
             <input type="file" id="settingsImageFile" accept="image/*" style="display:none">
           </div>
         </div>
-
         <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
           <div style="flex:1">
             <label style="font-weight:700;font-size:13px">Two-Factor Authentication</label>
@@ -371,7 +359,6 @@
             <button class="btn ghost" id="toggle2faBtn">Connect 2FA</button>
           </div>
         </div>
-
         <div id="twoFaArea" style="margin-top:8px;display:none">
           <div style="font-size:13px;color:var(--muted)">Scan this code in your authenticator app (demo), or copy secret:</div>
           <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
@@ -382,7 +369,6 @@
             </div>
           </div>
         </div>
-
         <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
           <div style="flex:1">
             <label style="font-weight:700;font-size:13px">Language</label>
@@ -391,7 +377,6 @@
               <option value="fr">Français</option>
             </select>
           </div>
-
           <div style="flex:1">
             <label style="font-weight:700;font-size:13px">Theme</label>
             <select class="input" id="themeSelect" style="margin-top:6px">
@@ -400,7 +385,6 @@
             </select>
           </div>
         </div>
-
         <div class="actions" style="margin-top:14px">
           <button class="btn ghost" id="settingsCancel">Cancel</button>
           <button class="btn" id="settingsSave">Save Settings</button>
@@ -408,7 +392,7 @@
       </div>
     </div>
 
-    <!-- rest of modals (payments, projects, logout, qr) unchanged -->
+    <!-- Payments modal (unchanged) -->
     <div class="modal-backdrop" id="paymentsModal">
       <div class="modal">
         <button class="close-x" id="paymentsCloseX">✕</button>
@@ -418,6 +402,7 @@
       </div>
     </div>
 
+    <!-- Projects modal (unchanged) -->
     <div class="modal-backdrop" id="projectsModal">
       <div class="modal">
         <button class="close-x" id="projectsCloseX">✕</button>
@@ -427,6 +412,7 @@
       </div>
     </div>
 
+    <!-- Simple logout confirm modal (unchanged) -->
     <div class="modal-backdrop" id="logoutModal">
       <div class="modal">
         <h3>Confirm Logout</h3>
@@ -438,6 +424,7 @@
       </div>
     </div>
 
+    <!-- QR modal (unchanged) -->
     <div class="modal-backdrop" id="qrModal">
       <div class="modal" style="text-align:center">
         <button class="close-x" id="qrCloseX">✕</button>
@@ -456,181 +443,152 @@ function numberWithCommas(x){
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-/* ---------- Refs ---------- */
-/* keep refs that exist in DOM (profile DOM kept but mostly hidden) */
-const menuBtn = document.getElementById('menuBtn');
-const menuPanel = document.getElementById('menuPanel');
-const overlayDim = document.getElementById('overlayDim');
-const mContribute = document.getElementById('mContribute');
-const mViewProjects = document.getElementById('mViewProjects');
-const mHelp = document.getElementById('mHelp');
-const mSettings = document.getElementById('mSettings');
-const mLogout = document.getElementById('mLogout');
-const mWithdraw = document.getElementById('mWithdraw');
-const paymentsNavPlace = document.getElementById('paymentsNavPlace');
+/* ---------- Refs (safe getters) ---------- */
+const getById = id => document.getElementById(id);
+const menuBtn = getById('menuBtn');
+const menuPanel = getById('menuPanel');
+const overlayDim = getById('overlayDim');
+const mContribute = getById('mContribute');
+const mViewProjects = getById('mViewProjects');
+const mHelp = getById('mHelp');
+const mSettings = getById('mSettings');
+const mLogout = getById('mLogout');
+const mWithdraw = getById('mWithdraw');
+const paymentsNavPlace = getById('paymentsNavPlace');
 
-const profileCircle = document.getElementById('profileCircle'); // present but neutralized visually
-const profileImg = document.getElementById('profileImg');
-const profileInitials = document.getElementById('profileInitials');
-const profileMenu = document.getElementById('profileMenu');
-const viewProfileBtn = document.getElementById('viewProfileBtn');
-const editProfileBtn = document.getElementById('editProfileBtn');
-const profileLogoutBtn = document.getElementById('profileLogoutBtn');
+const profileCircle = getById('profileCircle');
+const profileImg = getById('profileImg');
+const profileInitials = getById('profileInitials');
+const profileMenu = getById('profileMenu');
+const viewProfileBtn = getById('viewProfileBtn');
+const editProfileBtn = getById('editProfileBtn');
+const profileLogoutBtn = getById('profileLogoutBtn');
 
-const contributeModal = document.getElementById('contributeModal');
-const contribClose = document.getElementById('contribClose');
-const contribCloseX = document.getElementById('contribCloseX');
-const methodBankBtn = document.getElementById('methodBank');
-const methodUSDTBtn = document.getElementById('methodUSDT');
-const bankBlock = document.getElementById('bankBlock');
-const usdtBlock = document.getElementById('usdtBlock');
-const iPaidBtn = document.getElementById('iPaidBtn');
-const proofArea = document.getElementById('proofArea');
-const proofCloseX = document.getElementById('proofCloseX');
-const bankProofInputs = document.getElementById('bankProofInputs');
-const usdtHashInput = document.getElementById('usdtHashInput');
-const proofFile = document.getElementById('proofFile');
-const previewProofBtn = document.getElementById('previewProof');
-const filePreview = document.getElementById('filePreview');
-const filePreviewInner = document.getElementById('filePreviewInner');
-const previewCloseX = document.getElementById('previewCloseX');
-const cancelProof = document.getElementById('cancelProof');
-const submitProof = document.getElementById('submitProof');
-const txHash = document.getElementById('txHash');
+const contributeModal = getById('contributeModal');
+const contribClose = getById('contribClose');
+const contribCloseX = getById('contribCloseX');
+const methodBankBtn = getById('methodBank');
+const methodUSDTBtn = getById('methodUSDT');
+const bankBlock = getById('bankBlock');
+const usdtBlock = getById('usdtBlock');
+const iPaidBtn = getById('iPaidBtn');
+const proofArea = getById('proofArea');
+const proofCloseX = getById('proofCloseX');
+const bankProofInputs = getById('bankProofInputs');
+const usdtHashInput = getById('usdtHashInput');
+const proofFile = getById('proofFile');
+const previewProofBtn = getById('previewProof');
+const filePreview = getById('filePreview');
+const filePreviewInner = getById('filePreviewInner');
+const previewCloseX = getById('previewCloseX');
+const cancelProof = getById('cancelProof');
+const submitProof = getById('submitProof');
+const txHash = getById('txHash');
 
-const packageSelect = document.getElementById('packageSelect');
-const packageAmount = document.getElementById('packageAmount');
-const projectName = document.getElementById('projectName');
-const projectMeta = document.getElementById('projectMeta');
-const progressPct = document.getElementById('progressPct');
-const progressTarget = document.getElementById('progressTarget');
-const progressFill = document.getElementById('progressFill');
-const dreamFunding = document.getElementById('dreamFunding');
+const packageSelect = getById('packageSelect');
+const packageAmount = getById('packageAmount');
+const projectName = getById('projectName');
+const projectMeta = getById('projectMeta');
+const progressPct = getById('progressPct');
+const progressTarget = getById('progressTarget');
+const progressFill = getById('progressFill');
+const dreamFunding = getById('dreamFunding');
 
-const editProfileModal = document.getElementById('editProfileModal');
-const profileImageFile = document.getElementById('profileImageFile');
-const profilePreview = document.getElementById('profilePreview');
-const editName = document.getElementById('editName');
-const newPassword = document.getElementById('newPassword');
-const saveProfileBtn = document.getElementById('saveProfileBtn');
-const editCancel = document.getElementById('editCancel');
-const editCloseX = document.getElementById('editCloseX');
+const editProfileModal = getById('editProfileModal');
+const profileImageFile = getById('profileImageFile');
+const profilePreview = getById('profilePreview');
+const editName = getById('editName');
+const newPassword = getById('newPassword');
+const saveProfileBtn = getById('saveProfileBtn');
+const editCancel = getById('editCancel');
+const editCloseX = getById('editCloseX');
 
-const settingsModal = document.getElementById('settingsModal');
-const settingsCloseX = document.getElementById('settingsCloseX');
-const settingsName = document.getElementById('settingsName');
-const settingsPassword = document.getElementById('settingsPassword');
-const settingsUploadBtn = document.getElementById('settingsUploadBtn');
-const settingsImageFile = document.getElementById('settingsImageFile');
-const settingsPreview = document.getElementById('settingsPreview');
-const toggle2faBtn = document.getElementById('toggle2faBtn');
-const twoFaArea = document.getElementById('twoFaArea');
-const twoFaQRCode = document.getElementById('twoFaQRCode');
-const twoFaSecret = document.getElementById('twoFaSecret');
-const copy2faSecret = document.getElementById('copy2faSecret');
-const langSelect = document.getElementById('langSelect');
-const themeSelect = document.getElementById('themeSelect');
-const settingsCancel = document.getElementById('settingsCancel');
-const settingsSave = document.getElementById('settingsSave');
+const settingsModal = getById('settingsModal');
+const settingsCloseX = getById('settingsCloseX');
+const settingsName = getById('settingsName');
+const settingsPassword = getById('settingsPassword');
+const settingsUploadBtn = getById('settingsUploadBtn');
+const settingsImageFile = getById('settingsImageFile');
+const settingsPreview = getById('settingsPreview');
+const toggle2faBtn = getById('toggle2faBtn');
+const twoFaArea = getById('twoFaArea');
+const twoFaQRCode = getById('twoFaQRCode');
+const twoFaSecret = getById('twoFaSecret');
+const copy2faSecret = getById('copy2faSecret');
+const langSelect = getById('langSelect');
+const themeSelect = getById('themeSelect');
+const settingsCancel = getById('settingsCancel');
+const settingsSave = getById('settingsSave');
 
-const paymentsModal = document.getElementById('paymentsModal');
-const paymentsListArea = document.getElementById('paymentsListArea');
-const paymentsClose = document.getElementById('paymentsClose');
-const paymentsCloseX = document.getElementById('paymentsCloseX');
+const paymentsModal = getById('paymentsModal');
+const paymentsListArea = getById('paymentsListArea');
+const paymentsClose = getById('paymentsClose');
+const paymentsCloseX = getById('paymentsCloseX');
 
-const projectsModal = document.getElementById('projectsModal');
-const projectsList = document.getElementById('projectsList');
-const projectsClose = document.getElementById('projectsClose');
+const projectsModal = getById('projectsModal');
+const projectsList = getById('projectsList');
+const projectsClose = getById('projectsClose');
+const projectsCloseX = getById('projectsCloseX');
 
-const logoutModal = document.getElementById('logoutModal');
-const btnNo = document.getElementById('btnNo'), btnYes = document.getElementById('btnYes');
+const logoutModal = getById('logoutModal');
+const btnNo = getById('btnNo'), btnYes = getById('btnYes');
 
-const qrModal = document.getElementById('qrModal'), qrImage = document.getElementById('qrImage'), qrClose = document.getElementById('qrClose'), qrCloseX = document.getElementById('qrCloseX');
+const qrModal = getById('qrModal'), qrImage = getById('qrImage'), qrClose = getById('qrClose'), qrCloseX = getById('qrCloseX');
 
-const dbLogo = document.getElementById('dbLogo');
-const toast = document.getElementById('toast');
+const dbLogo = getById('dbLogo');
+const toast = getById('toast');
 const copyButtons = document.querySelectorAll('.copy-btn');
-const shareHere = document.getElementById('shareHere');
+const shareHere = getById('shareHere');
 
-const menuHeader = document.getElementById('menuHeader');
-const menuThumb = document.getElementById('menuThumb');
-const menuName = document.getElementById('menuName');
-const menuViewToggle = document.getElementById('menuViewToggle');
+const menuHeader = getById('menuHeader');
+const menuThumb = getById('menuThumb');
+const menuName = getById('menuName');
+const menuViewToggle = getById('menuViewToggle');
 
-/* ---------- Local state ---------- */
 let payments = JSON.parse(localStorage.getItem('payments') || '[]');
 let projects = JSON.parse(localStorage.getItem('projects') || '[]');
 
 /* ---------- Translations (small demo) ---------- */
-const translations = {
-  en: {
-    dashboard: 'Dashboard',
-    activeProjects: 'Active Projects',
-    totalContribution: 'Total Contribution',
-    referrals: 'Referrals',
-    referralsHint: 'Referrals are counted only after payments are approved by admin.',
-    contribution: 'Contribution',
-    welcome: 'Welcome, ',
-    shareText: 'Join me on Dream Big',
-    settings: 'Settings',
-    save: 'Save',
-    cancel: 'Cancel',
-    referralsTitle: 'Referrals'
-  },
-  fr: {
-    dashboard: 'Tableau de bord',
-    activeProjects: 'Projets actifs',
-    totalContribution: 'Contribution totale',
-    referrals: 'Parrainages',
-    referralsHint: 'Les parrainages sont comptés après approbation des paiements par l\'admin.',
-    contribution: 'Contribution',
-    welcome: 'Bienvenue, ',
-    shareText: 'Rejoignez-moi sur Dream Big',
-    settings: 'Paramètres',
-    save: 'Enregistrer',
-    cancel: 'Annuler',
-    referralsTitle: 'Parrainages'
-  }
-};
+const translations = { en: { dashboard: 'Dashboard', activeProjects: 'Active Projects', totalContribution: 'Total Contribution', referrals: 'Referrals', referralsHint: 'Referrals are counted only after payments are approved by admin.', contribution: 'Contribution', welcome: 'Welcome, ', shareText: 'Join me on Dream Big', settings: 'Settings', save: 'Save', cancel: 'Cancel', referralsTitle: 'Referrals' }, fr: { dashboard: 'Tableau de bord', activeProjects: 'Projets actifs', totalContribution: 'Contribution totale', referrals: 'Parrainages', referralsHint: 'Les parrainages sont comptés après approbation des paiements par l\\'admin.', contribution: 'Contribution', welcome: 'Bienvenue, ', shareText: 'Rejoignez-moi sur Dream Big', settings: 'Paramètres', save: 'Enregistrer', cancel: 'Annuler', referralsTitle: 'Parrainages' } };
 
-/* ---------- Utilities & UI helpers (unchanged) ---------- */
+/* ---------- Utilities ---------- */
 function showToast(msg){ toast.innerText = msg || 'Copied!'; toast.style.display='block'; toast.style.opacity='1'; setTimeout(()=>{ toast.style.transition='opacity 300ms ease'; toast.style.opacity='0'; setTimeout(()=>{ toast.style.display='none'; toast.style.transition=''; },300); },1400); }
 function copyText(text){ if(!text) return showToast('Nothing to copy'); if(navigator.clipboard){ navigator.clipboard.writeText(text).then(()=> showToast('Copied')); } else { const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); showToast('Copied'); } catch(e){ showToast('Copy failed'); } ta.remove(); } }
 function openModal(el){ if(!el) return; el.style.display='flex'; el.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
 function closeModal(el){ if(!el) return; el.style.display='none'; el.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
 
-/* ---------- Menu (hamburger) ---------- */
+/* ---------- Menu ---------- */
 function openMenu(){ menuPanel.classList.add('open'); overlayDim.classList.add('visible'); menuPanel.setAttribute('aria-hidden','false'); setTimeout(()=>document.addEventListener('click', docClickCloseMenu),20); }
 function closeMenu(){ menuPanel.classList.remove('open'); overlayDim.classList.remove('visible'); menuPanel.setAttribute('aria-hidden','true'); document.removeEventListener('click', docClickCloseMenu); }
 function docClickCloseMenu(e){ if(!menuPanel.contains(e.target) && !menuBtn.contains(e.target)) closeMenu(); }
-menuBtn.addEventListener('click',(e)=>{ e.stopPropagation(); menuPanel.classList.contains('open')? closeMenu() : openMenu(); });
-overlayDim.addEventListener('click', ()=> closeMenu());
+if(menuBtn) menuBtn.addEventListener('click',(e)=>{ e.stopPropagation(); menuPanel.classList.contains('open')? closeMenu() : openMenu(); });
+if(overlayDim) overlayDim.addEventListener('click', ()=> closeMenu());
 
-/* ---------- Profile menu handlers left in place (profile-menu hidden) ---------- */
-profileCircle.addEventListener && profileCircle.addEventListener('click',(e)=>{
-  e.stopPropagation();
-  if(!profileMenu) return;
-  const open = profileMenu.style.display === 'block';
-  profileMenu.style.display = open ? 'none' : 'block';
-  profileMenu.setAttribute('aria-hidden', open ? 'true' : 'false');
-});
+/* ---------- Profile menu (safe guards) ---------- */
+if(profileCircle){
+  profileCircle.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const open = profileMenu.style.display === 'block';
+    profileMenu.style.display = open ? 'none' : 'block';
+    profileMenu.setAttribute('aria-hidden', open ? 'true' : 'false');
+  });
+}
 document.addEventListener('click',(e)=>{
   if(profileMenu && profileMenu.style.display === 'block' && profileCircle && !profileCircle.contains(e.target)){
     profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true');
   }
 });
-viewProfileBtn && viewProfileBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; alert('Profile view (demo)'); });
-editProfileBtn && editProfileBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; openModal(editProfileModal); });
-profileLogoutBtn && profileLogoutBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; openModal(logoutModal); });
+if(viewProfileBtn) viewProfileBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; alert('Profile view (demo)'); });
+if(editProfileBtn) editProfileBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; openModal(editProfileModal); });
+if(profileLogoutBtn) profileLogoutBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; openModal(logoutModal); });
 
-/* ---------- Init user & profile image (kept same) ---------- */
+/* ---------- Init user & profile image (safe) ---------- */
 function safeSetProfileImage(dataUrl){
   if(!dataUrl) return;
-  if(profileImg) { profileImg.src = dataUrl; profileImg.style.display = 'block'; }
+  if(profileImg){ profileImg.src = dataUrl; profileImg.style.display = 'block'; }
   if(profileInitials) profileInitials.style.display = 'none';
-  // set db logo and small menu thumb
-  dbLogo.innerHTML = '<img src="'+dataUrl+'" alt="logo">';
-  menuThumb.innerHTML = '<img src="'+dataUrl+'" style="width:100%;height:100%;object-fit:cover">';
+  if(dbLogo) dbLogo.innerHTML = '<img src="'+dataUrl+'" alt="logo">';
+  if(menuThumb) menuThumb.innerHTML = '<img src="'+dataUrl+'" style="width:100%;height:100%;object-fit:cover">';
   localStorage.setItem('profileImage', dataUrl);
 }
 function setInitialsFromName(name){
@@ -638,10 +596,7 @@ function setInitialsFromName(name){
   let initials = 'PD';
   if(parts.length>0 && parts[0].length>0) initials = parts[0][0].toUpperCase() + (parts[1]? parts[1][0].toUpperCase() : '');
   if(profileInitials) profileInitials.innerText = initials;
-  // also set menu thumb fallback initials
-  if(!localStorage.getItem('profileImage')){
-    menuThumb.innerText = initials;
-  }
+  if(!localStorage.getItem('profileImage') && menuThumb) menuThumb.innerText = initials;
 }
 function loadUser(){
   let user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -651,132 +606,135 @@ function loadUser(){
     user = { name, password };
     localStorage.setItem('user', JSON.stringify(user));
   }
-  document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
-  editName.value = user.name || '';
-  settingsName.value = user.name || '';
+  const welcomeEl = getById('welcomeTitle');
+  if(welcomeEl) welcomeEl.innerText = translations[getLang()].welcome + user.name;
+  if(editName) editName.value = user.name || '';
+  if(settingsName) settingsName.value = user.name || '';
   setInitialsFromName(user.name);
-  // load profile image if available
   const savedImg = localStorage.getItem('profileImage');
-  if(savedImg){ safeSetProfileImage(savedImg); }
-  // set menu name
-  document.getElementById('menuName').innerText = user.name;
+  if(savedImg) safeSetProfileImage(savedImg);
+  if(menuName) menuName.innerText = user.name;
 }
 loadUser();
 
-/* ---------- Contribution / payments / projects / settings JS ----------
-   (kept the same as your original file -- I did not change behavior,
-   only earlier DOM/CSS/typed removal and menu relocation were applied.) */
+/* ---------- Contribution modal behavior (updated) ---------- */
+let preferredMethod = localStorage.getItem('preferredContribution') || 'bank';
+function showBank(){ if(bankBlock) bankBlock.style.display='block'; if(usdtBlock) usdtBlock.style.display='none'; preferredMethod='bank'; localStorage.setItem('preferredContribution','bank'); if(getById('contribHint')) getById('contribHint').innerText='Bank Deposit'; }
+function showUSDT(){ if(bankBlock) bankBlock.style.display='none'; if(usdtBlock) usdtBlock.style.display='block'; preferredMethod='usdt'; localStorage.setItem('preferredContribution','usdt'); if(getById('contribHint')) getById('contribHint').innerText='USDT (TRC20)'; }
+if(methodBankBtn) methodBankBtn.addEventListener('click', showBank);
+if(methodUSDTBtn) methodUSDTBtn.addEventListener('click', showUSDT);
+
+if(mContribute) mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); const pref = localStorage.getItem('preferredContribution') || 'bank'; if(pref==='usdt') showUSDT(); else showBank(); });
+
+if(contribClose) contribClose.addEventListener('click', ()=> closeModal(contributeModal));
+if(contribCloseX) contribCloseX.addEventListener('click', ()=> closeModal(contributeModal));
 
 /* helper to update progress bar with color ranges */
 function updateProgress(percent){
   const p = Math.max(0, Math.min(100, Math.round(percent)));
-  progressFill.style.width = p + '%';
-  progressPct.innerText = p + '%';
-
-  // color ranges: 0-40 red, 41-60 yellow, 61-100 green
-  let color = '#e14b4b'; // default red
+  if(progressFill) progressFill.style.width = p + '%';
+  if(progressPct) progressPct.innerText = p + '%';
+  let color = '#e14b4b';
   if(p <= 40) color = '#e14b4b';
   else if(p <= 60) color = '#f6c44b';
   else color = '#34d399';
-  progressFill.style.background = color;
+  if(progressFill) progressFill.style.background = color;
 }
 
 /* package selection */
-packageSelect.addEventListener('change', ()=>{
+if(packageSelect) packageSelect.addEventListener('change', ()=>{
   const val = packageSelect.value;
   if(!val){
-    packageAmount.innerText='';
-    projectName.innerText='No project selected';
-    projectMeta.innerText='Choose a package from Contribution';
-    dreamFunding.innerText = 'Dream Funding: $0';
+    if(packageAmount) packageAmount.innerText='';
+    if(projectName) projectName.innerText='No project selected';
+    if(projectMeta) projectMeta.innerText='Choose a package from Contribution';
+    if(dreamFunding) dreamFunding.innerText = 'Dream Funding: $0';
     localStorage.removeItem('selectedPackage');
     updateProgress(0);
-    progressTarget.innerText = 'Target: —';
+    if(progressTarget) progressTarget.innerText = 'Target: —';
     return;
   }
   const price = Number(val);
-  const pkg = {
-    name: '$' + price,
-    price: price,
-    funding: price * 100
-  };
+  const pkg = { name: '$' + price, price: price, funding: price * 100 };
   localStorage.setItem('selectedPackage', JSON.stringify(pkg));
-  projectName.innerText = pkg.name + ' Package';
-  projectMeta.innerText = pkg.name + ' • Package selected';
-  packageAmount.innerText = '(' + pkg.name + ' Contribution)';
-  dreamFunding.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding);
+  if(projectName) projectName.innerText = pkg.name + ' Package';
+  if(projectMeta) projectMeta.innerText = pkg.name + ' • Package selected';
+  if(packageAmount) packageAmount.innerText = '(' + pkg.name + ' Contribution)';
+  if(dreamFunding) dreamFunding.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding);
   updateProgress(0);
-  progressTarget.innerText = 'Target: $' + numberWithCommas(pkg.funding);
+  if(progressTarget) progressTarget.innerText = 'Target: $' + numberWithCommas(pkg.funding);
 });
 
 /* I have paid flow */
-methodBankBtn && methodBankBtn.addEventListener('click', ()=>{ bankBlock.style.display='block'; usdtBlock.style.display='none'; localStorage.setItem('preferredContribution','bank'); document.getElementById('contribHint').innerText='Bank Deposit'; });
-methodUSDTBtn && methodUSDTBtn.addEventListener('click', ()=>{ bankBlock.style.display='none'; usdtBlock.style.display='block'; localStorage.setItem('preferredContribution','usdt'); document.getElementById('contribHint').innerText='USDT (TRC20)'; });
-
-mContribute && mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); const pref = localStorage.getItem('preferredContribution') || 'bank'; if(pref==='usdt'){ bankBlock.style.display='none'; usdtBlock.style.display='block'; } else { bankBlock.style.display='block'; usdtBlock.style.display='none'; } });
-
-contribClose && contribClose.addEventListener('click', ()=> closeModal(contributeModal));
-contribCloseX && contribCloseX.addEventListener('click', ()=> closeModal(contributeModal));
-
-iPaidBtn && iPaidBtn.addEventListener('click', ()=>{
-  proofArea.style.display='block';
-  const pref = localStorage.getItem('preferredContribution') || 'bank';
-  if(pref === 'usdt'){ bankProofInputs.style.display='none'; usdtHashInput.style.display='block'; }
-  else { bankProofInputs.style.display='flex'; usdtHashInput.style.display='none'; }
+if(iPaidBtn) iPaidBtn.addEventListener('click', ()=>{
+  if(proofArea) proofArea.style.display='block';
+  const pref = localStorage.getItem('preferredContribution') || preferredMethod || 'bank';
+  if(pref === 'usdt'){ if(bankProofInputs) bankProofInputs.style.display='none'; if(usdtHashInput) usdtHashInput.style.display='block'; }
+  else { if(bankProofInputs) bankProofInputs.style.display='flex'; if(usdtHashInput) usdtHashInput.style.display='none'; }
 });
-proofCloseX && proofCloseX.addEventListener('click', ()=> proofArea.style.display='none');
-cancelProof && cancelProof.addEventListener('click', ()=> proofArea.style.display='none');
+if(proofCloseX) proofCloseX.addEventListener('click', ()=> { if(proofArea) proofArea.style.display='none'; });
+if(cancelProof) cancelProof.addEventListener('click', ()=> { if(proofArea) proofArea.style.display='none'; });
 
-/* preview proof */
-previewProofBtn && previewProofBtn.addEventListener('click', ()=>{
-  const f = proofFile.files[0];
-  if(!f) return showToast('Choose a file first');
-  filePreview.style.display='block';
-  if(f.type.startsWith('image/')){
-    const r = new FileReader();
-    r.onload = e => filePreviewInner.innerHTML = '<img src="'+e.target.result+'" style="max-width:100%;border-radius:8px">';
-    r.readAsDataURL(f);
-  } else {
-    filePreviewInner.innerHTML = '<div style="padding:8px;color:var(--muted)">'+f.name+'</div>';
-  }
-});
-previewCloseX && previewCloseX.addEventListener('click', ()=> { filePreview.style.display='none'; filePreviewInner.innerHTML=''; });
+/* preview proof (safe) */
+if(previewProofBtn){
+  previewProofBtn.addEventListener('click', ()=>{
+    const f = proofFile && proofFile.files && proofFile.files[0];
+    if(!f) return showToast('Choose a file first');
+    if(filePreview) filePreview.style.display='block';
+    if(f.type && f.type.startsWith && f.type.startsWith('image/')){
+      const r = new FileReader();
+      r.onload = e => { if(filePreviewInner) filePreviewInner.innerHTML = '<img src="'+e.target.result+'" style="max-width:100%;border-radius:8px">'; };
+      r.readAsDataURL(f);
+    } else {
+      if(filePreviewInner) filePreviewInner.innerHTML = '<div style="padding:8px;color:var(--muted)">'+f.name+'</div>';
+    }
+  });
+}
+if(previewCloseX) previewCloseX.addEventListener('click', ()=> { if(filePreview) filePreview.style.display='none'; if(filePreviewInner) filePreviewInner.innerHTML=''; });
 
-submitProof && submitProof.addEventListener('click', ()=>{
-  const pkg = JSON.parse(localStorage.getItem('selectedPackage') || 'null');
-  if(!pkg) return showToast('Choose a package first');
-  const pref = localStorage.getItem('preferredContribution') || 'bank';
-  const record = { id: 'PAY-'+Date.now(), package: pkg, method: pref, date: new Date().toISOString(), status: 'pending' };
-  if(pref === 'usdt'){
-    const hash = txHash.value && txHash.value.trim();
-    if(!hash) return showToast('Paste transaction hash first');
-    record.hash = hash;
-  } else {
-    const f = proofFile.files[0];
-    if(!f) return showToast('Upload proof file first');
-    record.proofFilename = f.name; // demo only
-  }
-  payments.push(record);
-  localStorage.setItem('payments', JSON.stringify(payments));
-  const modal = contributeModal.querySelector('.modal');
-  modal.innerHTML = '<button class="close-x" id="contribCloseConfirm">✕</button><h3>Congratulations (Pending Approval)</h3><p style="color:var(--muted)">Please be patient while we review your payment within 48 hours.</p><div style="margin-top:12px"><button class="btn" id="backToDashboard">Back to dashboard</button></div>';
-  setTimeout(()=>{
-    document.getElementById('backToDashboard').addEventListener('click', ()=>{ location.reload(); });
-    document.getElementById('contribCloseConfirm').addEventListener('click', ()=> location.reload());
-  },80);
-  proofArea.style.display='none';
-  filePreview.style.display='none';
-  filePreviewInner.innerHTML='';
-  if(proofFile) proofFile.value='';
-  if(txHash) txHash.value='';
-  refreshPaymentsNav();
-});
+/* submit proof or tx hash (demo persist to localStorage) */
+if(submitProof){
+  submitProof.addEventListener('click', ()=>{
+    const pkg = JSON.parse(localStorage.getItem('selectedPackage') || 'null');
+    if(!pkg) return showToast('Choose a package first');
+    const pref = localStorage.getItem('preferredContribution') || preferredMethod || 'bank';
+    const record = { id: 'PAY-'+Date.now(), package: pkg, method: pref, date: new Date().toISOString(), status: 'pending' };
+    if(pref === 'usdt'){
+      const hash = txHash && txHash.value && txHash.value.trim();
+      if(!hash) return showToast('Paste transaction hash first');
+      record.hash = hash;
+    } else {
+      const f = proofFile && proofFile.files && proofFile.files[0];
+      if(!f) return showToast('Upload proof file first');
+      record.proofFilename = f.name;
+    }
+    payments.push(record);
+    localStorage.setItem('payments', JSON.stringify(payments));
+    // show confirmation inside modal (demo)
+    const modal = contributeModal && contributeModal.querySelector('.modal');
+    if(modal){
+      modal.innerHTML = '<button class="close-x" id="contribCloseConfirm">✕</button><h3>Congratulations (Pending Approval)</h3><p style="color:var(--muted)">Please be patient while we review your payment within 48 hours.</p><div style="margin-top:12px"><button class="btn" id="backToDashboard">Back to dashboard</button></div>';
+      setTimeout(()=>{
+        const back = getById('backToDashboard');
+        const closeConfirm = getById('contribCloseConfirm');
+        if(back) back.addEventListener('click', ()=> location.reload());
+        if(closeConfirm) closeConfirm.addEventListener('click', ()=> location.reload());
+      },80);
+    }
+    if(proofArea) proofArea.style.display='none';
+    if(filePreview) filePreview.style.display='none';
+    if(filePreviewInner) filePreviewInner.innerHTML='';
+    if(proofFile) proofFile.value='';
+    if(txHash) txHash.value='';
+    refreshPaymentsNav();
+  });
+}
 
-/* refresh payments nav */
+/* refresh payments nav: */
 function refreshPaymentsNav(){
   payments = JSON.parse(localStorage.getItem('payments') || '[]');
-  paymentsNavPlace.innerHTML = '';
-  if(payments.length>0){
+  if(paymentsNavPlace) paymentsNavPlace.innerHTML = '';
+  if(payments.length>0 && paymentsNavPlace){
     const unCount = payments.filter(p=>p.status==='pending').length;
     const apCount = payments.filter(p=>p.status==='approved').length;
     const btnUn = document.createElement('button'); btnUn.className='menu-item'; btnUn.innerHTML='<span>Unapproved Payments</span><span class="hint">'+unCount+'</span>';
@@ -790,6 +748,7 @@ function refreshPaymentsNav(){
 /* open payments list modal */
 function openPaymentsList(status){
   payments = JSON.parse(localStorage.getItem('payments') || '[]');
+  if(!paymentsListArea) return;
   paymentsListArea.innerHTML = '';
   const list = payments.filter(p=>p.status===status);
   if(list.length===0){ paymentsListArea.innerHTML = '<div style="color:var(--muted)">No payments '+status+'</div>'; openModal(paymentsModal); return; }
@@ -829,8 +788,9 @@ function openPaymentsList(status){
 /* ---------- Projects ---------- */
 function renderProjects(){
   projects = JSON.parse(localStorage.getItem('projects') || '[]');
+  if(!projectsList) return;
   projectsList.innerHTML = '';
-  if(!projects || projects.length===0){ projectsList.innerHTML = '<div style="color:var(--muted)">No projects yet.</div>'; document.getElementById('activeProjectsCount').innerText = 0; return; }
+  if(!projects || projects.length===0){ projectsList.innerHTML = '<div style="color:var(--muted)">No projects yet.</div>'; if(getById('activeProjectsCount')) getById('activeProjectsCount').innerText = 0; return; }
   projects.forEach(p=>{
     const div = document.createElement('div');
     div.className='project-item';
@@ -840,48 +800,44 @@ function renderProjects(){
     div.innerHTML = '<div style="font-weight:800">'+p.name+'</div><div style="font-size:13px;color:var(--muted)">ID: '+p.id+' • Contribution: $'+ numberWithCommas(p.amount) +' • Dream Funding: $'+ numberWithCommas(p.funding) +' • '+p.status+'</div>';
     projectsList.appendChild(div);
   });
-  document.getElementById('activeProjectsCount').innerText = projects.length;
+  if(getById('activeProjectsCount')) getById('activeProjectsCount').innerText = projects.length;
 }
 
-/* ---------- Edit Profile upload (kept) ---------- */
+/* ---------- Edit Profile upload (safe) ---------- */
 let pendingImageData = null;
-profileImageFile && profileImageFile.addEventListener('change', ()=>{
+if(profileImageFile) profileImageFile.addEventListener('change', ()=>{
   const f = profileImageFile.files[0];
   if(!f) return showToast('Choose an image');
   if(!f.type.startsWith('image/')) return showToast('Image required');
   const r = new FileReader();
   r.onload = e => {
     pendingImageData = e.target.result;
-    profilePreview.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
+    if(profilePreview) profilePreview.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
   };
   r.readAsDataURL(f);
 });
-editCancel && editCancel.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; if(profileImageFile) profileImageFile.value=''; profilePreview.innerHTML='No image'; });
-editCloseX && editCloseX.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; if(profileImageFile) profileImageFile.value=''; profilePreview.innerHTML='No image'; });
+if(editCancel) editCancel.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; if(profileImageFile) profileImageFile.value=''; if(profilePreview) profilePreview.innerHTML='No image'; });
+if(editCloseX) editCloseX.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; if(profileImageFile) profileImageFile.value=''; if(profilePreview) profilePreview.innerHTML='No image'; });
 
-saveProfileBtn && saveProfileBtn.addEventListener('click', ()=>{
-  const pwd = newPassword.value.trim();
-  const nameVal = editName.value.trim();
+if(saveProfileBtn) saveProfileBtn.addEventListener('click', ()=>{
+  const pwd = newPassword ? newPassword.value.trim() : '';
+  const nameVal = editName ? editName.value.trim() : '';
   if(pendingImageData){
-    if(profileImg) { profileImg.src = pendingImageData; profileImg.style.display = 'block'; }
-    if(profileInitials) profileInitials.style.display = 'none';
-    dbLogo.innerHTML = '<img src="'+pendingImageData+'" alt="logo">';
-    menuThumb.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
-    localStorage.setItem('profileImage', pendingImageData);
+    safeSetProfileImage(pendingImageData);
     pendingImageData = null;
     if(profileImageFile) profileImageFile.value = '';
-    profilePreview.innerHTML = 'No image';
+    if(profilePreview) profilePreview.innerHTML = 'No image';
   }
   let user = JSON.parse(localStorage.getItem('user') || '{}');
   if(nameVal){
     user.name = nameVal;
-    document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
-    document.getElementById('menuName').innerText = user.name;
+    if(getById('welcomeTitle')) getById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
+    if(getById('menuName')) getById('menuName').innerText = user.name;
     setInitialsFromName(user.name);
   }
   if(pwd){
     user.password = pwd;
-    newPassword.value = '';
+    if(newPassword) newPassword.value = '';
     showToast('Password saved (demo)');
   }
   localStorage.setItem('user', JSON.stringify(user));
@@ -889,75 +845,63 @@ saveProfileBtn && saveProfileBtn.addEventListener('click', ()=>{
   closeModal(editProfileModal);
 });
 
-/* ---------- Settings modal behavior (kept) ---------- */
-settingsUploadBtn && settingsUploadBtn.addEventListener('click', ()=> settingsImageFile.click());
-settingsImageFile && settingsImageFile.addEventListener('change', ()=>{
-  const f = settingsImageFile.files[0];
+/* ---------- Settings modal behavior (NEW) ---------- */
+if(settingsUploadBtn) settingsUploadBtn.addEventListener('click', ()=> settingsImageFile.click());
+if(settingsImageFile) settingsImageFile.addEventListener('change', (ev)=>{
+  const f = ev.target.files[0];
   if(!f) return showToast('Choose an image');
   if(!f.type.startsWith('image/')) return showToast('Image required');
   const r = new FileReader();
   r.onload = e => {
-    settingsPreview.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover">';
     pendingSettingsImage = e.target.result;
+    if(settingsPreview) settingsPreview.innerHTML = '<img src="'+pendingSettingsImage+'" style="width:100%;height:100%;object-fit:cover">';
   };
   r.readAsDataURL(f);
 });
 let pendingSettingsImage = null;
 
-toggle2faBtn && toggle2faBtn.addEventListener('click', ()=>{
+if(toggle2faBtn) toggle2faBtn.addEventListener('click', ()=>{
   const enabled = localStorage.getItem('2faEnabled') === 'true';
   if(!enabled){
     const secret = 'DBP-' + Math.random().toString(36).slice(2,10).toUpperCase();
-    localStorage.setItem('2faEnabled','true');
-    localStorage.setItem('2faSecret', secret);
-    twoFaSecret.innerText = secret;
+    localStorage.setItem('2faEnabled','true'); localStorage.setItem('2faSecret', secret);
+    if(twoFaSecret) twoFaSecret.innerText = secret;
     const qrSrc = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent('otpauth://totp/DreamBig?secret='+secret);
-    twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
-    twoFaArea.style.display = 'flex';
-    toggle2faBtn.innerText = 'Disconnect 2FA';
+    if(twoFaQRCode) twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
+    if(twoFaArea) twoFaArea.style.display = 'flex';
+    if(toggle2faBtn) toggle2faBtn.innerText = 'Disconnect 2FA';
     showToast('2FA connected (demo)');
   } else {
-    localStorage.removeItem('2faEnabled');
-    localStorage.removeItem('2faSecret');
-    twoFaArea.style.display = 'none';
-    toggle2faBtn.innerText = 'Connect 2FA';
+    localStorage.removeItem('2faEnabled'); localStorage.removeItem('2faSecret');
+    if(twoFaArea) twoFaArea.style.display = 'none';
+    if(toggle2faBtn) toggle2faBtn.innerText = 'Connect 2FA';
     showToast('2FA disconnected (demo)');
   }
 });
+if(copy2faSecret) copy2faSecret.addEventListener('click', ()=> { const s = localStorage.getItem('2faSecret'); if(s) copyText(s); else showToast('No secret'); });
 
-copy2faSecret && copy2faSecret.addEventListener('click', ()=>{
-  const s = localStorage.getItem('2faSecret');
-  if(s) copyText(s);
-  else showToast('No secret');
-});
+if(settingsCancel) settingsCancel.addEventListener('click', ()=> closeModal(settingsModal));
+if(settingsCloseX) settingsCloseX.addEventListener('click', ()=> closeModal(settingsModal));
 
-settingsCancel && settingsCancel.addEventListener('click', ()=> closeModal(settingsModal));
-settingsCloseX && settingsCloseX.addEventListener('click', ()=> closeModal(settingsModal));
-
-settingsSave && settingsSave.addEventListener('click', ()=>{
-  const nameVal = settingsName.value.trim();
-  const pwdVal = settingsPassword.value.trim();
-  const lang = langSelect.value;
-  const theme = themeSelect.value;
-
+if(settingsSave) settingsSave.addEventListener('click', ()=>{
+  const nameVal = settingsName ? settingsName.value.trim() : '';
+  const pwdVal = settingsPassword ? settingsPassword.value.trim() : '';
+  const lang = langSelect ? langSelect.value : 'en';
+  const theme = themeSelect ? themeSelect.value : 'light';
   if(pendingSettingsImage){
     safeSetProfileImage(pendingSettingsImage);
-    settingsPreview.innerHTML = 'No image';
+    if(settingsPreview) settingsPreview.innerHTML = 'No image';
     pendingSettingsImage = null;
     if(settingsImageFile) settingsImageFile.value = '';
   }
-
   let user = JSON.parse(localStorage.getItem('user') || '{}');
   if(nameVal){
     user.name = nameVal;
-    document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
-    document.getElementById('menuName').innerText = user.name;
+    if(getById('welcomeTitle')) getById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
+    if(getById('menuName')) getById('menuName').innerText = user.name;
     setInitialsFromName(user.name);
   }
-  if(pwdVal){
-    user.password = pwdVal;
-    showToast('Password saved (demo)');
-  }
+  if(pwdVal){ user.password = pwdVal; showToast('Password saved (demo)'); }
   localStorage.setItem('user', JSON.stringify(user));
   localStorage.setItem('lang', lang);
   applyTranslations();
@@ -967,80 +911,74 @@ settingsSave && settingsSave.addEventListener('click', ()=>{
   closeModal(settingsModal);
 });
 
-/* ---------- Copy buttons ---------- */
-copyButtons.forEach(btn => btn.addEventListener('click', (e)=> {
+/* ---------- Copy btns ---------- */
+document.querySelectorAll('.copy-btn').forEach(btn=> btn.addEventListener('click', (e)=> {
   const key = e.currentTarget.getAttribute('data-copy');
-  if(key === 'bankAcct') copyText(document.getElementById('bankAcct').innerText.trim());
-  if(key === 'walletAddr') copyText(document.getElementById('walletAddr').innerText.trim());
+  if(key === 'bankAcct') copyText(getById('bankAcct').innerText.trim());
+  if(key === 'walletAddr') copyText(getById('walletAddr').innerText.trim());
 }));
 
 /* ---------- QR ---------- */
-document.getElementById('showQR') && document.getElementById('showQR').addEventListener('click', ()=>{
-  const addr = document.getElementById('walletAddr').innerText.trim();
-  const src = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(addr);
-  qrImage.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover">';
-  closeModal(contributeModal); openModal(qrModal);
-});
-qrClose && qrClose.addEventListener('click', ()=> closeModal(qrModal));
-qrCloseX && qrCloseX.addEventListener('click', ()=> closeModal(qrModal));
+if(getById('showQR')){
+  getById('showQR').addEventListener('click', ()=>{
+    const addr = getById('walletAddr').innerText.trim();
+    const src = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(addr);
+    if(qrImage) qrImage.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover">';
+    closeModal(contributeModal); openModal(qrModal);
+  });
+}
+if(qrClose) qrClose.addEventListener('click', ()=> closeModal(qrModal));
+if(qrCloseX) qrCloseX.addEventListener('click', ()=> closeModal(qrModal));
 
-/* ---------- Payments & Projects controls ---------- */
-paymentsClose && paymentsClose.addEventListener('click', ()=> closeModal(paymentsModal));
-paymentsCloseX && paymentsCloseX.addEventListener('click', ()=> closeModal(paymentsModal));
-projectsClose && projectsClose.addEventListener('click', ()=> closeModal(projectsModal));
-document.getElementById('projectsCloseX') && document.getElementById('projectsCloseX').addEventListener('click', ()=> closeModal(projectsModal));
+/* ---------- Payments modal controls ---------- */
+if(paymentsClose) paymentsClose.addEventListener('click', ()=> closeModal(paymentsModal));
+if(paymentsCloseX) paymentsCloseX.addEventListener('click', ()=> closeModal(paymentsModal));
+
+/* ---------- Projects modal controls ---------- */
+if(projectsClose) projectsClose.addEventListener('click', ()=> closeModal(projectsModal));
+if(projectsCloseX) projectsCloseX.addEventListener('click', ()=> closeModal(projectsModal));
 
 /* ---------- Logout ---------- */
-btnNo && btnNo.addEventListener('click', ()=> closeModal(logoutModal));
-btnYes && btnYes.addEventListener('click', ()=> {
-  closeModal(logoutModal);
-  document.getElementById('appRoot').style.opacity = '0.25';
-  setTimeout(()=> location.href = 'login.html', 900);
-});
-document.getElementById('mLogout') && document.getElementById('mLogout').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
+if(btnNo) btnNo.addEventListener('click', ()=> closeModal(logoutModal));
+if(btnYes) btnYes.addEventListener('click', ()=> { closeModal(logoutModal); getById('appRoot').style.opacity = '0.25'; setTimeout(()=> location.href = 'login.html', 900); });
+if(getById('mLogout')) getById('mLogout').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
 
 /* ---------- Withdraw handler ---------- */
-mWithdraw && mWithdraw.addEventListener('click', ()=>{
-  closeMenu();
-  window.location.href = 'withdraw.html';
-});
+if(mWithdraw) mWithdraw.addEventListener('click', ()=> { closeMenu(); window.location.href = 'withdraw.html'; });
 
 /* ---------- Sharing ---------- */
-[shareHere].forEach(el => el.addEventListener('click', async ()=>{
-  const url = location.href;
-  const lang = getLang();
+if(shareHere) shareHere.addEventListener('click', async ()=>{
+  const url = location.href; const lang = getLang();
   const obj = { title: translations[lang].shareText, text: translations[lang].shareText, url };
-  if(navigator.share){ try{ await navigator.share(obj); } catch(e){} } else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); } else alert('Copy: '+url);
-}));
+  if(navigator.share){ try{ await navigator.share(obj); } catch(e){} } else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); } else showToast('Copy: '+url);
+});
 
 /* ---------- Menu item actions ---------- */
-document.getElementById('mSettings') && document.getElementById('mSettings').addEventListener('click', ()=> { closeMenu(); openSettings(); });
-document.getElementById('mViewProjects') && document.getElementById('mViewProjects').addEventListener('click', ()=> { closeMenu(); renderProjects(); openModal(projectsModal); });
-document.getElementById('mHelp') && document.getElementById('mHelp').addEventListener('click', ()=> { closeMenu(); alert('Help & support (demo)'); });
+if(getById('mSettings')) getById('mSettings').addEventListener('click', ()=> { closeMenu(); openSettings(); });
+if(getById('mViewProjects')) getById('mViewProjects').addEventListener('click', ()=> { closeMenu(); renderProjects(); openModal(projectsModal); });
+if(getById('mHelp')) getById('mHelp').addEventListener('click', ()=> { closeMenu(); alert('Help & support (demo)'); });
 
-/* ---------- Settings open/close helper ---------- */
+/* ---------- Settings open helper ---------- */
 function openSettings(){
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  settingsName.value = user.name || '';
-  settingsPassword.value = '';
+  if(settingsName) settingsName.value = user.name || '';
+  if(settingsPassword) settingsPassword.value = '';
   const img = localStorage.getItem('profileImage');
-  if(img) settingsPreview.innerHTML = '<img src="'+img+'" style="width:100%;height:100%;object-fit:cover">';
-  else settingsPreview.innerHTML = 'No image';
+  if(img && settingsPreview) settingsPreview.innerHTML = '<img src="'+img+'" style="width:100%;height:100%;object-fit:cover">';
+  else if(settingsPreview) settingsPreview.innerHTML = 'No image';
   const lang = localStorage.getItem('lang') || 'en';
-  langSelect.value = lang;
+  if(langSelect) langSelect.value = lang;
   const theme = localStorage.getItem('theme') || 'light';
-  themeSelect.value = theme;
+  if(themeSelect) themeSelect.value = theme;
   const twofa = localStorage.getItem('2faEnabled') === 'true';
-  toggle2faBtn.innerText = twofa ? 'Disconnect 2FA' : 'Connect 2FA';
+  if(toggle2faBtn) toggle2faBtn.innerText = twofa ? 'Disconnect 2FA' : 'Connect 2FA';
   if(twofa){
     const secret = localStorage.getItem('2faSecret') || '';
-    twoFaSecret.innerText = secret;
+    if(twoFaSecret) twoFaSecret.innerText = secret;
     const qrSrc = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent('otpauth://totp/DreamBig?secret='+secret);
-    twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
-    twoFaArea.style.display = 'flex';
-  } else {
-    twoFaArea.style.display = 'none';
-  }
+    if(twoFaQRCode) twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
+    if(twoFaArea) twoFaArea.style.display = 'flex';
+  } else if(twoFaArea) twoFaArea.style.display = 'none';
   openModal(settingsModal);
 }
 
@@ -1048,94 +986,108 @@ function openSettings(){
 function getLang(){ return localStorage.getItem('lang') || 'en'; }
 function applyTranslations(){
   const lang = getLang();
-  document.getElementById('dashboardTitle').innerText = translations[lang].dashboard;
-  document.getElementById('kpiActiveLabel').innerText = translations[lang].activeProjects;
-  document.getElementById('kpiContributionLabel').innerText = translations[lang].totalContribution;
-  document.getElementById('kpiReferralsLabel').innerText = translations[lang].referrals;
-  document.getElementById('referralHint').innerText = translations[lang].referralsHint;
-  document.getElementById('contribLabel').innerText = translations[lang].contribution;
-  document.getElementById('welcomeTitle').innerText = translations[lang].welcome + (JSON.parse(localStorage.getItem('user')||'{}').name || 'Member');
-  document.getElementById('referralsTitle').innerText = translations[lang].referralsTitle;
+  if(getById('dashboardTitle')) getById('dashboardTitle').innerText = translations[lang].dashboard;
+  if(getById('kpiActiveLabel')) getById('kpiActiveLabel').innerText = translations[lang].activeProjects;
+  if(getById('kpiContributionLabel')) getById('kpiContributionLabel').innerText = translations[lang].totalContribution;
+  if(getById('kpiReferralsLabel')) getById('kpiReferralsLabel').innerText = translations[lang].referrals;
+  if(getById('referralHint')) getById('referralHint').innerText = translations[lang].referralsHint;
+  if(getById('contribLabel')) getById('contribLabel').innerText = translations[lang].contribution;
+  if(getById('welcomeTitle')) getById('welcomeTitle').innerText = translations[lang].welcome + (JSON.parse(localStorage.getItem('user')||'{}').name || 'Member');
+  if(getById('referralsTitle')) getById('referralsTitle').innerText = translations[lang].referralsTitle;
 }
 function applyTheme(){
   const theme = localStorage.getItem('theme') || 'light';
-  if(theme === 'navy'){
-    document.documentElement.classList.add('theme-navy');
-  } else {
-    document.documentElement.classList.remove('theme-navy');
-  }
+  if(theme === 'navy') document.documentElement.classList.add('theme-navy');
+  else document.documentElement.classList.remove('theme-navy');
 }
 
 /* ---------- Menu header view/hide ---------- */
-menuViewToggle && menuViewToggle.addEventListener('click', ()=>{
+if(menuViewToggle) menuViewToggle.addEventListener('click', ()=>{
   const hidden = menuName.style.visibility === 'hidden';
-  if(hidden){
-    menuName.style.visibility = 'visible';
-    menuViewToggle.innerText = 'Hide';
-  } else {
-    menuName.style.visibility = 'hidden';
-    menuViewToggle.innerText = 'View';
-  }
+  if(hidden){ menuName.style.visibility = 'visible'; menuViewToggle.innerText = 'Hide'; } else { menuName.style.visibility = 'hidden'; menuViewToggle.innerText = 'View'; }
 });
 
 /* ---------- Init UI state ---------- */
 function updateReferralsUI(){
   const refs = parseInt(localStorage.getItem('referrals')||'0',10);
-  document.getElementById('refersNum').innerText = refs;
+  if(getById('refersNum')) getById('refersNum').innerText = refs;
 }
 function init(){
-  const meta = document.getElementById('metaDate');
-  if(!meta.innerText) { const d=new Date(); meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear(); }
-
+  const meta = getById('metaDate');
+  if(meta && !meta.innerText) { const d=new Date(); meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear(); }
   const savedImg = localStorage.getItem('profileImage');
-  if(savedImg){ if(profileImg){ profileImg.src = savedImg; profileImg.style.display='block'; } if(profileInitials) profileInitials.style.display='none'; dbLogo.innerHTML = '<img src="'+savedImg+'">'; menuThumb.innerHTML = '<img src="'+savedImg+'" style="width:100%;height:100%;object-fit:cover">'; }
-
+  if(savedImg){
+    if(profileImg){ profileImg.src = savedImg; profileImg.style.display='block'; }
+    if(profileInitials) profileInitials.style.display='none';
+    if(dbLogo) dbLogo.innerHTML = '<img src="'+savedImg+'">';
+    if(menuThumb) menuThumb.innerHTML = '<img src="'+savedImg+'" style="width:100%;height:100%;object-fit:cover">';
+  }
   const pkg = JSON.parse(localStorage.getItem('selectedPackage') || 'null');
   if(pkg){
-    projectName.innerText = pkg.name + ' Package';
-    projectMeta.innerText = pkg.name + ' • Package selected';
-    packageAmount.innerText = '(' + pkg.name + ' Contribution)';
-    dreamFunding.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding);
-    progressTarget.innerText = 'Target: $' + numberWithCommas(pkg.funding);
+    if(projectName) projectName.innerText = pkg.name + ' Package';
+    if(projectMeta) projectMeta.innerText = pkg.name + ' • Package selected';
+    if(packageAmount) packageAmount.innerText = '(' + pkg.name + ' Contribution)';
+    if(dreamFunding) dreamFunding.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding);
+    if(progressTarget) progressTarget.innerText = 'Target: $' + numberWithCommas(pkg.funding);
     const savedPct = Number(localStorage.getItem('progressPercent') || '0');
     updateProgress(savedPct);
   } else {
     updateProgress(0);
   }
-
-  refreshPaymentsNav();
-  renderProjects();
-  updateReferralsUI();
-  applyTranslations();
-  applyTheme();
-
-  // NOTE: typed banner removed as requested — no initTypedBanner call.
+  refreshPaymentsNav(); renderProjects(); updateReferralsUI(); applyTranslations(); applyTheme();
+  initTypedBanner(); // start typed banner (3s delay inside)
 }
 init();
 
-/* ---------- extras ---------- */
-document.getElementById('contribClose')?.addEventListener('click', ()=> closeModal(contributeModal));
-
+/* ---------- copy actions ---------- */
 document.querySelectorAll('.copy-btn').forEach(btn=>{
   btn.addEventListener('click', e=>{
     const key = btn.getAttribute('data-copy');
-    if(key === 'bankAcct') copyText(document.getElementById('bankAcct').innerText.trim());
-    if(key === 'walletAddr') copyText(document.getElementById('walletAddr').innerText.trim());
+    if(key === 'bankAcct') copyText(getById('bankAcct').innerText.trim());
+    if(key === 'walletAddr') copyText(getById('walletAddr').innerText.trim());
   });
 });
 
-/* payments nav init */
-refreshPaymentsNav();
-
-/* menu close on ESC */
+/* ---------- menu close on ESC ---------- */
 document.addEventListener('keyup', (e)=> { if(e.key === 'Escape') { closeMenu(); closeModal(settingsModal); closeModal(editProfileModal); closeModal(contributeModal); } });
 
-/* profile menu quick bindings (safe check) */
-document.getElementById('profileLogoutBtn') && document.getElementById('profileLogoutBtn').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
+/* ---------- profile menu quick bindings ---------- */
+if(getById('profileLogoutBtn')) getById('profileLogoutBtn').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
 
-/* expose openSettings for debug/demo */
+/* ---------- expose openSettings for debug/demo ---------- */
 window.openSettings = openSettings;
 
+/* ---------- TYPED BANNER LOGIC (single run, starts 3s after page load) ---------- */
+function initTypedBanner(){
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const typedSmall = getById('typedSmall');
+  const typedMain = getById('typedMain');
+  const bannerCaret = getById('bannerCaret');
+  if(!typedMain) return;
+  const mainText = 'MAKE IT HAPPEN . SHOCK THE WORLD';
+  const typeSpeed = 60;
+  if(prefersReduced){
+    if(typedSmall) typedSmall.textContent = '';
+    typedMain.textContent = mainText;
+    if(bannerCaret) bannerCaret.style.display = 'none';
+    return;
+  }
+  if(typedSmall) typedSmall.textContent = '';
+  // start typing once after 3 seconds
+  setTimeout(() => {
+    let i = 0;
+    if(bannerCaret) bannerCaret.style.display = 'inline-block';
+    typedMain.textContent = '';
+    const t = setInterval(() => {
+      typedMain.textContent += mainText.charAt(i);
+      i++;
+      if(i >= mainText.length){
+        clearInterval(t);
+        if(bannerCaret) setTimeout(()=> bannerCaret.style.display = 'none', 500);
+      }
+    }, typeSpeed);
+  }, 3000);
+}
 </script>
 </body>
 </html>
