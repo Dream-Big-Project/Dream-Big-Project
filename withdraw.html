@@ -13,6 +13,7 @@
     --accent:#f6c44b;
     --accent-contrast:#071735;
     --glass: rgba(255,255,255,0.03);
+    --danger: #ff5b5b;
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color: #eaf6ff;
   }
@@ -38,16 +39,53 @@
   .muted-box{ background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; color:var(--muted); font-size:14px; }
   .center{ text-align:center; }
 
-  /* full-screen processing overlay */
-  .overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:120; background: rgba(2,6,20,0.6); }
-  .overlay .modal{ width:90%; max-width:560px; text-align:center; background:var(--card); padding:22px; border-radius:12px; color:var(--text); }
-  .overlay .modal h3{ margin:0 0 8px 0; color:var(--accent); }
-  .note{ font-size:14px; color:var(--muted); margin-top:6px; }
+  /* non-blocking submission modal (small card) */
+  .submission-toast {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    min-width:260px;
+    max-width:420px;
+    z-index:140;
+    display:none;
+    pointer-events:auto;
+  }
+  .submission-toast .card {
+    padding:12px;
+    border-radius:10px;
+  }
 
-  .hidden{ display:none; }
+  /* toast for messages */
+  .toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    bottom: 22px;
+    z-index:160;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-weight:800;
+    color: #fff;
+    display: inline-block;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 300ms cubic-bezier(.2,.9,.2,1), opacity 300ms;
+  }
+  .toast.show { opacity:1; transform: translateX(-50%) translateY(0); pointer-events:auto; }
+  .toast.hide { opacity:0; transform: translateX(-50%) translateY(12px); pointer-events:none; }
+
+  .toast.info { background: rgba(0,0,0,0.8); }
+  .toast.error { background: linear-gradient(180deg, var(--danger), #d94343); }
+
+  /* pending preview element under left card (distinct look) */
+  .pending-preview { background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; color:var(--muted); font-size:14px; margin-top:12px; }
+
+  /* subtle disabled style for specific controls */
+  .control-disabled { opacity:0.55; pointer-events:none; }
 
   @media(max-width:980px){
     .wrap{ grid-template-columns: 1fr; padding:14px; gap:14px; }
+    .submission-toast{ right: 12px; left: 12px; transform:none; }
   }
 
 </style>
@@ -122,31 +160,40 @@
         <div id="savedAccountPreview" class="muted-box hidden"></div>
       </div>
 
-      <!-- hidden helper for dev/testing (simulate admin approval) -->
-      <div style="margin-top:16px;font-size:12px;color:transparent" id="devTools"><button id="simulateApprove" class="btn ghost">Simulate admin approve (dev)</button></div>
+      <!-- dev helpers visible for demo -->
+      <div style="margin-top:16px;font-size:12px;color:var(--muted)" id="devTools">
+        <button id="simulateApprove" class="btn ghost">Simulate admin approve (dev)</button>
+        <button id="simulateReceive" class="btn ghost">Simulate received (dev)</button>
+      </div>
     </div>
   </div>
 
-  <!-- overlay modal: processing message -->
-  <div class="overlay" id="overlay">
-    <div class="modal">
-      <h3>Withdrawal submitted</h3>
-      <p class="note" id="overlayNote">Your withdrawal is being processed and usually takes within 72 hours to be credited.</p>
-      <p class="muted" style="margin-top:18px">You will be returned to the dashboard shortly...</p>
+  <!-- non-blocking submission toast (small confirmation card) -->
+  <div class="submission-toast" id="submissionToast" aria-hidden="true">
+    <div class="card" id="submissionCard" style="background:var(--card); color:var(--muted);">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:800; color:var(--accent)">Withdrawal submitted</div>
+          <div id="submissionNote" style="font-size:13px; margin-top:6px">Your withdrawal is being processed and usually takes up to 72 hours.</div>
+        </div>
+        <div style="margin-left:12px;">
+          <div class="status-pill" style="background: rgba(255,255,255,0.03); color:var(--muted);">Pending</div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- toast placeholder -->
+  <div id="toastContainer" aria-live="polite"></div>
 
 <script>
 (function(){
-  // initial data keys in localStorage:
-  // - balance (number, cents allowed; stored as float USD)
-  // - withdrawRequest (object or null)
-  // - accountInfo (object)
+  // localStorage keys
   const balanceKey = 'balance';
   const requestKey = 'withdrawRequest';
   const accountKey = 'withdrawAccount';
 
-  // Elements
+  // elements
   const balanceDisplay = document.getElementById('balanceDisplay');
   const amountInput = document.getElementById('amount');
   const requestBtn = document.getElementById('requestBtn');
@@ -161,18 +208,19 @@
   const bankProof = document.getElementById('bankProof');
   const trcAddress = document.getElementById('trcAddress');
   const savedAccountPreview = document.getElementById('savedAccountPreview');
-  const overlay = document.getElementById('overlay');
   const reqStatusPill = document.getElementById('reqStatusPill');
-  const devTools = document.getElementById('devTools');
+  const submissionToast = document.getElementById('submissionToast');
+  const submissionNote = document.getElementById('submissionNote');
+  const toastContainer = document.getElementById('toastContainer');
+  const pendingPreviewId = 'pendingPreview';
   const simulateApprove = document.getElementById('simulateApprove');
-  const leftCard = document.getElementById('leftCard');
-  const rightCard = document.getElementById('rightCard');
+  const simulateReceive = document.getElementById('simulateReceive');
 
-  // helpers
+  /* ====== Helpers: localStorage management ====== */
   function getBalance(){
     const raw = localStorage.getItem(balanceKey);
-    if(raw === null) {
-      localStorage.setItem(balanceKey, '2400'); // default demo balance
+    if(raw === null || raw === undefined) {
+      localStorage.setItem(balanceKey, '2400'); // demo default balance
       return 2400;
     }
     const n = parseFloat(raw);
@@ -184,10 +232,9 @@
   }
   function renderBalance(){
     const b = getBalance();
-    balanceDisplay.innerText = '$' + Number(b).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits:2});
+    balanceDisplay.innerText = '$' + Number(b).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
   }
 
-  // load saved account
   function getAccount(){
     const raw = localStorage.getItem(accountKey);
     if(!raw) return null;
@@ -213,54 +260,109 @@
     savedAccountPreview.innerHTML = html;
   }
 
-  // escape small helper
   function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  // withdraw request
-  function getRequest(){ try{ return JSON.parse(localStorage.getItem(requestKey) || 'null'); } catch(e){ return null; } }
-  function saveRequest(req){ localStorage.setItem(requestKey, JSON.stringify(req)); }
+  function getRequest(){
+    try{ return JSON.parse(localStorage.getItem(requestKey) || 'null'); } catch(e){ return null; }
+  }
+  function saveRequest(req){ localStorage.setItem(requestKey, JSON.stringify(req)); renderRequestState(); }
   function clearRequest(){ localStorage.removeItem(requestKey); renderRequestState(); }
 
-  // render pending/request state
-  function renderRequestState(){
-    const req = getRequest();
-    if(req && req.status === 'processing'){
-      // show status, disable form
+  /* ====== Toasts & messages ====== */
+  function showInfo(text, ms = 1400){
+    showToast(text, 'info', ms);
+  }
+  function showError(text, ms = 3700){
+    showToast(text, 'error', ms);
+  }
+  function showToast(text, type='info', ms=1400){
+    const el = document.createElement('div');
+    el.className = 'toast ' + (type === 'error' ? 'error' : 'info');
+    el.innerText = text;
+    toastContainer.appendChild(el);
+
+    // force reflow to enable transition
+    requestAnimationFrame(() => {
+      el.classList.add('show');
+    });
+
+    // hide after ms
+    setTimeout(() => {
+      el.classList.remove('show');
+      el.classList.add('hide');
+      setTimeout(() => { el.remove(); }, 360);
+    }, ms);
+  }
+
+  /* ====== Pending UI state toggles ====== */
+  function setPendingControls(enabled){
+    // enabled = true -> pending active (disable withdraw controls)
+    if(enabled){
+      // show pill and disable amount+request buttons
       reqStatusPill.style.display = 'inline-block';
       reqStatusPill.innerText = 'Processing';
-      // disable inputs/buttons
-      leftCard.classList.add('disabled');
-      rightCard.classList.add('disabled');
+      amountInput.classList.add('control-disabled');
+      requestBtn.classList.add('control-disabled');
+      requestAllBtn.classList.add('control-disabled');
       amountInput.value = '';
-      // show details below balance
-      const preview = document.createElement('div');
-      preview.className = 'muted-box';
-      preview.style.marginTop = '12px';
-      preview.innerHTML = '<div style="font-weight:800">Pending withdrawal</div>'
-        + '<div style="margin-top:8px">Amount: $' + Number(req.amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</div>'
-        + '<div style="margin-top:6px">Requested: ' + (new Date(req.date)).toLocaleString() + '</div>';
-      // remove any previous preview area, then append
-      const existing = document.getElementById('pendingPreview');
-      if(existing) existing.remove();
-      preview.id = 'pendingPreview';
-      leftCard.appendChild(preview);
     } else {
       reqStatusPill.style.display = 'none';
-      leftCard.classList.remove('disabled');
-      rightCard.classList.remove('disabled');
-      const existing = document.getElementById('pendingPreview');
-      if(existing) existing.remove();
+      amountInput.classList.remove('control-disabled');
+      requestBtn.classList.remove('control-disabled');
+      requestAllBtn.classList.remove('control-disabled');
     }
   }
 
-  // UI wiring
+  function renderRequestState(){
+    const req = getRequest();
+    // remove any old preview
+    const existing = document.getElementById(pendingPreviewId);
+    if(existing) existing.remove();
+
+    if(req && req.status === 'processing'){
+      // show persistent pending preview under left card
+      setPendingControls(true);
+      const preview = document.createElement('div');
+      preview.className = 'pending-preview';
+      preview.id = pendingPreviewId;
+      preview.innerHTML = '<div style="font-weight:800">Pending withdrawal</div>'
+        + '<div style="margin-top:8px">Amount: $' + Number(req.amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</div>'
+        + '<div style="margin-top:6px">Requested: ' + (new Date(req.date)).toLocaleString() + '</div>';
+      document.getElementById('leftCard').appendChild(preview);
+
+      // show non-blocking small submission toast
+      submissionToast.style.display = 'block';
+      submissionToast.setAttribute('aria-hidden','false');
+      submissionNote.innerText = 'Your withdrawal is being processed and usually takes up to 72 hours.';
+    } else if(req && req.status === 'approved'){
+      // approved but not yet received: still block new withdraw until received
+      setPendingControls(true);
+      const preview = document.createElement('div');
+      preview.className = 'pending-preview';
+      preview.id = pendingPreviewId;
+      preview.innerHTML = '<div style="font-weight:800">Withdrawal approved (awaiting receipt)</div>'
+        + '<div style="margin-top:8px">Amount: $' + Number(req.amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</div>'
+        + '<div style="margin-top:6px">Approved: ' + (req.approvedAt ? new Date(req.approvedAt).toLocaleString() : '—') + '</div>';
+      document.getElementById('leftCard').appendChild(preview);
+
+      submissionToast.style.display = 'block';
+      submissionToast.setAttribute('aria-hidden','false');
+      submissionNote.innerText = 'Your withdrawal was approved. Awaiting final receipt.';
+    } else {
+      // no pending or completed
+      setPendingControls(false);
+      submissionToast.style.display = 'none';
+      submissionToast.setAttribute('aria-hidden','true');
+    }
+  }
+
+  /* ====== UI wiring ====== */
   methodSelect.addEventListener('change', ()=>{
     const m = methodSelect.value;
     if(m === 'bank'){ bankFields.classList.remove('hidden'); trcFields.classList.add('hidden'); }
     else { bankFields.classList.add('hidden'); trcFields.classList.remove('hidden'); }
   });
 
-  // load stored account info to inputs
   (function initAccountInputs(){
     const acc = getAccount();
     if(!acc) return;
@@ -276,64 +378,61 @@
     renderSavedAccount();
   })();
 
-  // save account details (file is optional)
   saveAccountBtn.addEventListener('click', ()=>{
     const method = methodSelect.value;
     if(method === 'bank'){
       const bn = bankName.value.trim();
       const an = acctName.value.trim();
       const num = acctNumber.value.trim();
-      if(!bn || !an || !num) return alert('Please fill bank name, account name and account number.');
-      // optionally read file name only (not uploading to server)
+      if(!bn || !an || !num) { showError('Please fill bank name, account name and account number.'); return; }
       const proofFile = bankProof.files[0];
       const obj = { method: 'bank', bankName: bn, acctName: an, acctNumber: num };
-      if(proofFile) {
-        // for demo store file name only; if you want file content, read as DataURL
-        obj.proofName = proofFile.name;
-        // optionally store content (commented out to avoid large localStorage):
-        /* const r = new FileReader();
-           r.onload = e => { obj.proofData = e.target.result; saveAccount(obj); ... } */
-      }
+      if(proofFile) obj.proofName = proofFile.name;
       saveAccount(obj);
-      showMessage('Account saved.');
+      showInfo('Account saved.');
     } else {
       const addr = trcAddress.value.trim();
-      if(!addr) return alert('Please paste your TRC20 address.');
+      if(!addr) { showError('Please paste your TRC20 address.'); return; }
       saveAccount({ method: 'trc20', trcAddress: addr });
-      showMessage('TRC20 address saved.');
+      showInfo('TRC20 address saved.');
     }
   });
 
-  // request all balance
   requestAllBtn.addEventListener('click', (e)=>{
     e.preventDefault();
     const b = getBalance();
-    if(b <= 0) return alert('No available balance to withdraw.');
+    if(b <= 0) { showError('No available balance to withdraw.'); return; }
     amountInput.value = Number(b).toFixed(2);
   });
 
-  // main request action
   requestBtn.addEventListener('click', (e)=>{
     e.preventDefault();
-    // check there is no pending request
+
     const existing = getRequest();
-    if(existing && existing.status === 'processing') {
-      // already pending — just notify and do nothing
-      return showMessage('You already have a pending withdrawal. It will be processed by admin.');
+    if(existing && (existing.status === 'processing' || existing.status === 'approved')) {
+      // cannot place another request while existing pending/approved
+      showInfo('You already have a pending withdrawal. You cannot create another until this one completes.');
+      return;
     }
 
     const amount = parseFloat(amountInput.value);
-    if(isNaN(amount) || amount <= 0) return alert('Enter a valid amount.');
-    const balance = getBalance();
-    if(amount > balance) return alert('Amount exceeds available balance.');
+    if(isNaN(amount) || amount <= 0){ showError('Enter a valid amount.'); return; }
 
-    // account check
-    const acc = getAccount();
-    if(!acc) {
-      if(!confirm('No account saved. You should save account details so admin knows where to send funds. Continue anyway?')) return;
+    const balance = getBalance();
+    if(amount > balance){
+      // SPECIFIC: insufficient balance - red fade in (bottom->up), stays 3.7s then fade out
+      showError('Insufficient balance');
+      return;
     }
 
-    // create request object
+    // account presence check (non-blocking)
+    const acc = getAccount();
+    if(!acc) {
+      // allow continue but warn
+      if(!confirm('No account saved. Admin may not know where to send funds. Continue anyway?')) return;
+    }
+
+    // create request and save
     const req = {
       id: 'WD-' + Date.now(),
       amount: Number(amount),
@@ -343,61 +442,53 @@
       note: 'User requested withdrawal'
     };
 
-    // save & subtract balance (pending)
+    // subtract balance immediately (pending)
     saveRequest(req);
     setBalance(Math.max(0, (balance - amount)));
 
-    // show overlay message for 10s then go back to dashboard
-    overlay.style.display = 'flex';
+    // show a quick non-blocking message + persistent pending preview
+    showInfo('Withdrawal submitted. Processing by admin...');
     renderRequestState();
-
-    setTimeout(()=> {
-      overlay.style.display = 'none';
-      // redirect back
-      window.location.href = 'dashboard.html';
-    }, 10000); // 10 seconds
   });
 
-  // small helper to show a small transient toast/message (just inside this page)
-  function showMessage(text){
-    const el = document.createElement('div');
-    el.style.position = 'fixed';
-    el.style.left = '50%';
-    el.style.transform = 'translateX(-50%)';
-    el.style.bottom = '22px';
-    el.style.padding = '10px 14px';
-    el.style.borderRadius = '10px';
-    el.style.background = 'rgba(0,0,0,0.8)';
-    el.style.color = '#fff';
-    el.style.zIndex = '140';
-    el.style.fontWeight = '800';
-    el.innerText = text;
-    document.body.appendChild(el);
-    setTimeout(()=> { el.style.transition = 'opacity 300ms'; el.style.opacity = '0'; setTimeout(()=> el.remove(),300); }, 1400);
-  }
-
-  // dev simulate approval: marks request approved and shows message (for demo only)
+  // dev buttons to simulate admin flows
   simulateApprove?.addEventListener('click', ()=>{
     const req = getRequest();
-    if(!req) return alert('No request to approve.');
+    if(!req) { showInfo('No request to approve.'); return; }
     req.status = 'approved';
     req.approvedAt = new Date().toISOString();
     saveRequest(req);
-    showMessage('Request approved (demo).');
-    // in a real system you'd update DB and transfer funds
+    showInfo('Request marked approved (demo).');
+    renderRequestState();
   });
 
-  // when page loads, ensure UI shows balance and pending state
+  simulateReceive?.addEventListener('click', ()=>{
+    const req = getRequest();
+    if(!req) { showInfo('No request to complete.'); return; }
+    // mark as received/completed and clear request (for demo)
+    req.status = 'received';
+    req.receivedAt = new Date().toISOString();
+    // Here you might perform finalization: funds moved, record kept, etc.
+    // We'll remove the request and show final success message.
+    clearRequest();
+    showInfo('Withdrawal received. You can make a new request.');
+    // in a real system you might also persist history instead of just clearing
+  });
+
+  // initial render
   renderBalance();
   renderSavedAccount();
   renderRequestState();
 
-  // OPTIONAL: if the request exists and is processing, keep it persistent on dashboard too.
-  // (dashboard.html that you already have checks localStorage.payments/paymentsNav but not withdrawRequest —
-  //  you can add a similar "Withdraws" area there that reads withdrawRequest)
+  // Accessibility: pressing Enter on amount triggers request
+  amountInput.addEventListener('keydown', (ev) => {
+    if(ev.key === 'Enter') {
+      ev.preventDefault();
+      requestBtn.click();
+    }
+  });
+
 })();
 </script>
 </body>
-
 </html>
-
