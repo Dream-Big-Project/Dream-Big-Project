@@ -46,8 +46,8 @@
   .menu-panel.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
   .menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;color:var(--muted);background:transparent;border:none;width:100%;text-align:left;font-weight:700;font-size:15px}
   .menu-item:hover{background:rgba(0,0,0,0.02);color:var(--text)}
-  .menu-item .hint{font-size:12px;color:var(--muted);font-weight:600}
-  .profile{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#eaf6ff,#cfefff);display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer;overflow:hidden;position:relative}
+  /* profile circle kept in DOM for safety but hidden visually */
+  .profile{display:none}
   .profile img{width:100%;height:100%;object-fit:cover;border-radius:50%}
   .profile-initials{font-weight:800;color:var(--muted)}
   main{flex:1;overflow:auto;padding-bottom:110px}
@@ -72,7 +72,7 @@
   .modal{background:var(--card);padding:18px;border-radius:12px;min-width:280px;box-shadow:0 8px 30px rgba(0,0,0,0.08);position:relative;color:var(--text)}
   .modal h3{margin:0 0 6px 0;color:var(--text)}
   .modal p{color:var(--muted);margin:0 0 12px 0}
-  .modal .actions{display:flex;gap:8px;justify-content:flex-end}
+  .modal .actions{Display:flex;gap:8px;justify-content:flex-end}
   .close-x{position:absolute;right:12px;top:10px;background:transparent;border:none;color:var(--danger);font-weight:900;font-size:20px;border-radius:6px;padding:6px}
   .proof-area{margin-top:12px;background:rgba(0,0,0,0.02);padding:12px;border-radius:10px}
   .file-preview{margin-top:8px;background:rgba(0,0,0,0.02);padding:8px;border-radius:8px}
@@ -117,7 +117,7 @@
       <div style="display:flex;align-items:center;gap:10px">
         <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
 
-        <!-- profile circle with img element (keeps handlers safe) -->
+        <!-- profile circle kept in DOM but hidden via CSS -->
         <div class="profile" id="profileCircle" title="Profile">
           <img id="profileImg" alt="Profile" style="display:none">
           <span id="profileInitials" class="profile-initials">PD</span>
@@ -168,6 +168,7 @@
 
         <!-- NEW: Typed banner placed directly under welcome -->
         <div id="typedBanner" class="typed-banner" aria-live="polite" aria-atomic="true">
+          <span class="small-word" id="typedSmall" aria-hidden="true"></span>
           <span class="main-line" id="typedMain" aria-hidden="true"></span>
           <span class="banner-caret" id="bannerCaret" aria-hidden="true" style="display:none"></span>
         </div>
@@ -609,20 +610,22 @@ menuBtn.addEventListener('click',(e)=>{ e.stopPropagation(); menuPanel.classList
 overlayDim.addEventListener('click', ()=> closeMenu());
 
 /* ---------- Profile menu ---------- */
-profileCircle.addEventListener('click',(e)=>{
-  e.stopPropagation();
-  const open = profileMenu.style.display === 'block';
-  profileMenu.style.display = open ? 'none' : 'block';
-  profileMenu.setAttribute('aria-hidden', open ? 'true' : 'false');
-});
+if (profileCircle) {
+  profileCircle.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const open = profileMenu.style.display === 'block';
+    profileMenu.style.display = open ? 'none' : 'block';
+    profileMenu.setAttribute('aria-hidden', open ? 'true' : 'false');
+  });
+}
 document.addEventListener('click',(e)=>{
-  if(profileMenu.style.display === 'block' && !profileCircle.contains(e.target)){
+  if(profileMenu.style.display === 'block' && profileCircle && !profileCircle.contains(e.target)){
     profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true');
   }
 });
-viewProfileBtn.addEventListener('click', ()=>{ profileMenu.style.display='none'; alert('Profile view (demo)'); });
-editProfileBtn.addEventListener('click', ()=>{ profileMenu.style.display='none'; openModal(editProfileModal); });
-profileLogoutBtn.addEventListener('click', ()=>{ profileMenu.style.display='none'; openModal(logoutModal); });
+if(viewProfileBtn) viewProfileBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; alert('Profile view (demo)'); });
+if(editProfileBtn) editProfileBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; openModal(editProfileModal); });
+if(profileLogoutBtn) profileLogoutBtn.addEventListener('click', ()=>{ if(profileMenu) profileMenu.style.display='none'; openModal(logoutModal); });
 
 /* ---------- Init user & profile image ---------- */
 function safeSetProfileImage(dataUrl){
@@ -669,42 +672,40 @@ loadUser();
 let preferredMethod = localStorage.getItem('preferredContribution') || 'bank';
 function showBank(){ bankBlock.style.display='block'; usdtBlock.style.display='none'; preferredMethod='bank'; localStorage.setItem('preferredContribution','bank'); document.getElementById('contribHint').innerText='Bank Deposit'; }
 function showUSDT(){ bankBlock.style.display='none'; usdtBlock.style.display='block'; preferredMethod='usdt'; localStorage.setItem('preferredContribution','usdt'); document.getElementById('contribHint').innerText='USDT (TRC20)'; }
-methodBankBtn.addEventListener('click', showBank);
-methodUSDTBtn.addEventListener('click', showUSDT);
+if (methodBankBtn) methodBankBtn.addEventListener('click', showBank);
+if (methodUSDTBtn) methodUSDTBtn.addEventListener('click', showUSDT);
 
-mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); const pref = localStorage.getItem('preferredContribution') || 'bank'; if(pref==='usdt') showUSDT(); else showBank(); });
+if (mContribute) mContribute.addEventListener('click', ()=>{ closeMenu(); openModal(contributeModal); const pref = localStorage.getItem('preferredContribution') || 'bank'; if(pref==='usdt') showUSDT(); else showBank(); });
 
-contribClose.addEventListener('click', ()=> closeModal(contributeModal));
-contribCloseX.addEventListener('click', ()=> closeModal(contributeModal));
+if (contribClose) contribClose.addEventListener('click', ()=> closeModal(contributeModal));
+if (contribCloseX) contribCloseX.addEventListener('click', ()=> closeModal(contributeModal));
 
 /* helper to update progress bar with color ranges */
 function updateProgress(percent){
   const p = Math.max(0, Math.min(100, Math.round(percent)));
-  progressFill.style.width = p + '%';
-  progressPct.innerText = p + '%';
+  if (progressFill) progressFill.style.width = p + '%';
+  if (progressPct) progressPct.innerText = p + '%';
 
   // color ranges: 0-40 red, 41-60 yellow, 61-100 green
   let color = '#e14b4b'; // default red
   if(p <= 40) color = '#e14b4b';
   else if(p <= 60) color = '#f6c44b';
   else color = '#34d399';
-  progressFill.style.background = color;
-
-  // update text color on small devices if needed
+  if (progressFill) progressFill.style.background = color;
 }
 
 /* package selection: numeric prices; funding = price * 100 */
-packageSelect.addEventListener('change', ()=>{
+if (packageSelect) packageSelect.addEventListener('change', ()=>{
   const val = packageSelect.value;
   if(!val){
-    packageAmount.innerText='';
-    projectName.innerText='No project selected';
-    projectMeta.innerText='Choose a package from Contribution';
-    dreamFunding.innerText = 'Dream Funding: $0';
+    if (packageAmount) packageAmount.innerText='';
+    if (projectName) projectName.innerText='No project selected';
+    if (projectMeta) projectMeta.innerText='Choose a package from Contribution';
+    if (dreamFunding) dreamFunding.innerText = 'Dream Funding: $0';
     localStorage.removeItem('selectedPackage');
     // reset tracker to zero as requested
     updateProgress(0);
-    progressTarget.innerText = 'Target: —';
+    if(progressTarget) progressTarget.innerText = 'Target: —';
     return;
   }
   const price = Number(val);
@@ -725,21 +726,21 @@ packageSelect.addEventListener('change', ()=>{
 });
 
 /* I have paid flow */
-iPaidBtn.addEventListener('click', ()=>{
-  proofArea.style.display='block';
+if (iPaidBtn) iPaidBtn.addEventListener('click', ()=>{
+  if (proofArea) proofArea.style.display='block';
   const pref = localStorage.getItem('preferredContribution') || preferredMethod || 'bank';
-  if(pref === 'usdt'){ bankProofInputs.style.display='none'; usdtHashInput.style.display='block'; }
-  else { bankProofInputs.style.display='flex'; usdtHashInput.style.display='none'; }
+  if(pref === 'usdt'){ if(bankProofInputs) bankProofInputs.style.display='none'; if(usdtHashInput) usdtHashInput.style.display='block'; }
+  else { if(bankProofInputs) bankProofInputs.style.display='flex'; if(usdtHashInput) usdtHashInput.style.display='none'; }
 });
-proofCloseX.addEventListener('click', ()=> proofArea.style.display='none');
-cancelProof.addEventListener('click', ()=> proofArea.style.display='none');
+if (proofCloseX) proofCloseX.addEventListener('click', ()=> proofArea.style.display='none');
+if (cancelProof) cancelProof.addEventListener('click', ()=> proofArea.style.display='none');
 
 /* preview proof */
-previewProofBtn.addEventListener('click', ()=>{
-  const f = proofFile.files[0];
+if (previewProofBtn) previewProofBtn.addEventListener('click', ()=>{
+  const f = proofFile && proofFile.files && proofFile.files[0];
   if(!f) return showToast('Choose a file first');
-  filePreview.style.display='block';
-  if(f.type.startsWith('image/')){
+  if(filePreview) filePreview.style.display='block';
+  if(f.type && f.type.startsWith('image/')){
     const r = new FileReader();
     r.onload = e => filePreviewInner.innerHTML = '<img src="'+e.target.result+'" style="max-width:100%;border-radius:8px">';
     r.readAsDataURL(f);
@@ -747,20 +748,20 @@ previewProofBtn.addEventListener('click', ()=>{
     filePreviewInner.innerHTML = '<div style="padding:8px;color:var(--muted)">'+f.name+'</div>';
   }
 });
-previewCloseX.addEventListener('click', ()=> { filePreview.style.display='none'; filePreviewInner.innerHTML=''; });
+if (previewCloseX) previewCloseX.addEventListener('click', ()=> { if(filePreview) filePreview.style.display='none'; if(filePreviewInner) filePreviewInner.innerHTML=''; });
 
 /* submit proof or tx hash (demo persist to localStorage) */
-submitProof.addEventListener('click', ()=>{
+if (submitProof) submitProof.addEventListener('click', ()=>{
   const pkg = JSON.parse(localStorage.getItem('selectedPackage') || 'null');
   if(!pkg) return showToast('Choose a package first');
   const pref = localStorage.getItem('preferredContribution') || preferredMethod || 'bank';
   const record = { id: 'PAY-'+Date.now(), package: pkg, method: pref, date: new Date().toISOString(), status: 'pending' };
   if(pref === 'usdt'){
-    const hash = txHash.value && txHash.value.trim();
+    const hash = txHash && txHash.value && txHash.value.trim();
     if(!hash) return showToast('Paste transaction hash first');
     record.hash = hash;
   } else {
-    const f = proofFile.files[0];
+    const f = proofFile && proofFile.files && proofFile.files[0];
     if(!f) return showToast('Upload proof file first');
     record.proofFilename = f.name; // demo only
   }
@@ -770,25 +771,23 @@ submitProof.addEventListener('click', ()=>{
   const modal = contributeModal.querySelector('.modal');
   modal.innerHTML = '<button class="close-x" id="contribCloseConfirm">✕</button><h3>Congratulations (Pending Approval)</h3><p style="color:var(--muted)">Please be patient while we review your payment within 48 hours.</p><div style="margin-top:12px"><button class="btn" id="backToDashboard">Back to dashboard</button></div>';
   setTimeout(()=>{
-    document.getElementById('backToDashboard').addEventListener('click', ()=>{
-      location.reload(); // simple restore of UI state for demo
-    });
+    document.getElementById('backToDashboard').addEventListener('click', ()=> location.reload());
     document.getElementById('contribCloseConfirm').addEventListener('click', ()=> location.reload());
   },80);
   // cleanup
-  proofArea.style.display='none';
-  filePreview.style.display='none';
-  filePreviewInner.innerHTML='';
-  proofFile.value='';
-  txHash.value='';
+  if (proofArea) proofArea.style.display='none';
+  if (filePreview) filePreview.style.display='none';
+  if (filePreviewInner) filePreviewInner.innerHTML='';
+  if (proofFile) proofFile.value='';
+  if (txHash) txHash.value='';
   refreshPaymentsNav();
 });
 
 /* refresh payments nav: creates Unapproved/Approved items and ensures menu closes when they are clicked */
 function refreshPaymentsNav(){
   payments = JSON.parse(localStorage.getItem('payments') || '[]');
-  paymentsNavPlace.innerHTML = '';
-  if(payments.length>0){
+  if(paymentsNavPlace) paymentsNavPlace.innerHTML = '';
+  if(payments.length>0 && paymentsNavPlace){
     const unCount = payments.filter(p=>p.status==='pending').length;
     const apCount = payments.filter(p=>p.status==='approved').length;
     const btnUn = document.createElement('button'); btnUn.className='menu-item'; btnUn.innerHTML='<span>Unapproved Payments</span><span class="hint">'+unCount+'</span>';
@@ -802,6 +801,7 @@ function refreshPaymentsNav(){
 /* open payments list modal */
 function openPaymentsList(status){
   payments = JSON.parse(localStorage.getItem('payments') || '[]');
+  if(!paymentsListArea) return;
   paymentsListArea.innerHTML = '';
   const list = payments.filter(p=>p.status===status);
   if(list.length===0){ paymentsListArea.innerHTML = '<div style="color:var(--muted)">No payments '+status+'</div>'; openModal(paymentsModal); return; }
@@ -843,8 +843,9 @@ function openPaymentsList(status){
 /* ---------- Projects ---------- */
 function renderProjects(){
   projects = JSON.parse(localStorage.getItem('projects') || '[]');
+  if(!projectsList) return;
   projectsList.innerHTML = '';
-  if(!projects || projects.length===0){ projectsList.innerHTML = '<div style="color:var(--muted)">No projects yet.</div>'; document.getElementById('activeProjectsCount').innerText = 0; return; }
+  if(!projects || projects.length===0){ projectsList.innerHTML = '<div style="color:var(--muted)">No projects yet.</div>'; if(document.getElementById('activeProjectsCount')) document.getElementById('activeProjectsCount').innerText = 0; return; }
   projects.forEach(p=>{
     const div = document.createElement('div');
     div.className='project-item';
@@ -854,49 +855,48 @@ function renderProjects(){
     div.innerHTML = '<div style="font-weight:800">'+p.name+'</div><div style="font-size:13px;color:var(--muted)">ID: '+p.id+' • Contribution: $'+ numberWithCommas(p.amount) +' • Dream Funding: $'+ numberWithCommas(p.funding) +' • '+p.status+'</div>';
     projectsList.appendChild(div);
   });
-  document.getElementById('activeProjectsCount').innerText = projects.length;
+  if(document.getElementById('activeProjectsCount')) document.getElementById('activeProjectsCount').innerText = projects.length;
 }
 
 /* ---------- Edit Profile upload (extended) ---------- */
 let pendingImageData = null;
-profileImageFile.addEventListener('change', ()=>{
+if (profileImageFile) profileImageFile.addEventListener('change', ()=>{
   const f = profileImageFile.files[0];
   if(!f) return showToast('Choose an image');
   if(!f.type.startsWith('image/')) return showToast('Image required');
   const r = new FileReader();
   r.onload = e => {
     pendingImageData = e.target.result;
-    profilePreview.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
+    if(profilePreview) profilePreview.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
   };
   r.readAsDataURL(f);
 });
-editCancel.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; profileImageFile.value=''; profilePreview.innerHTML='No image'; });
-editCloseX.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; profileImageFile.value=''; profilePreview.innerHTML='No image'; });
+if (editCancel) editCancel.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; if(profileImageFile) profileImageFile.value=''; if(profilePreview) profilePreview.innerHTML='No image'; });
+if (editCloseX) editCloseX.addEventListener('click', ()=> { closeModal(editProfileModal); pendingImageData=null; if(profileImageFile) profileImageFile.value=''; if(profilePreview) profilePreview.innerHTML='No image'; });
 
-saveProfileBtn.addEventListener('click', ()=>{
-  const pwd = newPassword.value.trim();
-  const nameVal = editName.value.trim();
+if (saveProfileBtn) saveProfileBtn.addEventListener('click', ()=>{
+  const pwd = newPassword ? newPassword.value.trim() : '';
+  const nameVal = editName ? editName.value.trim() : '';
   if(pendingImageData){
-    profileImg.src = pendingImageData;
-    profileImg.style.display = 'block';
-    profileInitials.style.display = 'none';
-    dbLogo.innerHTML = '<img src="'+pendingImageData+'" alt="logo">';
-    menuThumb.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
+    if(profileImg){ profileImg.src = pendingImageData; profileImg.style.display = 'block'; }
+    if(profileInitials) profileInitials.style.display = 'none';
+    if(dbLogo) dbLogo.innerHTML = '<img src="'+pendingImageData+'" alt="logo">';
+    if(menuThumb) menuThumb.innerHTML = '<img src="'+pendingImageData+'" style="width:100%;height:100%;object-fit:cover">';
     localStorage.setItem('profileImage', pendingImageData);
     pendingImageData = null;
-    profileImageFile.value = '';
-    profilePreview.innerHTML = 'No image';
+    if(profileImageFile) profileImageFile.value = '';
+    if(profilePreview) profilePreview.innerHTML = 'No image';
   }
   let user = JSON.parse(localStorage.getItem('user') || '{}');
   if(nameVal){
     user.name = nameVal;
-    document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
-    document.getElementById('menuName').innerText = user.name;
+    if(document.getElementById('welcomeTitle')) document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
+    if(document.getElementById('menuName')) document.getElementById('menuName').innerText = user.name;
     setInitialsFromName(user.name);
   }
   if(pwd){
     user.password = pwd;
-    newPassword.value = '';
+    if(newPassword) newPassword.value = '';
     showToast('Password saved (demo)');
   }
   localStorage.setItem('user', JSON.stringify(user));
@@ -905,88 +905,67 @@ saveProfileBtn.addEventListener('click', ()=>{
 });
 
 /* ---------- Settings modal behavior (NEW) ---------- */
-settingsUploadBtn.addEventListener('click', ()=> settingsImageFile.click());
-settingsImageFile.addEventListener('change', ()=>{
-  const f = settingsImageFile.files[0];
+if (settingsUploadBtn) settingsUploadBtn.addEventListener('click', ()=> settingsImageFile.click());
+if (settingsImageFile) settingsImageFile.addEventListener('change', (ev)=>{
+  const f = ev.target.files[0];
   if(!f) return showToast('Choose an image');
   if(!f.type.startsWith('image/')) return showToast('Image required');
   const r = new FileReader();
   r.onload = e => {
-    settingsPreview.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover">';
     pendingSettingsImage = e.target.result;
+    if(settingsPreview) settingsPreview.innerHTML = '<img src="'+pendingSettingsImage+'" style="width:100%;height:100%;object-fit:cover">';
   };
   r.readAsDataURL(f);
 });
 let pendingSettingsImage = null;
 
-toggle2faBtn.addEventListener('click', ()=>{
+if (toggle2faBtn) toggle2faBtn.addEventListener('click', ()=>{
   const enabled = localStorage.getItem('2faEnabled') === 'true';
   if(!enabled){
-    // connect flow demo: generate a random secret and show QR via google charts
     const secret = 'DBP-' + Math.random().toString(36).slice(2,10).toUpperCase();
-    localStorage.setItem('2faEnabled','true');
-    localStorage.setItem('2faSecret', secret);
-    twoFaSecret.innerText = secret;
+    localStorage.setItem('2faEnabled','true'); localStorage.setItem('2faSecret', secret);
+    if(twoFaSecret) twoFaSecret.innerText = secret;
     const qrSrc = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent('otpauth://totp/DreamBig?secret='+secret);
-    twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
-    twoFaArea.style.display = 'flex';
-    toggle2faBtn.innerText = 'Disconnect 2FA';
+    if(twoFaQRCode) twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
+    if(twoFaArea) twoFaArea.style.display = 'flex';
+    if(toggle2faBtn) toggle2faBtn.innerText = 'Disconnect 2FA';
     showToast('2FA connected (demo)');
   } else {
-    localStorage.removeItem('2faEnabled');
-    localStorage.removeItem('2faSecret');
-    twoFaArea.style.display = 'none';
-    toggle2faBtn.innerText = 'Connect 2FA';
+    localStorage.removeItem('2faEnabled'); localStorage.removeItem('2faSecret');
+    if(twoFaArea) twoFaArea.style.display = 'none';
+    if(toggle2faBtn) toggle2faBtn.innerText = 'Connect 2FA';
     showToast('2FA disconnected (demo)');
   }
 });
+if (copy2faSecret) copy2faSecret.addEventListener('click', ()=> { const s = localStorage.getItem('2faSecret'); if(s) copyText(s); else showToast('No secret'); });
 
-copy2faSecret.addEventListener('click', ()=>{
-  const s = localStorage.getItem('2faSecret');
-  if(s) copyText(s);
-  else showToast('No secret');
-});
+if (settingsCancel) settingsCancel.addEventListener('click', ()=> closeModal(settingsModal));
+if (settingsCloseX) settingsCloseX.addEventListener('click', ()=> closeModal(settingsModal));
 
-settingsCancel.addEventListener('click', ()=> closeModal(settingsModal));
-settingsCloseX.addEventListener('click', ()=> closeModal(settingsModal));
-
-settingsSave.addEventListener('click', ()=>{
-  // apply settings: image, name, password, language, theme
-  const nameVal = settingsName.value.trim();
-  const pwdVal = settingsPassword.value.trim();
-  const lang = langSelect.value;
-  const theme = themeSelect.value;
-
-  // save image if pending
+if (settingsSave) settingsSave.addEventListener('click', ()=>{
+  const nameVal = settingsName ? settingsName.value.trim() : '';
+  const pwdVal = settingsPassword ? settingsPassword.value.trim() : '';
+  const lang = langSelect ? langSelect.value : 'en';
+  const theme = themeSelect ? themeSelect.value : 'light';
   if(pendingSettingsImage){
     safeSetProfileImage(pendingSettingsImage);
-    settingsPreview.innerHTML = 'No image';
+    if(settingsPreview) settingsPreview.innerHTML = 'No image';
     pendingSettingsImage = null;
-    settingsImageFile.value = '';
+    if(settingsImageFile) settingsImageFile.value = '';
   }
-
-  // save user fields
   let user = JSON.parse(localStorage.getItem('user') || '{}');
   if(nameVal){
     user.name = nameVal;
-    document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
-    document.getElementById('menuName').innerText = user.name;
+    if(document.getElementById('welcomeTitle')) document.getElementById('welcomeTitle').innerText = translations[getLang()].welcome + user.name;
+    if(document.getElementById('menuName')) document.getElementById('menuName').innerText = user.name;
     setInitialsFromName(user.name);
   }
-  if(pwdVal){
-    user.password = pwdVal;
-    showToast('Password saved (demo)');
-  }
+  if(pwdVal){ user.password = pwdVal; showToast('Password saved (demo)'); }
   localStorage.setItem('user', JSON.stringify(user));
-
-  // language
   localStorage.setItem('lang', lang);
   applyTranslations();
-
-  // theme
   localStorage.setItem('theme', theme);
-  applyTheme(); // NOTE: applyTheme will also ensure colors used by typed banner reflect theme
-
+  applyTheme();
   showToast('Settings saved');
   closeModal(settingsModal);
 });
@@ -1003,76 +982,70 @@ if(document.getElementById('showQR')){
   document.getElementById('showQR').addEventListener('click', ()=>{
     const addr = document.getElementById('walletAddr').innerText.trim();
     const src = 'https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=' + encodeURIComponent(addr);
-    qrImage.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover">';
+    if(qrImage) qrImage.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover">';
     closeModal(contributeModal); openModal(qrModal);
   });
 }
-qrClose.addEventListener('click', ()=> closeModal(qrModal));
-qrCloseX.addEventListener('click', ()=> closeModal(qrModal));
+if(qrClose) qrClose.addEventListener('click', ()=> closeModal(qrModal));
+if(qrCloseX) qrCloseX.addEventListener('click', ()=> closeModal(qrModal));
 
 /* ---------- Payments modal controls ---------- */
-paymentsClose.addEventListener('click', ()=> closeModal(paymentsModal));
-paymentsCloseX.addEventListener('click', ()=> closeModal(paymentsModal));
+if(paymentsClose) paymentsClose.addEventListener('click', ()=> closeModal(paymentsModal));
+if(paymentsCloseX) paymentsCloseX.addEventListener('click', ()=> closeModal(paymentsModal));
 
 /* ---------- Projects modal controls ---------- */
-projectsClose.addEventListener('click', ()=> closeModal(projectsModal));
-document.getElementById('projectsCloseX').addEventListener('click', ()=> closeModal(projectsModal));
+if(projectsClose) projectsClose.addEventListener('click', ()=> closeModal(projectsModal));
+if(document.getElementById('projectsCloseX')) document.getElementById('projectsCloseX').addEventListener('click', ()=> closeModal(projectsModal));
 
 /* ---------- Logout ---------- */
-btnNo.addEventListener('click', ()=> closeModal(logoutModal));
-btnYes.addEventListener('click', ()=> {
+if(btnNo) btnNo.addEventListener('click', ()=> closeModal(logoutModal));
+if(btnYes) btnYes.addEventListener('click', ()=> {
   closeModal(logoutModal);
-  document.getElementById('appRoot').style.opacity = '0.25';
+  if(document.getElementById('appRoot')) document.getElementById('appRoot').style.opacity = '0.25';
   setTimeout(()=> location.href = 'login.html', 900);
 });
-document.getElementById('mLogout').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
+if(document.getElementById('mLogout')) document.getElementById('mLogout').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
 
 /* ---------- Withdraw handler: navigate to withdraw.html ---------- */
-mWithdraw.addEventListener('click', ()=>{
+if (mWithdraw) mWithdraw.addEventListener('click', ()=>{
   closeMenu();
-  // navigate to withdraw page in the same tab
   window.location.href = 'withdraw.html';
-  // if you prefer to open in a new tab, replace with:
-  // window.open('withdraw.html', '_blank');
 });
 
 /* ---------- Sharing ---------- */
-[shareHere].forEach(el => el.addEventListener('click', async ()=>{
+if (shareHere) shareHere.addEventListener('click', async ()=>{
   const url = location.href;
   const lang = getLang();
   const obj = { title: translations[lang].shareText, text: translations[lang].shareText, url };
   if(navigator.share){ try{ await navigator.share(obj); } catch(e){} } else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=> showToast('Referral copied')); } else alert('Copy: '+url);
-}));
+});
 
 /* ---------- Menu item actions ---------- */
-document.getElementById('mSettings').addEventListener('click', ()=> { closeMenu(); openSettings(); });
-document.getElementById('mViewProjects').addEventListener('click', ()=> { closeMenu(); renderProjects(); openModal(projectsModal); });
-document.getElementById('mHelp').addEventListener('click', ()=> { closeMenu(); alert('Help & support (demo)'); });
+if(document.getElementById('mSettings')) document.getElementById('mSettings').addEventListener('click', ()=> { closeMenu(); openSettings(); });
+if(document.getElementById('mViewProjects')) document.getElementById('mViewProjects').addEventListener('click', ()=> { closeMenu(); renderProjects(); openModal(projectsModal); });
+if(document.getElementById('mHelp')) document.getElementById('mHelp').addEventListener('click', ()=> { closeMenu(); alert('Help & support (demo)'); });
 
 /* ---------- Settings open/close helper ---------- */
 function openSettings(){
-  // prefill current settings
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  settingsName.value = user.name || '';
-  settingsPassword.value = '';
+  if(settingsName) settingsName.value = user.name || '';
+  if(settingsPassword) settingsPassword.value = '';
   const img = localStorage.getItem('profileImage');
-  if(img) settingsPreview.innerHTML = '<img src="'+img+'" style="width:100%;height:100%;object-fit:cover">';
-  else settingsPreview.innerHTML = 'No image';
+  if(img && settingsPreview) settingsPreview.innerHTML = '<img src="'+img+'" style="width:100%;height:100%;object-fit:cover">';
+  else if(settingsPreview) settingsPreview.innerHTML = 'No image';
   const lang = localStorage.getItem('lang') || 'en';
-  langSelect.value = lang;
+  if(langSelect) langSelect.value = lang;
   const theme = localStorage.getItem('theme') || 'light';
-  themeSelect.value = theme;
+  if(themeSelect) themeSelect.value = theme;
   const twofa = localStorage.getItem('2faEnabled') === 'true';
-  toggle2faBtn.innerText = twofa ? 'Disconnect 2FA' : 'Connect 2FA';
+  if(toggle2faBtn) toggle2faBtn.innerText = twofa ? 'Disconnect 2FA' : 'Connect 2FA';
   if(twofa){
     const secret = localStorage.getItem('2faSecret') || '';
-    twoFaSecret.innerText = secret;
+    if(twoFaSecret) twoFaSecret.innerText = secret;
     const qrSrc = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent('otpauth://totp/DreamBig?secret='+secret);
-    twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
-    twoFaArea.style.display = 'flex';
-  } else {
-    twoFaArea.style.display = 'none';
-  }
+    if(twoFaQRCode) twoFaQRCode.innerHTML = '<img src="'+qrSrc+'" style="width:100%;height:100%;object-fit:cover">';
+    if(twoFaArea) twoFaArea.style.display = 'flex';
+  } else if(twoFaArea) twoFaArea.style.display = 'none';
   openModal(settingsModal);
 }
 
@@ -1080,14 +1053,14 @@ function openSettings(){
 function getLang(){ return localStorage.getItem('lang') || 'en'; }
 function applyTranslations(){
   const lang = getLang();
-  document.getElementById('dashboardTitle').innerText = translations[lang].dashboard;
-  document.getElementById('kpiActiveLabel').innerText = translations[lang].activeProjects;
-  document.getElementById('kpiContributionLabel').innerText = translations[lang].totalContribution;
-  document.getElementById('kpiReferralsLabel').innerText = translations[lang].referrals;
-  document.getElementById('referralHint').innerText = translations[lang].referralsHint;
-  document.getElementById('contribLabel').innerText = translations[lang].contribution;
-  document.getElementById('welcomeTitle').innerText = translations[lang].welcome + (JSON.parse(localStorage.getItem('user')||'{}').name || 'Member');
-  document.getElementById('referralsTitle').innerText = translations[lang].referralsTitle;
+  if(document.getElementById('dashboardTitle')) document.getElementById('dashboardTitle').innerText = translations[lang].dashboard;
+  if(document.getElementById('kpiActiveLabel')) document.getElementById('kpiActiveLabel').innerText = translations[lang].activeProjects;
+  if(document.getElementById('kpiContributionLabel')) document.getElementById('kpiContributionLabel').innerText = translations[lang].totalContribution;
+  if(document.getElementById('kpiReferralsLabel')) document.getElementById('kpiReferralsLabel').innerText = translations[lang].referrals;
+  if(document.getElementById('referralHint')) document.getElementById('referralHint').innerText = translations[lang].referralsHint;
+  if(document.getElementById('contribLabel')) document.getElementById('contribLabel').innerText = translations[lang].contribution;
+  if(document.getElementById('welcomeTitle')) document.getElementById('welcomeTitle').innerText = translations[lang].welcome + (JSON.parse(localStorage.getItem('user')||'{}').name || 'Member');
+  if(document.getElementById('referralsTitle')) document.getElementById('referralsTitle').innerText = translations[lang].referralsTitle;
 }
 function applyTheme(){
   const theme = localStorage.getItem('theme') || 'light';
@@ -1096,47 +1069,38 @@ function applyTheme(){
   } else {
     document.documentElement.classList.remove('theme-navy');
   }
-  // ensure typed banner colors reflect theme immediately (no extra action needed since CSS uses var(--accent))
 }
 
 /* ---------- Menu header view/hide ---------- */
-menuViewToggle.addEventListener('click', ()=>{
+if (menuViewToggle) menuViewToggle.addEventListener('click', ()=>{
   const hidden = menuName.style.visibility === 'hidden';
-  if(hidden){
-    menuName.style.visibility = 'visible';
-    menuViewToggle.innerText = 'Hide';
-  } else {
-    menuName.style.visibility = 'hidden';
-    menuViewToggle.innerText = 'View';
-  }
+  if(hidden){ menuName.style.visibility = 'visible'; menuViewToggle.innerText = 'Hide'; } else { menuName.style.visibility = 'hidden'; menuViewToggle.innerText = 'View'; }
 });
 
 /* ---------- Init UI state ---------- */
 function updateReferralsUI(){
   const refs = parseInt(localStorage.getItem('referrals')||'0',10);
-  document.getElementById('refersNum').innerText = refs;
+  if(document.getElementById('refersNum')) document.getElementById('refersNum').innerText = refs;
 }
 function init(){
   const meta = document.getElementById('metaDate');
-  if(!meta.innerText) { const d=new Date(); meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear(); }
+  if(meta && !meta.innerText) { const d=new Date(); meta.innerText = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear(); }
 
   // load saved profile image & menu thumb / welcome
   const savedImg = localStorage.getItem('profileImage');
-  if(savedImg){ profileImg.src = savedImg; profileImg.style.display='block'; profileInitials.style.display='none'; dbLogo.innerHTML = '<img src="'+savedImg+'">'; menuThumb.innerHTML = '<img src="'+savedImg+'" style="width:100%;height:100%;object-fit:cover">'; }
+  if(savedImg){ if(profileImg){ profileImg.src = savedImg; profileImg.style.display='block'; } if(profileInitials) profileInitials.style.display='none'; if(dbLogo) dbLogo.innerHTML = '<img src="'+savedImg+'">'; if(menuThumb) menuThumb.innerHTML = '<img src="'+savedImg+'" style="width:100%;height:100%;object-fit:cover">'; }
 
   // load selected package if previously chosen (and update UI)
   const pkg = JSON.parse(localStorage.getItem('selectedPackage') || 'null');
   if(pkg){
-    projectName.innerText = pkg.name + ' Package';
-    projectMeta.innerText = pkg.name + ' • Package selected';
-    packageAmount.innerText = '(' + pkg.name + ' Contribution)';
-    dreamFunding.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding);
-    progressTarget.innerText = 'Target: $' + numberWithCommas(pkg.funding);
-    // ensure progress shows current saved percent if you store one later; default 0
+    if(projectName) projectName.innerText = pkg.name + ' Package';
+    if(projectMeta) projectMeta.innerText = pkg.name + ' • Package selected';
+    if(packageAmount) packageAmount.innerText = '(' + pkg.name + ' Contribution)';
+    if(dreamFunding) dreamFunding.innerText = 'Dream Funding: $' + numberWithCommas(pkg.funding);
+    if(progressTarget) progressTarget.innerText = 'Target: $' + numberWithCommas(pkg.funding);
     const savedPct = Number(localStorage.getItem('progressPercent') || '0');
     updateProgress(savedPct);
   } else {
-    // default progress 0%
     updateProgress(0);
   }
 
@@ -1155,7 +1119,7 @@ function init(){
 init();
 
 /* ---------- extra small handlers ---------- */
-document.getElementById('contribClose')?.addEventListener('click', ()=> closeModal(contributeModal));
+if(document.getElementById('contribClose')) document.getElementById('contribClose').addEventListener('click', ()=> closeModal(contributeModal));
 
 /* ---------- copy actions (example) ---------- */
 document.querySelectorAll('.copy-btn').forEach(btn=>{
@@ -1167,13 +1131,13 @@ document.querySelectorAll('.copy-btn').forEach(btn=>{
 });
 
 /* ---------- simple profile save from settings (supports choosing file) ---------- */
-settingsImageFile.addEventListener('change', (ev)=>{
+if (settingsImageFile) settingsImageFile.addEventListener('change', (ev)=>{
   const f = ev.target.files[0];
   if(!f) return;
   const r = new FileReader();
   r.onload = e => {
     pendingSettingsImage = e.target.result;
-    settingsPreview.innerHTML = '<img src="'+pendingSettingsImage+'" style="width:100%;height:100%;object-fit:cover">';
+    if(settingsPreview) settingsPreview.innerHTML = '<img src="'+pendingSettingsImage+'" style="width:100%;height:100%;object-fit:cover">';
   };
   r.readAsDataURL(f);
 });
@@ -1185,12 +1149,12 @@ refreshPaymentsNav();
 document.addEventListener('keyup', (e)=> { if(e.key === 'Escape') { closeMenu(); closeModal(settingsModal); closeModal(editProfileModal); closeModal(contributeModal); } });
 
 /* ---------- profile menu quick bindings ---------- */
-document.getElementById('profileLogoutBtn').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
+if(document.getElementById('profileLogoutBtn')) document.getElementById('profileLogoutBtn').addEventListener('click', ()=> { closeMenu(); openModal(logoutModal); });
 
 /* ---------- final notes: expose openSettings for debug/demo ---------- */
 window.openSettings = openSettings;
 
-/* ---------- TYPED BANNER LOGIC ---------- */
+/* ---------- TYPED BANNER LOGIC (SMALL WORD REMOVED) ---------- */
 function initTypedBanner(){
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const typedSmall = document.getElementById('typedSmall');
@@ -1198,26 +1162,24 @@ function initTypedBanner(){
   const bannerCaret = document.getElementById('bannerCaret');
 
   if(!typedSmall || !typedMain) return;
-  
-  const smalltext = '';
+
+  // small word removed intentionally
+  const smallText = ''; // removed per request
   const mainText = 'MAKE IT HAPPEN . SHOCK THE WORLD';
   const typeSpeed = 60;        // ms per char
   const deleteSpeed = 36;      // ms per char
   const holdMs = 4000;         // 4 seconds hold
   const betweenMs = 600;       // pause between cycles
 
-  // Ensure colors follow theme through CSS vars (no extra work required)
+  // hide small-word element so no gap or capital text appears
+  typedSmall.style.display = 'none';
 
-  // If reduced motion, render static and return
+  // If reduced motion, render static main text and hide caret
   if(prefersReduced){
-    typedSmall.textContent = smallText;
     typedMain.textContent = mainText;
     bannerCaret.style.display = 'none';
     return;
   }
-
-  // show the small word immediately but low opacity (CSS handles opacity)
-  typedSmall.textContent = smallText;
 
   // function to type text into element
   function typeInto(el, text, speed){
@@ -1268,5 +1230,3 @@ function initTypedBanner(){
 </script>
 </body>
 </html>
-
-
