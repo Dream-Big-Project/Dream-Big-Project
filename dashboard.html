@@ -83,6 +83,20 @@
   .menu-header .hdr-name{font-weight:800}
   .small-pill{padding:6px 8px;border-radius:999px;background:rgba(0,0,0,0.02);font-weight:700;font-size:13px;color:var(--muted)}
   @media(min-width:540px){.app{padding:20px}}
+
+  /* ---------- Typed banner styles (new) ---------- */
+  .typed-banner { margin-top:10px; text-align:center; user-select:none; }
+  .typed-banner .small-word { display:block; font-weight:900; font-size:12px; opacity:0.46; letter-spacing:1.4px; margin-bottom:6px; text-transform:uppercase; }
+  .typed-banner .main-line { display:block; font-weight:900; font-size:20px; text-transform:uppercase; letter-spacing:0.8px; min-height:1.2em; }
+  .typed-banner .banner-caret { display:inline-block; width:10px; height:1.05em; vertical-align:middle; background:var(--accent); margin-left:8px; border-radius:2px; animation: tb-blink 900ms steps(2,start) infinite; }
+  @keyframes tb-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  @media(min-width:900px){ .typed-banner .main-line { font-size:24px; } }
+  @media(max-width:520px){ .typed-banner .main-line { font-size:16px; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .typed-banner .banner-caret { display:none !important; }
+  }
+
 </style>
 </head>
 <body>
@@ -151,6 +165,14 @@
     <main>
       <section class="welcome">
         <h2 id="welcomeTitle">Welcome, Member</h2>
+
+        <!-- NEW: Typed banner placed directly under welcome -->
+        <div id="typedBanner" class="typed-banner" aria-live="polite" aria-atomic="true">
+          <span class="small-word" id="typedSmall" aria-hidden="true"></span>
+          <span class="main-line" id="typedMain" aria-hidden="true"></span>
+          <span class="banner-caret" id="bannerCaret" aria-hidden="true" style="display:none"></span>
+        </div>
+
         <div class="kpis">
           <div class="kpi"><div class="num" id="activeProjectsCount">0</div><div style="font-size:12px;color:var(--muted)" id="kpiActiveLabel">Active Projects</div></div>
           <div class="kpi"><div class="num" id="totalContribution">$0</div><div style="font-size:12px;color:var(--muted)" id="kpiContributionLabel">Total Contribution</div></div>
@@ -964,7 +986,7 @@ settingsSave.addEventListener('click', ()=>{
 
   // theme
   localStorage.setItem('theme', theme);
-  applyTheme();
+  applyTheme(); // NOTE: applyTheme will also ensure colors used by typed banner reflect theme
 
   showToast('Settings saved');
   closeModal(settingsModal);
@@ -1075,6 +1097,7 @@ function applyTheme(){
   } else {
     document.documentElement.classList.remove('theme-navy');
   }
+  // ensure typed banner colors reflect theme immediately (no extra action needed since CSS uses var(--accent))
 }
 
 /* ---------- Menu header view/hide ---------- */
@@ -1126,6 +1149,9 @@ function init(){
   // apply translations & theme
   applyTranslations();
   applyTheme();
+
+  // Start the typed banner after UI is ready
+  initTypedBanner();
 }
 init();
 
@@ -1164,6 +1190,81 @@ document.getElementById('profileLogoutBtn').addEventListener('click', ()=> { clo
 
 /* ---------- final notes: expose openSettings for debug/demo ---------- */
 window.openSettings = openSettings;
+
+/* ---------- TYPED BANNER LOGIC ---------- */
+function initTypedBanner(){
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const typedSmall = document.getElementById('typedSmall');
+  const typedMain = document.getElementById('typedMain');
+  const bannerCaret = document.getElementById('bannerCaret');
+
+  if(!typedSmall || !typedMain) return;
+
+  const smallText = 'TYPE';
+  const mainText = 'MAKE IT HAPPEN . SHOCK THE WORLD';
+  const typeSpeed = 60;        // ms per char
+  const deleteSpeed = 36;      // ms per char
+  const holdMs = 4000;         // 4 seconds hold
+  const betweenMs = 600;       // pause between cycles
+
+  // Ensure colors follow theme through CSS vars (no extra work required)
+
+  // If reduced motion, render static and return
+  if(prefersReduced){
+    typedSmall.textContent = smallText;
+    typedMain.textContent = mainText;
+    bannerCaret.style.display = 'none';
+    return;
+  }
+
+  // show the small word immediately but low opacity (CSS handles opacity)
+  typedSmall.textContent = smallText;
+
+  // function to type text into element
+  function typeInto(el, text, speed){
+    return new Promise(resolve=>{
+      el.textContent = '';
+      let i = 0;
+      bannerCaret.style.display = 'inline-block';
+      const t = setInterval(()=>{
+        el.textContent += text.charAt(i);
+        i++;
+        if(i >= text.length){
+          clearInterval(t);
+          resolve();
+        }
+      }, speed);
+    });
+  }
+
+  // function to delete text from element
+  function deleteFrom(el, speed){
+    return new Promise(resolve=>{
+      let text = el.textContent || '';
+      let i = text.length;
+      bannerCaret.style.display = 'inline-block';
+      const t = setInterval(()=>{
+        i--;
+        el.textContent = text.slice(0, i);
+        if(i <= 0){
+          clearInterval(t);
+          bannerCaret.style.display = 'none';
+          resolve();
+        }
+      }, speed);
+    });
+  }
+
+  // main async loop
+  (async function loop(){
+    while(true){
+      await typeInto(typedMain, mainText, typeSpeed);
+      await new Promise(r => setTimeout(r, holdMs));
+      await deleteFrom(typedMain, deleteSpeed);
+      await new Promise(r => setTimeout(r, betweenMs));
+    }
+  })();
+}
 
 </script>
 </body>
