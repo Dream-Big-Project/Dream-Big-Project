@@ -1198,11 +1198,12 @@ function initTypedBanner(){
   const bannerCaret = document.getElementById('bannerCaret');
 
   if(!typedSmall || !typedMain) return;
-
+  
+  const smalltext = '';
   const mainText = 'MAKE IT HAPPEN . SHOCK THE WORLD';
   const typeSpeed = 60;        // ms per char
   const deleteSpeed = 36;      // ms per char
-  const holdMs = 5000;         // 5 seconds hold
+  const holdMs = 4000;         // 4 seconds hold
   const betweenMs = 600;       // pause between cycles
 
   // Ensure colors follow theme through CSS vars (no extra work required)
@@ -1267,4 +1268,5 @@ function initTypedBanner(){
 </script>
 </body>
 </html>
+
 
