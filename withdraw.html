@@ -272,8 +272,9 @@
   function getBalance(){
     const raw = localStorage.getItem(balanceKey);
     if(raw === null || raw === undefined) {
-      localStorage.setItem(balanceKey, '25000'); // demo default balance
-      return 25000;
+      // Default balance now set to $50,000 for this demo
+      localStorage.setItem(balanceKey, '50000');
+      return 50000;
     }
     const n = parseFloat(raw);
     return isNaN(n) ? 0 : n;
@@ -598,6 +599,3 @@
 </script>
 </body>
 </html>
-
-
-
