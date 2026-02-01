@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Withdraw — Dream Big Project</title>
+<meta name="description" content="Withdraw request page (Demo)" />
+<style>
+  :root{
+    --bg:#071735;
+    --card:#0f2946;
+    --muted:#9fb3c7;
+    --accent:#f6c44b;
+    --accent-contrast:#071735;
+    --glass: rgba(255,255,255,0.03);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #eaf6ff;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; background: linear-gradient(180deg,#021226,#071735); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+  .wrap{ max-width:980px; margin:28px auto; padding:22px; display:grid; grid-template-columns: 1fr 420px; gap:22px; align-items:start; }
+  .card{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:18px; box-shadow: 0 30px 60px rgba(0,0,0,0.45); }
+  h1{ margin:0 0 8px 0; font-size:20px; letter-spacing:-0.3px; }
+  p.muted{ margin:6px 0 12px 0; color:var(--muted); font-size:14px; }
+  .balance{ font-weight:900; font-size:28px; color:var(--accent); margin-top:6px; }
+  .form-row{ display:flex; gap:8px; align-items:center; margin-top:12px; }
+  input[type="number"], input[type="text"], select, textarea { width:100%; padding:10px 12px; border-radius:10px; background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); font-size:15px; }
+  .btn{ padding:10px 14px; border-radius:10px; border:0; cursor:pointer; font-weight:800; }
+  .btn.primary{ background: linear-gradient(135deg,var(--accent), #f0c75e); color:var(--accent-contrast); }
+  .btn.ghost{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.06); }
+  .left-block{ min-height:220px; }
+  .small{ font-size:13px; color:var(--muted); margin-top:6px; }
+  .account-head{ font-weight:800; margin-bottom:6px; }
+  label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+  .file-input{ color:var(--muted); font-size:13px; }
+  .status-pill{ display:inline-block; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.04); color:var(--muted); font-weight:800; }
+  .disabled{ opacity:0.45; pointer-events:none; }
+  .muted-box{ background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; color:var(--muted); font-size:14px; }
+  .center{ text-align:center; }
+
+  /* full-screen processing overlay */
+  .overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:120; background: rgba(2,6,20,0.6); }
+  .overlay .modal{ width:90%; max-width:560px; text-align:center; background:var(--card); padding:22px; border-radius:12px; color:var(--text); }
+  .overlay .modal h3{ margin:0 0 8px 0; color:var(--accent); }
+  .note{ font-size:14px; color:var(--muted); margin-top:6px; }
+
+  .hidden{ display:none; }
+
+  @media(max-width:980px){
+    .wrap{ grid-template-columns: 1fr; padding:14px; gap:14px; }
+  }
+
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- LEFT: withdraw request -->
+    <div class="card left-block" id="leftCard" aria-live="polite">
+      <h1>Request a withdrawal</h1>
+      <p class="muted">Enter an amount to withdraw or request your full available balance. Requests are processed by admin and typically take up to 72 hours.</p>
+
+      <div class="muted-box">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:12px;color:var(--muted)">Available balance</div>
+            <div class="balance" id="balanceDisplay">$0</div>
+          </div>
+          <div class="status-pill" id="reqStatusPill" style="display:none">Processing</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label for="amount">Amount to withdraw</label>
+        <input id="amount" type="number" step="0.01" min="1" placeholder="Enter amount (USD)" />
+        <div class="form-row" style="margin-top:10px">
+          <button class="btn primary" id="requestAll">Request withdraw all my balance</button>
+          <button class="btn ghost" id="requestBtn">Request</button>
+        </div>
+        <div class="small">Tip: once requested the withdrawal will be marked pending — you cannot request another until admin completes this one.</div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: account details -->
+    <div class="card" id="rightCard">
+      <h2 class="account-head">Account details</h2>
+      <p class="muted">Save the account where you'd like funds sent. You can choose bank or TRC20 wallet.</p>
+
+      <label for="methodSelect">Transfer method</label>
+      <select id="methodSelect">
+        <option value="bank">Bank transfer</option>
+        <option value="trc20">USDT (TRC20)</option>
+      </select>
+
+      <!-- Bank fields -->
+      <div id="bankFields" style="margin-top:12px;">
+        <label for="bankName">Bank name</label>
+        <input id="bankName" type="text" placeholder="e.g. First National Bank" />
+
+        <label for="acctName" style="margin-top:8px">Account name</label>
+        <input id="acctName" type="text" placeholder="Account holder's name" />
+
+        <label for="acctNumber" style="margin-top:8px">Account number</label>
+        <input id="acctNumber" type="text" placeholder="0123456789" />
+
+        <label for="bankProof" style="margin-top:8px">Upload account proof (optional)</label>
+        <input id="bankProof" class="file-input" type="file" accept="image/*,.pdf" />
+      </div>
+
+      <!-- TRC20 fields -->
+      <div id="trcFields" class="hidden" style="margin-top:12px;">
+        <label for="trcAddress">TRC20 wallet address</label>
+        <input id="trcAddress" type="text" placeholder="T..." />
+        <div class="small" style="margin-top:8px">Make sure this is a TRON / TRC20 compatible address.</div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn ghost" id="saveAccount">Save</button>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div id="savedAccountPreview" class="muted-box hidden"></div>
+      </div>
+
+      <!-- hidden helper for dev/testing (simulate admin approval) -->
+      <div style="margin-top:16px;font-size:12px;color:transparent" id="devTools"><button id="simulateApprove" class="btn ghost">Simulate admin approve (dev)</button></div>
+    </div>
+  </div>
+
+  <!-- overlay modal: processing message -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h3>Withdrawal submitted</h3>
+      <p class="note" id="overlayNote">Your withdrawal is being processed and usually takes within 72 hours to be credited.</p>
+      <p class="muted" style="margin-top:18px">You will be returned to the dashboard shortly...</p>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // initial data keys in localStorage:
+  // - balance (number, cents allowed; stored as float USD)
+  // - withdrawRequest (object or null)
+  // - accountInfo (object)
+  const balanceKey = 'balance';
+  const requestKey = 'withdrawRequest';
+  const accountKey = 'withdrawAccount';
+
+  // Elements
+  const balanceDisplay = document.getElementById('balanceDisplay');
+  const amountInput = document.getElementById('amount');
+  const requestBtn = document.getElementById('requestBtn');
+  const requestAllBtn = document.getElementById('requestAll');
+  const methodSelect = document.getElementById('methodSelect');
+  const bankFields = document.getElementById('bankFields');
+  const trcFields = document.getElementById('trcFields');
+  const saveAccountBtn = document.getElementById('saveAccount');
+  const acctName = document.getElementById('acctName');
+  const bankName = document.getElementById('bankName');
+  const acctNumber = document.getElementById('acctNumber');
+  const bankProof = document.getElementById('bankProof');
+  const trcAddress = document.getElementById('trcAddress');
+  const savedAccountPreview = document.getElementById('savedAccountPreview');
+  const overlay = document.getElementById('overlay');
+  const reqStatusPill = document.getElementById('reqStatusPill');
+  const devTools = document.getElementById('devTools');
+  const simulateApprove = document.getElementById('simulateApprove');
+  const leftCard = document.getElementById('leftCard');
+  const rightCard = document.getElementById('rightCard');
+
+  // helpers
+  function getBalance(){
+    const raw = localStorage.getItem(balanceKey);
+    if(raw === null) {
+      localStorage.setItem(balanceKey, '2400'); // default demo balance
+      return 2400;
+    }
+    const n = parseFloat(raw);
+    return isNaN(n) ? 0 : n;
+  }
+  function setBalance(v){
+    localStorage.setItem(balanceKey, String(Number(v)));
+    renderBalance();
+  }
+  function renderBalance(){
+    const b = getBalance();
+    balanceDisplay.innerText = '$' + Number(b).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits:2});
+  }
+
+  // load saved account
+  function getAccount(){
+    const raw = localStorage.getItem(accountKey);
+    if(!raw) return null;
+    try{ return JSON.parse(raw); } catch(e){ return null; }
+  }
+  function saveAccount(obj){
+    localStorage.setItem(accountKey, JSON.stringify(obj));
+    renderSavedAccount();
+  }
+  function renderSavedAccount(){
+    const acc = getAccount();
+    if(!acc){ savedAccountPreview.classList.add('hidden'); savedAccountPreview.innerHTML = ''; return; }
+    savedAccountPreview.classList.remove('hidden');
+    let html = '<div style="font-weight:800;margin-bottom:6px">Saved account</div>';
+    if(acc.method === 'bank'){
+      html += '<div><strong>Bank:</strong> ' + escapeHtml(acc.bankName||'—') + '</div>';
+      html += '<div><strong>Account name:</strong> ' + escapeHtml(acc.acctName||'—') + '</div>';
+      html += '<div><strong>Account number:</strong> ' + escapeHtml(acc.acctNumber||'—') + '</div>';
+      if(acc.proofName) html += '<div style="margin-top:6px;font-size:13px;color:var(--muted)"><em>Proof:</em> ' + escapeHtml(acc.proofName) + '</div>';
+    } else {
+      html += '<div><strong>TRC20 address:</strong></div><div style="word-break:break-all">' + escapeHtml(acc.trcAddress||'—') + '</div>';
+    }
+    savedAccountPreview.innerHTML = html;
+  }
+
+  // escape small helper
+  function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // withdraw request
+  function getRequest(){ try{ return JSON.parse(localStorage.getItem(requestKey) || 'null'); } catch(e){ return null; } }
+  function saveRequest(req){ localStorage.setItem(requestKey, JSON.stringify(req)); }
+  function clearRequest(){ localStorage.removeItem(requestKey); renderRequestState(); }
+
+  // render pending/request state
+  function renderRequestState(){
+    const req = getRequest();
+    if(req && req.status === 'processing'){
+      // show status, disable form
+      reqStatusPill.style.display = 'inline-block';
+      reqStatusPill.innerText = 'Processing';
+      // disable inputs/buttons
+      leftCard.classList.add('disabled');
+      rightCard.classList.add('disabled');
+      amountInput.value = '';
+      // show details below balance
+      const preview = document.createElement('div');
+      preview.className = 'muted-box';
+      preview.style.marginTop = '12px';
+      preview.innerHTML = '<div style="font-weight:800">Pending withdrawal</div>'
+        + '<div style="margin-top:8px">Amount: $' + Number(req.amount).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</div>'
+        + '<div style="margin-top:6px">Requested: ' + (new Date(req.date)).toLocaleString() + '</div>';
+      // remove any previous preview area, then append
+      const existing = document.getElementById('pendingPreview');
+      if(existing) existing.remove();
+      preview.id = 'pendingPreview';
+      leftCard.appendChild(preview);
+    } else {
+      reqStatusPill.style.display = 'none';
+      leftCard.classList.remove('disabled');
+      rightCard.classList.remove('disabled');
+      const existing = document.getElementById('pendingPreview');
+      if(existing) existing.remove();
+    }
+  }
+
+  // UI wiring
+  methodSelect.addEventListener('change', ()=>{
+    const m = methodSelect.value;
+    if(m === 'bank'){ bankFields.classList.remove('hidden'); trcFields.classList.add('hidden'); }
+    else { bankFields.classList.add('hidden'); trcFields.classList.remove('hidden'); }
+  });
+
+  // load stored account info to inputs
+  (function initAccountInputs(){
+    const acc = getAccount();
+    if(!acc) return;
+    methodSelect.value = acc.method || 'bank';
+    methodSelect.dispatchEvent(new Event('change'));
+    if(acc.method === 'bank'){
+      bankName.value = acc.bankName || '';
+      acctName.value = acc.acctName || '';
+      acctNumber.value = acc.acctNumber || '';
+    } else {
+      trcAddress.value = acc.trcAddress || '';
+    }
+    renderSavedAccount();
+  })();
+
+  // save account details (file is optional)
+  saveAccountBtn.addEventListener('click', ()=>{
+    const method = methodSelect.value;
+    if(method === 'bank'){
+      const bn = bankName.value.trim();
+      const an = acctName.value.trim();
+      const num = acctNumber.value.trim();
+      if(!bn || !an || !num) return alert('Please fill bank name, account name and account number.');
+      // optionally read file name only (not uploading to server)
+      const proofFile = bankProof.files[0];
+      const obj = { method: 'bank', bankName: bn, acctName: an, acctNumber: num };
+      if(proofFile) {
+        // for demo store file name only; if you want file content, read as DataURL
+        obj.proofName = proofFile.name;
+        // optionally store content (commented out to avoid large localStorage):
+        /* const r = new FileReader();
+           r.onload = e => { obj.proofData = e.target.result; saveAccount(obj); ... } */
+      }
+      saveAccount(obj);
+      showMessage('Account saved.');
+    } else {
+      const addr = trcAddress.value.trim();
+      if(!addr) return alert('Please paste your TRC20 address.');
+      saveAccount({ method: 'trc20', trcAddress: addr });
+      showMessage('TRC20 address saved.');
+    }
+  });
+
+  // request all balance
+  requestAllBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const b = getBalance();
+    if(b <= 0) return alert('No available balance to withdraw.');
+    amountInput.value = Number(b).toFixed(2);
+  });
+
+  // main request action
+  requestBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    // check there is no pending request
+    const existing = getRequest();
+    if(existing && existing.status === 'processing') {
+      // already pending — just notify and do nothing
+      return showMessage('You already have a pending withdrawal. It will be processed by admin.');
+    }
+
+    const amount = parseFloat(amountInput.value);
+    if(isNaN(amount) || amount <= 0) return alert('Enter a valid amount.');
+    const balance = getBalance();
+    if(amount > balance) return alert('Amount exceeds available balance.');
+
+    // account check
+    const acc = getAccount();
+    if(!acc) {
+      if(!confirm('No account saved. You should save account details so admin knows where to send funds. Continue anyway?')) return;
+    }
+
+    // create request object
+    const req = {
+      id: 'WD-' + Date.now(),
+      amount: Number(amount),
+      date: new Date().toISOString(),
+      status: 'processing',
+      account: acc || null,
+      note: 'User requested withdrawal'
+    };
+
+    // save & subtract balance (pending)
+    saveRequest(req);
+    setBalance(Math.max(0, (balance - amount)));
+
+    // show overlay message for 10s then go back to dashboard
+    overlay.style.display = 'flex';
+    renderRequestState();
+
+    setTimeout(()=> {
+      overlay.style.display = 'none';
+      // redirect back
+      window.location.href = 'dashboard.html';
+    }, 10000); // 10 seconds
+  });
+
+  // small helper to show a small transient toast/message (just inside this page)
+  function showMessage(text){
+    const el = document.createElement('div');
+    el.style.position = 'fixed';
+    el.style.left = '50%';
+    el.style.transform = 'translateX(-50%)';
+    el.style.bottom = '22px';
+    el.style.padding = '10px 14px';
+    el.style.borderRadius = '10px';
+    el.style.background = 'rgba(0,0,0,0.8)';
+    el.style.color = '#fff';
+    el.style.zIndex = '140';
+    el.style.fontWeight = '800';
+    el.innerText = text;
+    document.body.appendChild(el);
+    setTimeout(()=> { el.style.transition = 'opacity 300ms'; el.style.opacity = '0'; setTimeout(()=> el.remove(),300); }, 1400);
+  }
+
+  // dev simulate approval: marks request approved and shows message (for demo only)
+  simulateApprove?.addEventListener('click', ()=>{
+    const req = getRequest();
+    if(!req) return alert('No request to approve.');
+    req.status = 'approved';
+    req.approvedAt = new Date().toISOString();
+    saveRequest(req);
+    showMessage('Request approved (demo).');
+    // in a real system you'd update DB and transfer funds
+  });
+
+  // when page loads, ensure UI shows balance and pending state
+  renderBalance();
+  renderSavedAccount();
+  renderRequestState();
+
+  // OPTIONAL: if the request exists and is processing, keep it persistent on dashboard too.
+  // (dashboard.html that you already have checks localStorage.payments/paymentsNav but not withdrawRequest —
+  //  you can add a similar "Withdraws" area there that reads withdrawRequest)
+})();
+</script>
+</body>
+</html>
